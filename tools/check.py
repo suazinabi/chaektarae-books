@@ -15,6 +15,9 @@ for j,h in enumerate(b.get('hooks',[])):
 for j,z in enumerate(b.get('zzal',[])):
     c=b['orig'][z['at']] if 0<=z['at']<len(b['orig']) else ''
     if z['x'] not in c:bad.append(f'짤 {j} 원문과 다름')
+for j,x in enumerate(b.get('side',[])):
+    if not (0<=x.get('at',-1)<len(b['orig'])):bad.append(f'반응 {j} at 범위')
+    if re.search(r'[0-9]{3,4}년',x.get('x','')):bad.append(f'반응 {j} 연도')
 if b.get('lang')=='en' and len(b.get('tr',[]))!=len(b['orig']):bad.append('tr 길이가 orig와 다름')
 if b.get('more'):
     if not b.get('total') or b['total']<=len(b['orig']):bad.append('more인데 total이 이상함')
