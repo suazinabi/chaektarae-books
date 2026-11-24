@@ -18,12 +18,21 @@ for j,z in enumerate(b.get('zzal',[])):
 for j,x in enumerate(b.get('side',[])):
     if not (0<=x.get('at',-1)<len(b['orig'])):bad.append(f'반응 {j} at 범위')
     if re.search(r'[0-9]{3,4}년',x.get('x','')):bad.append(f'반응 {j} 연도')
+ats=[x.get('at') for x in b.get('side',[])]
+if len(ats)!=len(set(ats)):bad.append('같은 조각에 반응이 두 개')
+seen=set()
+for j,g in enumerate(b.get('gl',[])):
+    if not g.get('w') or not g.get('m'):bad.append(f'낱말 {j} 비었음')
+    elif not any(g['w'] in c for c in b['orig']):bad.append(f'낱말 {j} 원문에 없음: '+g['w'])
+    if g.get('w') in seen:bad.append('낱말 중복: '+g['w'])
+    seen.add(g.get('w'))
+if not b.get('gl'):bad.append('낱말 톡(gl) 없음')
 if b.get('lang')=='en' and len(b.get('tr',[]))!=len(b['orig']):bad.append('tr 길이가 orig와 다름')
 if b.get('more'):
     if not b.get('total') or b['total']<=len(b['orig']):bad.append('more인데 total이 이상함')
     if any(t.get('lock') for t in b.get('threads',[])):bad.append('아직 다 안 들어왔는데 다 읽은 사람만 타래가 있음')
 elif not any(t.get('lock') for t in b.get('threads',[])):bad.append('다 읽은 사람만 타래 없음')
 if not b.get('by'):bad.append('담당 유저(by) 없음')
-for k in ('name','author','when','color','cvs','lang'):
+for k in ('name','author','when','color','cvs','lang','tone'):
     if k not in b:bad.append(k+' 없음')
 print('\n'.join(bad) if bad else 'OK')
