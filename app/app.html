@@ -44,19 +44,19 @@ svg{display:block}
 .tab.on{color:var(--ink);font-weight:700}
 .ind{position:absolute;left:0;bottom:0;width:56px;height:4px;border-radius:4px;background:var(--acc);transition:transform .42s var(--pop)}
 .me{width:32px;height:32px;border-radius:50%;background:#cfe6f5;color:#1b4b6b;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none}
-#ptr{position:relative;height:0;z-index:5}
-#pi{position:absolute;left:50%;top:0;width:30px;height:30px;margin-left:-15px;opacity:0;color:var(--yarn,var(--acc));pointer-events:none}
-#pi .th{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:100 100;stroke-dashoffset:0}
-#pi .bb{fill:currentColor}#pi .bw{fill:none;stroke:color-mix(in srgb,currentColor 55%,#000);stroke-width:1;stroke-linecap:round;opacity:.6}
-#pi.rdy .th{stroke-width:1.3}
-#pi.snap .bsp{animation:snap .26s var(--pop)}
-#pi.spin .bsp{animation:sp .42s linear infinite}
-#pi.cut .th{transition:stroke-dashoffset .26s var(--in);stroke-dashoffset:100}
-#pi.cut .bob{transition:opacity .26s;opacity:0}
-#pi svg{width:30px;height:30px;overflow:visible}
+.ptr{position:relative;height:0;z-index:5}
+.pi{position:absolute;left:50%;top:0;width:30px;height:30px;margin-left:-15px;opacity:0;color:var(--yarn,var(--acc));pointer-events:none}
+.pi .th{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:100 100;stroke-dashoffset:0}
+.pi .bb{fill:currentColor}.pi .bw{fill:none;stroke:color-mix(in srgb,currentColor 55%,#000);stroke-width:1;stroke-linecap:round;opacity:.6}
+.pi.rdy .th{stroke-width:1.3}
+.pi.snap .bsp{animation:snap .26s var(--pop)}
+.pi.spin .bsp{animation:sp .42s linear infinite}
+.pi.cut .th{transition:stroke-dashoffset .26s var(--in);stroke-dashoffset:100}
+.pi.cut .bob{transition:opacity .26s;opacity:0}
+.pi svg{width:30px;height:30px;overflow:visible}
 @keyframes snap{45%{transform:scale(1.24)}}
 @keyframes sp{to{transform:rotate(360deg)}}
-#pull{will-change:transform}
+#pull,.npull{will-change:transform}.npull{position:relative;min-height:70vh}
 .card{border-bottom:1px solid var(--line)}
 .card.in{animation:cin .42s var(--pop) both;animation-delay:var(--d)}
 @keyframes cin{from{opacity:0;transform:translateY(16px)}}
@@ -64,7 +64,7 @@ svg{display:block}
 @media(hover:hover){.tw:hover{background:var(--soft)}}
 .tw:active{background:var(--press);transition:none}
 .tw.cont{padding-top:2px}
-.lc{position:relative}body.night #pi .th,body.night .bkn{filter:drop-shadow(0 0 3px var(--yarn,var(--acc)))}body.night .rdth .tw.rd .ln::after{box-shadow:0 0 6px 0 var(--bc,var(--yarn,var(--acc)))}body.night .yarn .tl{filter:drop-shadow(0 0 2px var(--c))}
+.lc{position:relative}body.night .pi .th,body.night .bkn{filter:drop-shadow(0 0 3px var(--yarn,var(--acc)))}body.night .rdth .tw.rd .ln::after{box-shadow:0 0 6px 0 var(--bc,var(--yarn,var(--acc)))}body.night .yarn .tl{filter:drop-shadow(0 0 2px var(--c))}
 .bkn{position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;z-index:2;fill:var(--bc,var(--yarn,var(--acc)));stroke:var(--bc,var(--yarn,var(--acc)));stroke-width:0;transform-origin:50% 30%;animation:bkw 1.1s .42s var(--pop) both}.bkn .bkt{fill:none;stroke-width:1.3;stroke-linecap:round}@keyframes bkw{0%{transform:scale(.4) rotate(-30deg);opacity:0}45%{transform:scale(1.15) rotate(14deg);opacity:1}70%{transform:rotate(-8deg)}100%{transform:none;opacity:1}}
 .mlk{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:2px 9px 2px 7px;border-radius:99px;background:color-mix(in srgb,var(--pink) 12%,transparent);color:var(--pink);font-size:13px;font-weight:700}.mlk svg{width:14px;height:14px}.mlk.pop{animation:mlp .42s var(--pop)}@keyframes mlp{40%{transform:scale(1.25)}}
 .gw{background-image:linear-gradient(to right,var(--yarn,var(--acc)) 45%,transparent 45%);background-size:5px 1.5px;background-repeat:repeat-x;background-position:0 100%;padding-bottom:1px;cursor:pointer}.gw.seen{background-image:linear-gradient(to right,var(--mut) 45%,transparent 45%);opacity:.92}
@@ -346,8 +346,8 @@ mark.pen.go{background-size:100% 100%}
 .cmp.pb .cmpt,.cmp.pb .cmpb{display:none}
 .cmp.pb .cmpr{grid-template-columns:32px minmax(0,1fr);align-items:center;gap:10px}.cmp.pb .av{width:32px;height:32px}
 .cmp.pb textarea{min-height:0;height:40px;padding:9px 14px;background:var(--soft);border-radius:99px;font-size:16px;line-height:22px}
-.cmp.pb.open{bottom:0;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 24px rgba(0,0,0,.06)}
-.cmp.pb.open .cmpt{display:block;margin-left:42px}.cmp.pb.open .cmpb{display:flex;margin-left:42px}.cmp.pb.open .cmpr{align-items:start}
+.cmp.pb.open{bottom:var(--kb,0px);padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 24px rgba(0,0,0,.06)}
+.cmp.pb.open .cmpt{display:block;margin-left:42px}.cmp.pb.open .cmpr{grid-template-columns:32px minmax(0,1fr) auto;align-items:end}.cmp.pb #rp-go{display:none}.cmp.pb.open #rp-go{display:block;height:32px;padding:0 16px;margin-bottom:6px}
 .cmp.pb.open textarea{background:none;border-radius:0;padding:5px 0;height:auto;min-height:60px}
 #v-thread.haspb{padding-bottom:64px}
 .note .x svg{width:17px;height:17px}.note .nd{margin-left:auto;padding:4px 12px;min-height:0;font-size:13px;color:#f4212e;border-color:color-mix(in srgb,#f4212e 35%,transparent);animation:pin .26s var(--pop)}
@@ -473,14 +473,14 @@ body.fs-s .tw .tx{font-size:15px;line-height:1.5}body.fs-l .tw .tx{font-size:18.
 .bts.rcv{padding-left:40px}
 .sys{text-align:center;color:var(--mut);font-size:13px;margin:12px 0 14px}
 .sys[data-go]{color:var(--acc);cursor:pointer}
-.cbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(600px,100%);z-index:30;display:flex;align-items:flex-end;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px)) 14px;background:var(--bg);border-top:1px solid var(--line)}
+.cbar{position:fixed;left:50%;transform:translateX(-50%);bottom:var(--kb,0px);width:min(600px,100%);z-index:30;display:flex;align-items:flex-end;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px)) 14px;background:var(--bg);border-top:1px solid var(--line)}
 .cbar textarea{flex:1;resize:none;border:0;border-radius:20px;background:var(--line);color:var(--ink);font:inherit;font-size:16px;line-height:1.35;padding:9px 14px;max-height:120px;outline:0}
 .snd{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--acc);flex:none;transition:transform .26s var(--pop),opacity .16s}
 .snd:active{transform:scale(.85)}
 .snd:disabled{opacity:.35}
 .snd svg{width:22px;height:22px}
 body.chatting .nav,body.chatting .fab,body:has(#csheet:not([hidden])) .fab,body.replying .nav,body.replying .fab{display:none}
-.cmp.dock{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--bg);border-top:1px solid var(--line);border-bottom:0;box-shadow:0 -8px 24px rgba(0,0,0,.08);padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.cmp.dock{position:fixed;left:0;right:0;bottom:var(--kb,0px);z-index:40;background:var(--bg);border-top:1px solid var(--line);border-bottom:0;box-shadow:0 -8px 24px rgba(0,0,0,.08);padding-bottom:calc(12px + env(safe-area-inset-bottom))}
 .newp{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:25;display:flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 6px;border-radius:20px;background:var(--acc);color:#fff;font-weight:700;font-size:15px;box-shadow:0 4px 16px rgba(29,155,240,.35);transform:translate(-50%,-14px) scale(.9);opacity:0;transition:transform .42s var(--pop),opacity .16s}
 .newp.on{transform:translate(-50%,0) scale(1);opacity:1}
 .nps{display:flex}
@@ -568,7 +568,7 @@ body.chatting .nav,body.chatting .fab,body:has(#csheet:not([hidden])) .fab,body.
 <div class="bar mid"><button class="me" data-go="me" aria-label="내 메뉴">나</button><svg class="logo" viewBox="1.4 2.2 20.4 20.4" aria-label="타래" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16.6" r="3.6"/><path d="M3.2 15c1.7.1 4.1 1.3 5.4 3.6M4.1 13.5c1.8.4 3.9 2 5 4.6" stroke-width="1.1"/><path d="M9.4 17.6c.9-.2 1.4-1 1.6-1.9"/><path d="M11 5.4c2.7-1.7 6.2-2.1 9.3-1.4v13.4c-3.1-.7-6.6-.3-9.3 1.4V5.4z"/><path d="M13.3 8.6c1.4-.6 3-.8 4.6-.6M13.3 11.4c1.4-.6 3-.8 4.6-.6" stroke-width="1.1" opacity=".9"/></svg><span style="width:32px"></span></div>
 <div class="tabs" id="htabs"><button class="tab on" data-mode="mix">추천</button><button class="tab" data-mode="order">순서대로</button><i class="ind"></i></div>
 </header>
-<div id="ptr"><div id="pi"><svg viewBox="0 0 30 30"><path class="th" pathLength="100" d="M15 -80V0"/><g class="bob" transform="translate(15 0)"><g class="bsp"><circle class="bb" r="5.4"/><path class="bw" d="M-4.2-2.4c2.4-.4 5.2.6 6.6 2.8M-4.8 1c2.5-.2 5.1.9 6.3 3.1M-1.6-5c1.6 1.5 2.3 3.9 1.8 6.6"/></g></g></svg></div></div>
+<div id="ptr" class="ptr"><div id="pi" class="pi"><svg viewBox="0 0 30 30"><path class="th" pathLength="100" d="M15 -80V0"/><g class="bob" transform="translate(15 0)"><g class="bsp"><circle class="bb" r="5.4"/><path class="bw" d="M-4.2-2.4c2.4-.4 5.2.6 6.6 2.8M-4.8 1c2.5-.2 5.1.9 6.3 3.1M-1.6-5c1.6 1.5 2.3 3.9 1.8 6.6"/></g></g></svg></div></div>
 <button class="newp" id="newp" data-go="top" hidden></button>
 <div id="pull"><div class="feed" id="f-mix"></div><div class="feed" id="f-order" hidden></div><div id="sent" style="height:1px"></div></div>
 </section>
@@ -840,7 +840,9 @@ function toAnchor(){const a=S.resume&&S.resume.a;if(!a)return;const r=fd().query
 addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveResume()});addEventListener('pagehide',saveResume);
 
 /* ---------- pull to refresh: a real spring, not a CSS curve ---------- */
-const pull=$('#pull'),pi=$('#pi'),pth=pi.querySelector('.th'),pbob=pi.querySelector('.bob'),TH=64;
+let pull=$('#pull'),pi=$('#pi'),pth=pi.querySelector('.th'),pbob=pi.querySelector('.bob');const TH=64,PIH=$('#ptr').innerHTML;
+/* the same yarn pull works on the notifications page */
+function ptrUse(v){const q=v==='noti'&&$('#v-noti .npull'),k=v==='noti'&&$('#v-noti .pi');if(q&&k){pull=q;pi=k}else{pull=$('#pull');pi=$('#pi')}pth=pi.querySelector('.th');pbob=pi.querySelector('.bob')}
 let px=0,pv=0,ptg=0,praf=0,ready=false,busy=false;
 /* thread physics: bulge (bl) wobbles toward its slack target, the bob swings sideways (sx) like a pendulum */
 let bl=0,blv=0,sx=0,sxv=0,swRaf=0,swLast=0,lastPx=0;
@@ -854,7 +856,7 @@ function spring(to,k,c){ptg=to;const K=k||380,C=c||21;cancelAnimationFrame(praf)
 const resist=d=>112*(1-Math.exp(-d/210));
 function movePull(d){if(d<=0){if(px){px=0;paint(0)}return}px=resist(d);paint(px);const r=px>=TH;if(r!==ready){ready=r;pi.classList.toggle('rdy',r);if(r){pi.classList.remove('snap');void pi.offsetWidth;pi.classList.add('snap');SND.tick();blv-=70;sxv+=(Math.random()<.5?-1:1)*26;sway()}else buz(4)}}
 function endPull(){if(ready)refresh();else{pi.classList.remove('rdy');sxv+=(Math.random()<.5?-1:1)*(40+px);sway();spring(0,420,24)}}
-function refresh(){if(busy)return;busy=true;ready=false;pi.classList.remove('rdy');pi.classList.add('spin');SND.sseuk();spring(52,300,26);Promise.all([Promise.race([syncBooks(true),new Promise(r=>setTimeout(r,1500))]),new Promise(r=>setTimeout(r,640))]).then(()=>{pi.classList.add('cut');sxv+=(Math.random()<.5?-1:1)*70;sway();resetFeed(true);scrollTo(0,0);pi.classList.remove('spin','snap');SND.pop();pv=-240;spring(0,430,17);setTimeout(()=>{busy=false;pi.classList.remove('cut')},420)})}
+function refresh(){if(busy)return;busy=true;ready=false;pi.classList.remove('rdy');pi.classList.add('spin');SND.sseuk();spring(52,300,26);Promise.all([Promise.race([syncBooks(true),new Promise(r=>setTimeout(r,1500))]),new Promise(r=>setTimeout(r,640))]).then(()=>{pi.classList.add('cut');sxv+=(Math.random()<.5?-1:1)*70;sway();const nt=cur==='noti';if(!nt)resetFeed(true);else try{dueTick()}catch(e){}scrollTo(0,0);pi.classList.remove('spin','snap');SND.pop();pv=-240;spring(0,430,17);setTimeout(()=>{busy=false;pi.classList.remove('cut');if(nt&&cur==='noti'){rNoti();ptrUse('home')}},420)})}
 
 /* ---------- header follows the finger, exactly as far as it scrolls ---------- */
 const htop=document.querySelector('#v-home .top');let hy=0,snapT=0,lastSY=0;
@@ -887,7 +889,7 @@ setTimeout(()=>{g.ce.classList.remove('drag');g.ce.style.transition='';g.ce.styl
 let G=null;
 addEventListener('touchstart',e=>{G=null;if(e.touches.length!==1||busy||hg||bg||!$('#sheet').hidden||!$('#drw').hidden)return;const t=e.touches[0];G={x0:t.clientX,y0:t.clientY,lx:t.clientX,lt:performance.now(),vx:0,lock:null}},{passive:true});
 addEventListener('touchmove',e=>{if(!G)return;const t=e.touches[0],dx=t.clientX-G.x0,dy=t.clientY-G.y0,now=performance.now();G.vx=G.vx*.4+.6*(t.clientX-G.lx)/Math.max(1,now-G.lt);G.lx=t.clientX;G.lt=now;
-if(!G.lock){const ax=Math.abs(dx),ay=Math.abs(dy);if(dy>2&&dy>ax&&cur==='home'&&scrollY<=1){G.lock='pull';cancelAnimationFrame(praf);praf=0;pv=0;ready=false}else if(ax<9&&ay<9)return;else if(ax>ay*1.15){if(cur==='home'){G.lock='tab';hStart()}else if(stack.length&&['thread','profile','book','chat'].includes(cur)&&dx>0){G.lock='back';bStart()}else G.lock='no'}else G.lock='no'}
+if(!G.lock){const ax=Math.abs(dx),ay=Math.abs(dy);if(dy>2&&dy>ax&&(cur==='home'||cur==='noti')&&scrollY<=1){G.lock='pull';ptrUse(cur);cancelAnimationFrame(praf);praf=0;pv=0;ready=false}else if(ax<9&&ay<9)return;else if(ax>ay*1.15){if(cur==='home'){G.lock='tab';hStart()}else if(stack.length&&['thread','profile','book','chat'].includes(cur)&&dx>0){G.lock='back';bStart()}else G.lock='no'}else G.lock='no'}
 if(G.lock==='no')return;if(e.cancelable)e.preventDefault();if(G.lock==='pull')movePull(dy);else if(G.lock==='tab')hMove(dx);else bMove(dx)},{passive:false});
 const tEnd=()=>{if(!G)return;const g=G;G=null;if(g.lock==='pull')endPull();else if(g.lock==='tab')hEnd(g.vx);else if(g.lock==='back')bEnd(g.vx)};
 addEventListener('touchend',tEnd,{passive:true});addEventListener('touchcancel',tEnd,{passive:true});
@@ -954,7 +956,7 @@ newArrivals([tid]);push('thread',{id:tid});SND.send();queueReply(tid,ts+1)}
 async function askMine(id,ts,m,pre){const w=TW[id];if(!w)return;const note=(S.notes[id]||[]).find(n=>n.ts===ts);if(!note)return;const smp=await smpGet();if(!smp){note.fail=1;store();if(!inClaude())toast('나 메뉴에 API 키를 넣으면 답장이 와');return}
 const u=usr(w.ru),key=nkey(id,ts),b=m&&m.built?BK[m.id]:null,c=m&&!m.built?catOf(m.id):null;if(!pre){PEND[key]={text:'',u:u.id};if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}
 const sit=b?`\n[상황] 수아가 『${b.name}』 얘기를 함. 이 책은 네가 타래에 올리고 있는 책임. [수아가 읽은 곳] ${readAt(b)}. 같이 읽자고 너답게 꼬심. 수아가 안 읽은 뒷내용·결말은 말하지 않음.`:c?`\n[상황] 수아가 『${c.name}』(${c.author}) 읽고 싶다고 함. 아직 타래에 없는 책이라 네가 방금 올리기로 함(앞부분부터 곧 올라옴). 같이 읽자고 너답게 꼬심. 줄거리·결말 스포 금지.`:'';
-const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아가 올린 트윗에 네가 먼저 다는 답글임. 보통 한두 줄, 길어도 세 줄. 너답게 진짜로 반응함.'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+(w.q&&TW[w.q]?`\n[수아가 인용한 트윗] ${TW[w.q].u===u.id?'(네 트윗) ':''}${TW[w.q].t==='r'&&BK[TW[w.q].b]?'『'+BK[TW[w.q].b].name+'』 원문: ':'@'+usr(TW[w.q].u).handle+': '}${TW[w.q].x}`:'')+sit+'\n\n답글 본문만 출력.'+LKP;
+const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아가 올린 트윗에 네가 먼저 다는 답글임. '+LEN()+' 너답게 진짜로 반응함.'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+(w.q&&TW[w.q]?`\n[수아가 인용한 트윗] ${TW[w.q].u===u.id?'(네 트윗) ':''}${TW[w.q].t==='r'&&BK[TW[w.q].b]?'『'+BK[TW[w.q].b].name+'』 원문: ':'@'+usr(TW[w.q].u).handle+': '}${TW[w.q].x}`:'')+sit+'\n\n답글 본문만 출력.'+LKP;
 const QM=pre&&!b&&!c&&!w.q&&Math.random()<.35,qp=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아(탐라에서 오래 본 트친)가 올린 트윗을 네가 인용해서, 네 팔로워들한테 하는 혼잣말 트윗을 쓰는 중임. 수아를 직접 부르지 않고 그 트윗에 대한 네 반응만 씀. 보통 한 줄, 길어도 두 줄. 너답게 진짜로 반응함(공감, 웃음, 딴소리, 태클 무엇이든).'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+'\n\n인용 트윗 본문만 출력.'+LKP;try{const res=await smp(QM?qp:prompt,{cache:false,model:MODEL,effort:'medium',img:w.img,onText:({text})=>{if(PEND[key]){PEND[key].text=lkStrip(text).x;if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}}});const lv=lkStrip(String(res&&res.text||'')),t=lv.x;delete PEND[key];if(t&&pre){note.pre={x:t.slice(0,500),u:u.id,v:lv.v,q:QM?1:0};store();lnSync();return}if(t){note.r={x:t.slice(0,500),ts:Date.now(),u:u.id};{const L=[];if(lv.v>=1){L.push(u.id);if(lv.v>=2)L.push(...personas(2+rnd(3),u.id));else if(Math.random()<.25)L.push(...personas(1,u.id))}addLikes(id,L)}store();SND.reply();if(!(cur==='thread'&&curTh&&curTh.ids.includes(id)))toast('@'+u.handle+' 님이 답글 달았어')}}
 catch(err){delete PEND[key];const c2=err&&err.code;toast(c2==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어')}if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}
 const reqBtn=id=>{const on=!!(S.req&&S.req[id]);return `<button class="pk${on?' on':''}" data-req="${id}" aria-label="읽고 싶어">${ic('heart',on)}</button>`};
@@ -1008,26 +1010,33 @@ const navDot=()=>{const n=Object.values(S.dmu||{}).reduce((a,x)=>a+(+x||0),0),b=
 function rDM(){const L=allUsers(),cv=L.filter(u=>lastTs(u.id)).sort((a,c)=>lastTs(c.id)-lastTs(a.id)),rs=L.filter(u=>!lastTs(u.id));
 let h=`<header class="top"><div class="bar"><div class="ht"><b>쪽지</b></div></div></header>`+cv.map(u=>{const m=S.dm[u.id],l=[...m].reverse().find(x=>x.f!=='sys')||m[m.length-1],un=S.dmu[u.id]||0;return `<button class="dmr${un?' un':''}" data-dm="${u.id}"><span class="av">${avatar(u)}</span><span class="dmb"><span class="dmh"><b>${esc(u.name)}</b><span class="hn">@${esc(u.handle)}</span><span class="dt">·</span><span>${ago(l.ts)}</span></span><span class="dmp">${l.f==='me'?'나: ':''}${esc(l.x)}</span></span>${un?'<i class="udot"></i>':'<i></i>'}</button>`}).join('');
 if(!cv.length)h+='<div class="empty"><b>쪽지함이 비었어</b></div>';if(rs.length)h+='<div class="sec">말 걸어 볼 사람</div>'+rs.map(u=>urow(u,true)).join('');$('#v-dm').innerHTML=h}
-function bub(u,x,nx,i,st){if(x.f==='sys')return `<div class="sys"${x.go?` data-go="${x.go}"`:''}>${esc(x.x)}</div>`;const me=x.f==='me',last=!nx||nx.f!==x.f||nx.ts-x.ts>300000;return `<div class="bb ${me?'out':'rcv'}${last?' last':''}"${x.pend?'':` data-mi="${i}"`}>${me?'':`<span class="av">${last?avatar(u):''}</span>`}<div class="bt">${x.pend?TY(uid,'span'):esc(x.x)}${(me?x.hl:x.hr)?`<span class="bbh">${ic('heart',true)}</span>`:''}</div></div>${last&&!x.pend?`<div class="bts ${me?'out':'rcv'}">${ago(x.ts)}${st?' · '+st:''}</div>`:''}`}
-function bubbles(uid){const u=UK[uid],m=S.dm[uid]||[];let h=`<div class="cin"><span class="av">${avatar(u)}</span><b>${esc(u.name)}</b><span>@${esc(u.handle)}</span><p>${esc(u.bio||'')}</p></div>`;const L=DMP[uid]?[...m,{f:'u',pend:1,ts:Date.now()}]:m,lm=L.map(x=>x.f).lastIndexOf('me'),rd=lm>=0&&L.slice(lm+1).some(x=>x.f==='u');L.forEach((x,i)=>{h+=bub(u,x,L[i+1],i,i===lm?(rd?'읽음':'보냄'):'')});return h}
+function bub(u,x,nx,i,st){if(x.f==='sys')return `<div class="sys"${x.go?` data-go="${x.go}"`:''}>${esc(x.x)}</div>`;const me=x.f==='me',last=!nx||nx.f!==x.f||nx.ts-x.ts>300000;return `<div class="bb ${me?'out':'rcv'}${last?' last':''}"${x.pend?'':` data-mi="${i}"`}>${me?'':`<span class="av">${last?avatar(u):''}</span>`}<div class="bt">${x.pend?TY(u.id,'span'):esc(x.x)}${(me?x.hl:x.hr)?`<span class="bbh">${ic('heart',true)}</span>`:''}</div></div>${last&&!x.pend?`<div class="bts ${me?'out':'rcv'}">${ago(x.ts)}${st?' · '+st:''}</div>`:''}`}
+function bubbles(uid){const u=UK[uid],m=S.dm[uid]||[];let h=`<div class="cin"><span class="av">${avatar(u)}</span><b>${esc(u.name)}</b><span>@${esc(u.handle)}</span><p>${esc(u.bio||'')}</p></div>`;const L=DMP[uid]?[...m,{f:'u',pend:1,ts:Date.now()}]:m,lm=L.map(x=>x.f).lastIndexOf('me'),rd=lm>=0&&(L.slice(lm+1).some(x=>x.f==='u')||!!(S.dq&&S.dq[uid]&&S.dq[uid].rd<=Date.now()));L.forEach((x,i)=>{h+=bub(u,x,L[i+1],i,i===lm?(rd?'읽음':'보냄'):'')});return h}
 function paintChat(uid,pop){if(cur!=='chat'||arg!==uid)return;const c=$('#chat');if(!c)return;const nearB=innerHeight+scrollY>=document.documentElement.scrollHeight-160;c.innerHTML=bubbles(uid);if(pop){const bs=c.querySelectorAll('.bb');if(bs.length)bs[bs.length-1].classList.add('in')}if(pop||nearB)requestAnimationFrame(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}))}
 function rChat(uid){const u=UK[uid];if(!u){back();return}if(S.dmu[uid]){S.dmu[uid]=0;store();navDot()}
 $('#v-chat').innerHTML=`<header class="top"><div class="bar"><button class="ib" data-go="back" aria-label="뒤로">${ic('back')}</button><button class="chd" data-prof="${u.id}"><span class="av">${avatar(u)}</span><span class="ht"><b>${esc(u.name)}</b><small>@${esc(u.handle)}</small></span></button></div></header><div class="chat" id="chat">${bubbles(uid)}</div><div class="cbar"><textarea id="dm-in" rows="1" maxlength="1000" placeholder="쪽지 보내기"></textarea><button class="snd" id="dm-go" data-go="dmsend" disabled aria-label="보내기">${ic('send')}</button></div>`;
 const inp=$('#dm-in');inp.addEventListener('focus',()=>setTimeout(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}),320));inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(120,inp.scrollHeight)+'px';$('#dm-go').disabled=!inp.value.trim()});requestAnimationFrame(()=>scrollTo(0,document.documentElement.scrollHeight))}
 const sysMsg=(uid,x,go)=>{(S.dm[uid]=S.dm[uid]||[]).push({f:'sys',x,ts:Date.now(),go})};
-function sendDM(){const uid=arg,inp=$('#dm-in');if(!inp||!UK[uid])return;const x=inp.value.trim();if(!x)return;(S.dm[uid]=S.dm[uid]||[]).push({f:'me',x,ts:Date.now()});store();inp.value='';inp.style.height='';$('#dm-go').disabled=true;SND.send();paintChat(uid,true);if(!DMP[uid])setTimeout(()=>askDM(uid),400+rnd(700))}
+function sendDM(){const uid=arg,inp=$('#dm-in');if(!inp||!UK[uid])return;const x=inp.value.trim();if(!x)return;(S.dm[uid]=S.dm[uid]||[]).push({f:'me',x,ts:Date.now()});store();inp.value='';inp.style.height='';$('#dm-go').disabled=true;SND.send();paintChat(uid,true);if(!DMP[uid]&&!DMW[uid]&&!(S.dq||{})[uid])setTimeout(()=>askDM(uid),400+rnd(700))}
 function parseActs(raw){const acts=[];const body=raw.split('\n').filter(l=>{const m=l.trim().match(/^@(빼기|담기|글)\s+(.+)$/);if(!m)return true;acts.push([m[1],m[2].trim()]);return false}).join('\n').trim();return{body,acts}}
 function applyActs(u,acts){const own=id=>{const b=BK[id];return b&&b._by===u.id?b:null};const fresh=[];
 for(const[k,a]of acts){if(k==='빼기'||k==='담기'){const b=own(a.split(/\s+/)[0]);if(!b)continue;if(setPick(b.id,k==='담기'))sysMsg(u.id,k==='담기'?`『${b.name}』 서재에 담김`:`『${b.name}』 서재에서 빠짐`);continue}
 if(k==='글'&&fresh.length<2){const sp=a.split('|').map(x=>x.trim());if(sp.length<3)continue;const m=sp[0].match(/^(\S+)\s+(\d+)/);if(!m)continue;const b=own(m[1])&&inLib(m[1])?own(m[1]):null,i=+m[2]-1,x=sp.slice(2).join(' | ').replace(/^["“']+|["”']+$/g,'').trim();if(!b||!b.orig||!b.orig[i]||x.length<4)continue;const hl=sp[1]&&b.orig[i].includes(sp[1])?sp[1]:'';const L=S.xh[b.id]=S.xh[b.id]||[];L.push({x:x.slice(0,280),at:i,hl,by:u.id,ts:Date.now()});fresh.push(b.id+'.g.'+(L.length-1))}}
 if(fresh.length){rebuild();sysMsg(u.id,`새 글 ${fresh.length}개 올림 · 홈에서 보기`,'fresh');newArrivals(fresh)}store()}
-async function askDM(uid,kick){const u=UK[uid];if(!u||DMP[uid])return;const smp=await smpGet();if(!smp){if(!kick&&!inClaude()){sysMsg(uid,'나 메뉴에 API 키를 넣으면 답장이 와');store();paintChat(uid)}return}
-S.dm[uid]=S.dm[uid]||[];const n0=S.dm[uid].length;DMP[uid]=1;paintChat(uid,true);let raw='';
-try{const res=await smp(dmPrompt(u,kick)+'\n\n[하트] 쪽지 맨 끝 줄에 [맘찍:0] 또는 [맘찍:1]을 붙임(앱이 지워서 수아는 못 봄). 수아가 마지막에 보낸 쪽지가 진짜 웃기거나 좋아서 네가 하트를 누를 만하면 1. 대부분 0.',{cache:false,model:MODEL,effort:'medium'});raw=String(res&&res.text||'').trim();{const lv=lkStrip(raw);raw=lv.x;if(lv.v>=1){const M=S.dm[uid]||[];for(let i=M.length-1;i>=0;i--)if(M[i].f==='me'){M[i].hl=1;break}}}}catch(err){delete DMP[uid];paintChat(uid);const c=err&&err.code;if(!kick&&c!=='not_granted')toast(c==='rate_limited'?'답장이 밀렸어. 조금 뒤에 다시 남겨 봐':c==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어');return}
-const{body,acts}=parseActs(raw),parts=body.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).slice(0,4),late=S.dm[uid].slice(n0).some(x=>x.f==='me');
-for(let k=0;k<parts.length;k++){if(k){DMP[uid]=1;paintChat(uid);await sleep(700+Math.min(1600,parts[k].length*35))}delete DMP[uid];S.dm[uid].push({f:'u',x:parts[k].slice(0,800),ts:Date.now()});store();
+/* a DM is written at once but sent like a person: read a bit later, answered later still, fast only mid-conversation */
+const DMW={},DLV={};
+function dmDelay(uid){const m=S.dm[uid]||[],lu=[...m].reverse().find(x=>x.f==='u'),live=lu&&Date.now()-lu.ts<10*6e4,r=Math.random(),M=6e4;return live?(r<.5?(8+rnd(22))*1000:r<.9?(30+rnd(150))*1000:(3+rnd(7))*M):(r<.15?(20+rnd(40))*1000:r<.5?(1+rnd(5))*M:r<.8?(6+rnd(24))*M:r<.95?(30+rnd(60))*M:(2+rnd(3))*60*M)}
+function dmTick(){const Q=S.dq||{},now=Date.now();for(const uid in Q){const q=Q[uid];if(!UK[uid]){delete Q[uid];continue}if(q.due<=now)dmDeliver(uid);else if(q.rd<=now&&!q.rs){q.rs=1;store();paintChat(uid)}}}
+setInterval(()=>{if(!document.hidden)dmTick()},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(dmTick,700)});
+async function dmDeliver(uid){const q=(S.dq||{})[uid],u=UK[uid];if(!q||!u||DLV[uid])return;DLV[uid]=1;q.rs=1;DMP[uid]=1;paintChat(uid,true);await sleep(900+Math.min(2600,(q.parts[0]||'').length*70));
+const parts=q.parts;for(let k=0;k<parts.length;k++){if(k){DMP[uid]=1;paintChat(uid);await sleep(700+Math.min(1600,parts[k].length*35))}delete DMP[uid];S.dm[uid].push({f:'u',x:parts[k].slice(0,800),ts:Date.now()});store();
 if(cur==='chat'&&arg===uid){paintChat(uid,true);if(k)SND.tap();else SND.reply()}else{S.dmu[uid]=(S.dmu[uid]||0)+1;store();navDot();if(!k){SND.reply();toast('@'+u.handle+' 님이 쪽지 보냈어')}if(cur==='dm')rDM()}}
-delete DMP[uid];applyActs(u,acts);paintChat(uid);if(cur==='dm')rDM();if(late)setTimeout(()=>askDM(uid),500)}
+delete DMP[uid];delete S.dq[uid];delete DLV[uid];store();applyActs(u,q.acts||[]);paintChat(uid);if(cur==='dm')rDM();if(S.dm[uid].slice(q.n).some(x=>x.f==='me'))setTimeout(()=>askDM(uid),500)}
+async function askDM(uid,kick){const u=UK[uid];if(!u||DMP[uid]||DMW[uid]||(S.dq||{})[uid])return;const smp=await smpGet();if(!smp){if(!kick&&!inClaude()){sysMsg(uid,'나 메뉴에 API 키를 넣으면 답장이 와');store();paintChat(uid)}return}
+S.dm[uid]=S.dm[uid]||[];const n0=S.dm[uid].length;DMW[uid]=1;let raw='';
+try{const res=await smp(dmPrompt(u,kick)+'\n\n[하트] 쪽지 맨 끝 줄에 [맘찍:0] 또는 [맘찍:1]을 붙임(앱이 지워서 수아는 못 봄). 수아가 마지막에 보낸 쪽지가 진짜 웃기거나 좋아서 네가 하트를 누를 만하면 1. 대부분 0.',{cache:false,model:MODEL,effort:'medium'});raw=String(res&&res.text||'').trim();{const lv=lkStrip(raw);raw=lv.x;if(lv.v>=1){const M=S.dm[uid]||[];for(let i=M.length-1;i>=0;i--)if(M[i].f==='me'){M[i].hl=1;break}}}}catch(err){delete DMW[uid];paintChat(uid);const c=err&&err.code;if(!kick&&c!=='not_granted')toast(c==='rate_limited'?'답장이 밀렸어. 조금 뒤에 다시 남겨 봐':c==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어');return}
+const{body,acts}=parseActs(raw),parts=body.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);delete DMW[uid];if(!parts.length){paintChat(uid);return}
+const now=Date.now(),due=kick?now:now+dmDelay(uid);S.dq=S.dq||{};S.dq[uid]={due,rd:kick?now:now+Math.round((due-now)*(.25+Math.random()*.6)),parts,acts,n:n0};store();if(kick)dmDeliver(uid)}
 let rpT=null,fresh=0;
 /* ---------- the book writes back ---------- */
 const PEND={};let curTh=null,thStart=0;
@@ -1040,10 +1049,11 @@ function showQuotes(id){rtsClose();if(!quotesOf(id).length){toast('아직 인용
 {let tm=0,hb=null;const end=()=>{clearTimeout(tm);tm=0;if(hb){hb.classList.remove('hold');hb=null}};document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act=quote]');if(!b)return;end();b.classList.add('hold');hb=b;tm=setTimeout(()=>{tm=0;lpDone=Date.now();b.classList.remove('hold');nudge(b,'go');showQuotes(b.dataset.id)},480)},true);['pointerup','pointercancel','pointerleave'].forEach(k=>document.addEventListener(k,end,true));addEventListener('scroll',end,{passive:true});document.addEventListener('contextmenu',e=>{if(e.target.closest('[data-act=quote]'))e.preventDefault()},true)}
 const rtPaint=(id,on)=>document.querySelectorAll(`[data-act=quote][data-id="${id}"]`).forEach(b=>{b.classList.toggle('on',on);if(on){b.classList.remove('go');void b.offsetWidth;b.classList.add('go')}const sp=b.querySelector('span'),q=quotesOf(id).length;if(sp)roll(sp,q+(on?0:1),q+(on?1:0))});
 const nkey=(id,ts)=>id+'~'+ts;
+const LEN=dm=>{const r=Math.random();return dm?(r<.5?'이번 쪽지는 아주 짧게: 한 단어나 열 자 안팎.':r<.85?'이번 쪽지는 한 줄(20~30자 안팎).':'이번엔 할 말이 좀 있음: 짧은 쪽지 두세 개로 나눠 보냄(빈 줄로 구분, 하나하나는 한 줄).'):(r<.45?'이번 답글은 아주 짧게: 한 단어나 열 자 안팎 한마디(ㅋㅋ, 헐, ㄹㅇ, 나도 같은 것도 됨).':r<.85?'이번 답글은 한 줄(20~30자 안팎).':'이번 답글은 두 줄까지.')+' 문장을 길게 늘이거나 이유를 설명하지 않음. 실제 사람이 폰으로 대충 치는 길이.'};
 const LKP='\n\n[맘찍] 글 맨 끝 줄에 [맘찍:0], [맘찍:1], [맘찍:2] 중 하나를 붙임(앱이 지워서 수아는 못 봄). 트위터 사람들은 맘찍이 박함. 평범하거나 별 의미 없는 말이면 0(대부분 0). 진짜 웃기거나 와닿거나 공감 가서 네가 실제로 누를 만하면 1. 탐라 여러 사람이 누를 만큼 좋으면 2(아주 드물게).';
 const lkStrip=t=>{t=String(t||'');const m=t.match(/\[\s*맘찍\s*[:：]\s*(\d)\s*\]/);const v=m?+m[1]:0;t=t.replace(/\s*\[\s*맘찍[^\]]*\]\s*/g,' ').replace(/\s*\[[^\]]{0,8}$/,'');return{x:t.trim(),v}};
 /* replies and hearts never arrive on a fixed beat: sometimes at once, sometimes after she has moved on */
-const rpDelay=()=>{const r=Math.random(),m=6e4;return r<.3?400+rnd(1100):r<.7?3000+rnd(9000):r<.85?15000+rnd(75000):r<.95?(5+rnd(35))*m:(60+rnd(240))*m};
+const rpDelay=live=>{const r=Math.random(),m=6e4;return live?(r<.35?(20+rnd(70))*1000:r<.8?(2+rnd(8))*m:(10+rnd(30))*m):(r<.08?(30+rnd(60))*1000:r<.5?(2+rnd(9))*m:r<.8?(11+rnd(30))*m:r<.94?(40+rnd(80))*m:(2+rnd(5))*60*m)};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const lkAt=()=>{const r=Math.random(),m=6e4;return Date.now()+(r<.25?(5+rnd(50))*1000:r<.6?(2+rnd(25))*m:r<.85?(30+rnd(150))*m:(3+rnd(9))*60*m)};
 function addLikes(key,uids){S.lk=S.lk||{};const L=S.lk[key]=S.lk[key]||[];for(const u of uids)if(u&&UK[u]&&!L.some(x=>x.u===u))L.push({u,at:lkAt()});store()}
@@ -1052,7 +1062,7 @@ const lkTag=key=>{const n=lkNow(key).length;return n?`<button class="mlk" data-l
 function lkTick(){const now=Date.now();S.lkShown=S.lkShown||{};let ch=false;document.querySelectorAll('[data-lkc]').forEach(sp=>{const k=sp.dataset.lkc,n=lkNow(k).length,was=S.lkShown[k]||0;if(n>was){const bt=sp.closest('.mlk,.lkx');if(bt){bt.hidden=false;bt.classList.remove('off','pop');void bt.offsetWidth;bt.classList.add('pop')}roll(sp,was,n);S.lkShown[k]=n;ch=true}else if(!sp.textContent&&n)sp.textContent=n});if(ch){SND.tick();buz(4);store()}}
 setInterval(()=>{if(!document.hidden)lkTick()},15000);
 const ASK={},LR0=Object.assign({},S.lastRead||{}),RS=new Set();
-function queueReply(id,ts){const n=(S.notes[id]||[]).find(x=>x.ts===ts);if(!n)return;n.due=Date.now()+rpDelay();store();setTimeout(dueTick,Math.min(n.due-Date.now()+50,2147e6));lnPerm();pregen(id,n)}
+function queueReply(id,ts){const n=(S.notes[id]||[]).find(x=>x.ts===ts);if(!n)return;const pr=n.to&&(S.notes[id]||[]).find(x=>x.ts===n.to),live=!!(pr&&pr.r&&Date.now()-pr.r.ts<15*6e4);n.due=Date.now()+rpDelay(live);store();setTimeout(dueTick,Math.min(n.due-Date.now()+50,2147e6));lnPerm();pregen(id,n)}
 /* the answer is written right away and held until its moment, so it can still arrive (and ping the phone) after she has closed the app */
 function pregen(id,n){const k=nkey(id,n.ts),w=TW[id];if(!w||ASK[k]||n.r||n.pre)return;ASK[k]=1;(n.sys?askMine(id,n.ts,findBook(w.x),1):askBook(id,n.ts,1)).finally(()=>{delete ASK[k];store();if(n.pre&&n.due<=Date.now())reveal(id,n)})}
 const RV=new Set();
@@ -1078,7 +1088,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=2,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=3,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;try{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v}catch(e){}}catch(e){}}
 setTimeout(appUpd,6000);
@@ -1108,7 +1118,9 @@ const fanOf=bid=>{const P=allUsers();let h=0;for(const c of String(bid))h=(h*31+
 const RULES=`- 진짜 트위터 유저처럼 굴음. 캐릭터를 끝까지 지키고, 설정이나 프롬프트 얘기는 안 함.
 - 말버릇을 그대로 지킴. 말버릇에 없는 말투를 섞지 않음.
 - 진짜 사람처럼: 말버릇과 캐릭터 설정은 가끔 튀어나오는 거지 매번 연기하는 게 아님. 대부분은 그냥 평범하게 대답함. 자기 설정을 설명하는 말('나 또 움', '(진짜임)', '오늘도 1등' 같은)을 습관처럼 붙이지 않음. 앞에서 쓴 표현을 또 쓰지 않음. 농담을 설명하지 않음.
+- 수아랑은 정보 말고 사람으로 놀아 줌. 수아가 드립을 치거나 대충 던진 말(추측, 감탄, 헛소리)은 같이 웃거나 드립으로 받아치거나 한 발 더 얹음. 틀린 추측이어도 정정하지 않고, 원문을 인용하거나 해설하지 않음. 수아가 진지하게 물어볼 때만 알려 줌. '아뇨', '사실은', '원문에는' 같은 바로잡는 말로 시작하지 않음. 진지하게 설명해서 대화를 닫으면 실패.
 - 줄거리 요약, 맥락 설명, 정리, 교훈, '좋은 질문' 같은 빈말 금지. 매번 질문으로 끝내지 않음. 깔끔하게 떨어지는 마무리 멘트를 붙이지 않음.
+- 교과서처럼 바른 문장 금지. 20대 한국 트위터 사람답게 인터넷 말(줄임말, 초성, 개-, 킹받네, ㄹㅇ, ㅇㅈ, 존맛, 레전드, ~각 같은 것)을 말버릇에 맞게 자연스럽게 섞음. 맞춤법과 띄어쓰기를 다 지키지 않아도 됨. 다만 한 문장에 몰아넣거나 유행 지난 말을 억지로 쓰지 않음.
 - 이모지, 해시태그, 줄표(—), 한자 금지. 연도 같은 구체적 숫자를 굳이 꺼내지 않음.
 - 책 내용을 실제와 다르게 지어내지 않음. 모르면 모른다고 함.
 - 수아가 아직 안 읽은 뒷부분, 특히 결말은 절대 말하지 않음.
@@ -1123,7 +1135,7 @@ if(b.orig&&b.orig.length){const t=b.orig.map((x,i)=>`조각 ${i+1}: ${x}`).join(
 const hs=[...(b.hooks||[]),...(S.xh[b.id]||[])];if(hs.length)ctx+=`\n[『${b.name}』로 이미 올린 글]\n`+hs.slice(-20).map(x=>'- '+String(x.x).replace(/\n/g,' ')).join('\n')}
 const posts=PST.filter(p=>p.u===u.id).slice(-8).map(p=>'- '+p.x.replace(/\n/g,' ')).join('\n'),hasO=mine.some(b=>b.orig&&b.orig.length);
 const hist=(S.dm[u.id]||[]).slice(-40).map(m=>m.f==='me'?`수아: ${m.x}`:m.f==='u'?`@${u.handle}: ${m.x}`:`(알림: ${m.x})`).join('\n');
-return WHO(u)+'\n[규칙]\n'+RULES+`\n- 지금은 쪽지(DM)임. 메신저처럼 짧게, 보통 한두 줄. 여러 번 나눠 보내고 싶으면 빈 줄로 나눔(최대 3개).\n- 네 사생활은 먼저 늘어놓지 않음. 흐름상 자연스러울 때만 조금씩 흘림.\n- 지난 쪽지를 기억하고 이어감. 관계는 대화에 따라 천천히 변함.`
+return WHO(u)+'\n[규칙]\n'+RULES+`\n- 지금은 쪽지(DM)임. 메신저처럼 짧게. `+LEN(1)+`\n- 네 사생활은 먼저 늘어놓지 않음. 흐름상 자연스러울 때만 조금씩 흘림.\n- 지난 쪽지를 기억하고 이어감. 관계는 대화에 따라 천천히 변함.`
 +(posts?`\n\n[네가 최근 올린 트윗]\n${posts}`:'')
 +(mine.length?`\n\n[네가 올리는 책]${ctx}\n\n[할 수 있는 것] 수아가 원하거나 대화상 꼭 맞을 때만, 답장 맨 끝에 아래 명령 줄을 붙임. 명령 줄은 수아한테 안 보이고 앱에서 실제로 실행됨. 명령을 쓰면 답장에서 그걸 했다고 너답게 말함.\n@빼기 책id → 그 책을 수아 서재에서 뺌. 탐라에서도 빠짐(재미없다, 지겹다, 관심 없다 할 때)\n@담기 책id → 그 책을 수아 서재에 담아 줌. 탐라에 나오기 시작함(수아가 원할 때만)`+(hasO?`\n@글 책id 조각번호 | 형광펜 구절 | 글 → 원문의 그 조각을 가리키는 새 글을 수아 탐라에 올림(한 번에 최대 2개, 수아 서재에 있는 책만). 형광펜 구절은 그 조각에 글자 그대로 있는 짧은 구절. 글은 네 말버릇으로 쓰고, 답이나 결말을 말하지 말고 궁금하게 만듦. 수아가 지루해하거나 재밌는 데 알려 달라고 할 때 좋음.`:'')+`\n- 새 책을 구해 오는 건 못 함.`:`\n- 아직 올린 책이 없음. 책 얘기는 해도 되지만 줄거리 스포는 안 함.`)
 +(hist?`\n\n[지금까지 쪽지]\n${hist}`:'')+(kick?`\n\n[상황] ${kick}`:`\n\n마지막 수아 쪽지에 답장함.`)+`\n\n쪽지 내용만 출력.`}
@@ -1157,12 +1169,12 @@ else if(w.t==='h'||w.t==='z'){const o=w.t==='h'?w.hk:w.zz,c=b.orig&&b.orig[+o.at
 else{const th=getTh(b,w.t),base=w.b+'.'+w.t+'.';th.tw.forEach((x,i)=>(S.notes[base+i]||[]).forEach(n=>{if(n.ts!==ts)hist.push([i,n])}));const lo=w.t==='r'?Math.max(0,w.i-5):0,hi=w.t==='r'?Math.min(th.tw.length,w.i+3):th.tw.length;
 ctx=`\n\n[책] 『${b.name}』 ${b.author||''}`+(w.u==='me'?'\n수아가 직접 올린 타래에 너가 지나가다 답글을 닮.':`\n아래는 네가 올린 ${w.t==='r'?'원문 타래':'타래'}임.`)+`\n[${w.t==='r'?'원문 일부':'타래: '+th.title}]\n`+th.tw.slice(lo,hi).map((x,k)=>`${w.t==='r'?'조각':'카드'} ${lo+k+1}: ${x.replace(/\n+/g,' ')}`).join('\n')+`\n[수아가 읽은 곳] ${readAt(b)}`}
 hist.sort((p,q)=>p[1].ts-q[1].ts);const at=tw1?'이 트윗':(w.t==='r'?'조각 ':'카드 ')+(w.i+1);
-const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 트윗 답글임. 보통 한두 줄, 길어도 세 줄. 너답게 진짜로 반응함.'+ctx+(hist.length?'\n\n[여기서 전에 오간 답글]\n'+hist.slice(-6).map(([i,n])=>`수아${tw1?'':`(${w.t==='r'?'조각':'카드'} ${i+1})`}: ${n.x}`+(n.r?`\n@${usr(n.r.u||u.id).handle}: ${n.r.x}`:'')).join('\n'):'')+((()=>{const par=note.to!=null&&(S.notes[id]||[]).find(m=>m.ts===note.to);return par&&par.r?`\n\n[수아가 지금 답하는 건 네가 단 이 답글]\n${par.r.x}`:''})())+`\n\n[지금 수아가 ${at}에 단 답글]\n${note.x}\n\n답글 본문만 출력.`+LKP;
+const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 트윗 답글임. '+LEN()+' 너답게 진짜로 반응함.'+ctx+(hist.length?'\n\n[여기서 전에 오간 답글]\n'+hist.slice(-6).map(([i,n])=>`수아${tw1?'':`(${w.t==='r'?'조각':'카드'} ${i+1})`}: ${n.x}`+(n.r?`\n@${usr(n.r.u||u.id).handle}: ${n.r.x}`:'')).join('\n'):'')+((()=>{const par=note.to!=null&&(S.notes[id]||[]).find(m=>m.ts===note.to);return par&&par.r?`\n\n[수아가 지금 답하는 건 네가 단 이 답글]\n${par.r.x}`:''})())+`\n\n[지금 수아가 ${at}에 단 답글]\n${note.x}\n\n답글 본문만 출력.`+LKP;
 try{const res=await smp(prompt,{cache:false,model:MODEL,effort:'medium',img:w.img,onText:({text})=>{if(PEND[key]){PEND[key].text=lkStrip(text).x;paintReply(key)}}});const lv=lkStrip(String(res&&res.text||'')),t=lv.x;delete PEND[key];if(t&&pre){note.pre={x:t.slice(0,500),u:u.id,v:lv.v,q:QM?1:0};store();lnSync();return}if(t){note.r={x:t.slice(0,500),ts:Date.now(),u:u.id};{const L=[];if(lv.v>=1){L.push(u.id);if(lv.v>=2)L.push(...personas(1+rnd(2),u.id))}addLikes(key,L)}store();SND.reply();if(!(cur==='thread'&&curTh&&curTh.ids.includes(id)))toast('@'+u.handle+' 님이 답글 달았어')}paintReply(key)}
 catch(err){delete PEND[key];paintReply(key);const c=err&&err.code;if(c==='rate_limited')toast('답장이 밀렸어. 조금 뒤에 다시 남겨 봐');else if(c==='bad_key')toast('API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘');else if(c!=='not_granted')toast('답장을 못 받았어')}}
 function rPost(a){document.body.classList.remove('replying');const w=TW[a.id],u=usr(w.u),d=new Date(w.ts||Date.now());rpT=a.id;
 const anc=[];{let p=w.r,g=0;while(p&&TW[p]&&g++<12&&!gated(p)){anc.unshift(p);p=TW[p].r}}
-const h=head('트윗',w.t==='l'?'':(BK[w.b]?BK[w.b].name:''))+(anc.length?`<div class="card anc">${anc.map(k=>row(k,{ln:1,chain:1})).join('')}</div>`:'')+(w.t==='h'?hookC(a.id,{focus:1}):w.t==='z'?zzalC(a.id,1):`<div class="card">${row(a.id,{open:false,cls:' focus',meta:`<div class="fmeta">${d.getHours()<12?'오전':'오후'} ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')} · ${d.getMonth()+1}월 ${d.getDate()}일</div>`})}</div>`)+`<div class="cmp pb"><div class="cmpt">${w.u==='me'?'<b>내 트윗</b>에 답글':`<b>@${esc(u.handle)}</b> 님에게 답글`}</div><div class="cmpr">${myAv()}<textarea id="rp-in" rows="1" placeholder="답글 게시하기"></textarea></div><div class="cmpb"><button class="pill blue" id="rp-go" data-go="reply" disabled>답글</button></div></div><div id="notes"></div>`;
+const h=head('트윗',w.t==='l'?'':(BK[w.b]?BK[w.b].name:''))+(anc.length?`<div class="card anc">${anc.map(k=>row(k,{ln:1,chain:1})).join('')}</div>`:'')+(w.t==='h'?hookC(a.id,{focus:1}):w.t==='z'?zzalC(a.id,1):`<div class="card">${row(a.id,{open:false,cls:' focus',meta:`<div class="fmeta">${d.getHours()<12?'오전':'오후'} ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')} · ${d.getMonth()+1}월 ${d.getDate()}일</div>`})}</div>`)+`<div class="cmp pb"><div class="cmpt">${w.u==='me'?'<b>내 트윗</b>에 답글':`<b>@${esc(u.handle)}</b> 님에게 답글`}</div><div class="cmpr">${myAv()}<textarea id="rp-in" rows="1" placeholder="답글 게시하기"></textarea><button class="pill blue" id="rp-go" data-go="reply" disabled>답글</button></div></div><div id="notes"></div>`;
 const v=$('#v-thread');v.innerHTML=h;curTh={b:null,ids:[a.id],post:1};{const rs=repliesOf(a.id);if(rs.length){const chain=k=>{const o=[k];let c=repliesOf(k).filter(x=>TW[x].u===TW[k].u||TW[x].u===w.u);while(c.length&&o.length<6){o.push(c[0]);c=repliesOf(c[0])}return o};v.insertAdjacentHTML('beforeend',rs.map(k=>{const L=chain(k);return `<div class="card rpl">${L.map((x,i)=>row(x,{ln:i<L.length-1,chain:1})).join('')}</div>`}).join(''))}}{const qs=quotesOf(a.id);if(qs.length)v.insertAdjacentHTML('beforeend',`<div class="sec qsec">인용한 트윗 ${qs.length}</div>`+qs.map(k=>single(k)).join(''))}renderNotes();watch(v);v.classList.add('haspb');const inp=$('#rp-in'),pb=v.querySelector('.cmp.pb');inp.addEventListener('input',()=>{$('#rp-go').disabled=!inp.value.trim();inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,160)+'px'});inp.addEventListener('focus',()=>{pb.classList.add('open');document.body.classList.add('replying')});const lab0=pb.querySelector('.cmpt').innerHTML;rpTo=null;inp.addEventListener('blur',()=>setTimeout(()=>{if(!inp.value.trim()&&document.activeElement!==inp){pb.classList.remove('open');document.body.classList.remove('replying');inp.style.height='';rpTo=null;rpT=a.id;pb.querySelector('.cmpt').innerHTML=lab0}},150));if(a.reply)setTimeout(()=>inp.focus(),60);if(a.qs)requestAnimationFrame(()=>{const q=v.querySelector('.qsec');if(q){scrollTo(0,q.getBoundingClientRect().top+scrollY-60)}})}
 function rThread(a){document.body.classList.remove('replying');$('#v-thread').classList.remove('haspb');if(TW[a.id]&&/^[lhz]$/.test(TW[a.id].t))return rPost(a);const[bid,ts,is]=a.id.split('.'),T=ts==='r'?'r':+ts,F=+is,b=BK[bid],th=b&&getTh(b,T),RD=T==='r';if(!th){back();return}if(!RD&&locked(b,T)){back();return}if(!rpT||!rpT.startsWith(bid+'.'+T+'.')||a.reply)rpT=a.id;
 const ids=th.tw.map((x,k)=>bid+'.'+T+'.'+k),ti=+rpT.split('.')[2];if(!a.keep)thStart=RD?F:0;
@@ -1207,15 +1219,18 @@ if(!store()){S.books.pop();toast('너무 커서 저장이 안 돼. 조금 나눠
 
 
 /* ---------- phone notifications: only while she is away ---------- */
+/* the keyboard covers fixed bars on some phones: lift them by what the visible viewport lost */
+{const vv=window.visualViewport;if(vv){const f=()=>document.documentElement.style.setProperty('--kb',Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop))+'px');vv.addEventListener('resize',f);vv.addEventListener('scroll',f);f()}}
 const LNP=()=>{const C=window.Capacitor;return C&&C.Plugins&&C.Plugins.LocalNotifications};
 const lnId=k=>{let h=7;for(const c of String(k))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)%2e9+1};
 function lnPerm(){const L=LNP();if(!L||S.lnAsk)return;S.lnAsk=1;store();try{L.requestPermissions().catch(()=>{})}catch(e){}}
 let lnBusy=Promise.resolve();
 function lnSync(){const L=LNP();if(!L)return;const away=document.hidden,now=Date.now(),list=[];
 if(away&&!S.noPush)for(const id in S.notes)for(const n of S.notes[id]){if(!n.pre||n.r||n.done)continue;const u=usr(n.pre.u);list.push({id:lnId(nkey(id,n.ts)),title:`${u.name} @${u.handle}`,body:(n.pre.q?'내 트윗 인용: ':'답글: ')+n.pre.x,schedule:{at:new Date(Math.max(n.due,now+2000)),allowWhileIdle:true},extra:{open:id},smallIcon:'ic_stat_tarae',iconColor:'#1d9bf0'})}
+if(away&&!S.noPush)for(const uid in(S.dq||{})){const q=S.dq[uid],u=UK[uid];if(!u||!q.parts.length)continue;list.push({id:lnId('dm~'+uid),title:`${u.name} @${u.handle}`,body:'쪽지: '+q.parts[0],schedule:{at:new Date(Math.max(q.due+2500,now+2000)),allowWhileIdle:true},extra:{dm:uid},smallIcon:'ic_stat_tarae',iconColor:'#1d9bf0'})}
 lnBusy=lnBusy.then(()=>L.getPending()).then(p=>p&&p.notifications&&p.notifications.length?L.cancel({notifications:p.notifications.map(x=>({id:x.id}))}):0).then(()=>list.length?L.schedule({notifications:list}):0).catch(()=>{})}
 document.addEventListener('visibilitychange',lnSync);
-{const L=LNP(),C=window.Capacitor;if(L)try{L.addListener('localNotificationActionPerformed',e=>{const id=e&&e.notification&&e.notification.extra&&e.notification.extra.open;setTimeout(()=>{dueTick();if(id&&TW[id])openThread(id)},500)})}catch(e){}if(C&&C.Plugins&&C.Plugins.App)try{C.Plugins.App.addListener('pause',lnSync);C.Plugins.App.addListener('resume',()=>{lnSync();setTimeout(dueTick,600)})}catch(e){}}
+{const L=LNP(),C=window.Capacitor;if(L)try{L.addListener('localNotificationActionPerformed',e=>{const ex=e&&e.notification&&e.notification.extra||{},id=ex.open;setTimeout(()=>{dueTick();dmTick();if(ex.dm&&UK[ex.dm])push('chat',ex.dm);else if(id&&TW[id])openThread(id)},500)})}catch(e){}if(C&&C.Plugins&&C.Plugins.App)try{C.Plugins.App.addListener('pause',lnSync);C.Plugins.App.addListener('resume',()=>{lnSync();setTimeout(dueTick,600)})}catch(e){}}
 
 /* ---------- ⋯ on every tweet ---------- */
 let moId=null,moArm=false;
@@ -1253,7 +1268,7 @@ if(e.k==='q')return `<div class="ntw${nw}">${row(e.id)}</div>`;
 if(e.k==='f'){const us=e.us.map(usr);return `<button class="ntf${nw}" data-prof="${us[0].id}"><span class="ntic fo">${ic('person')}</span><span class="ntb"><span class="ntav">${us.slice(0,7).map(u=>`<span class="av">${avatar(u)}</span>`).join('')}</span><span class="ntt"><b>${esc(us[0].name)}</b> 님${us.length>1?` 외 ${us.length-1}명`:''}이 나를 팔로우했어요</span></span></button>`}
 const u=usr(e.u);return `<div class="ntw${nw}" data-nt="${e.id}" data-nk="${esc(e.key)}"><div class="tw"><div class="lc"><span class="av">${avatar(u)}</span></div><div class="rc"><div class="hd"><b class="nm">${esc(u.name)}</b><span class="hn">@${esc(u.handle)}</span><span class="dt">·</span><span class="wh">${ago(e.ts)}</span></div><div class="rep"><b>@${esc(ME.handle)}</b> 님에게 보내는 답글</div><div class="tx">${esc(e.x)}</div></div></div></div>`}).join('')
 :`<div class="empty"><b>아직 조용해</b></div>`;
-v.innerHTML=h;[...v.querySelectorAll('.ntf,.ntw')].slice(0,12).forEach((e,i)=>{e.style.setProperty('--i',i);e.classList.add('ntin')});setTimeout(()=>v.querySelectorAll('.ntn').forEach(e=>e.classList.add('seen')),2600);S.ntSeen=Date.now();store();navNoti()}
+v.innerHTML=h.replace('</header>','</header><div class="ptr">'+PIH.replace(' id="pi"','')+'</div><div class="npull">')+'</div>';[...v.querySelectorAll('.ntf,.ntw')].slice(0,12).forEach((e,i)=>{e.style.setProperty('--i',i);e.classList.add('ntin')});setTimeout(()=>v.querySelectorAll('.ntn').forEach(e=>e.classList.add('seen')),2600);S.ntSeen=Date.now();store();navNoti()}
 /* ---------- profile edit ---------- */
 let pfOpen=false,pfImg=null;
 function pfPick(f){if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const z=240,c=document.createElement('canvas');c.width=c.height=z;const m=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,z,z);pfImg=c.toDataURL('image/jpeg',.86);const p=$('#pf-av');if(p)p.innerHTML=`<img alt="" src="${pfImg}">`;buz(4)};im.onerror=()=>toast('이 사진은 못 읽겠어');im.src=r.result};r.readAsDataURL(f)}
