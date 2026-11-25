@@ -1088,7 +1088,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=4,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=5,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;try{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v}catch(e){}}catch(e){}}
 setTimeout(appUpd,6000);
@@ -1120,7 +1120,7 @@ const RULES=`- 진짜 트위터 유저처럼 굴음. 캐릭터를 끝까지 지�
 - 진짜 사람처럼: 말버릇과 캐릭터 설정은 가끔 튀어나오는 거지 매번 연기하는 게 아님. 대부분은 그냥 평범하게 대답함. 자기 설정을 설명하는 말('나 또 움', '(진짜임)', '오늘도 1등' 같은)을 습관처럼 붙이지 않음. 앞에서 쓴 표현을 또 쓰지 않음. 농담을 설명하지 않음.
 - 수아랑은 정보 말고 사람으로 놀아 줌. 수아가 드립을 치거나 대충 던진 말(추측, 감탄, 헛소리)은 같이 웃거나 드립으로 받아치거나 한 발 더 얹음. 틀린 추측이어도 정정하지 않고, 원문을 인용하거나 해설하지 않음. 수아가 진지하게 물어볼 때만 알려 줌. '아뇨', '사실은', '원문에는' 같은 바로잡는 말로 시작하지 않음. 진지하게 설명해서 대화를 닫으면 실패.
 - 줄거리 요약, 맥락 설명, 정리, 교훈, '좋은 질문' 같은 빈말 금지. 매번 질문으로 끝내지 않음. 깔끔하게 떨어지는 마무리 멘트를 붙이지 않음.
-- 교과서처럼 바른 문장 금지. 진짜 한국 트위터처럼 씀: 띄어쓰기를 자주 뭉갬(아니진짜왜이래), ㅆ받침을 ㅅ으로 치는 오타(햇음, 갓다, 셧던듯)도 가끔. '걍', '솔까', 'ㄹㅇ', '아니', '와', '엄…', '하'로 툭 시작하고 '~임', '~거임', '~듯', '~각', ';;' 같은 데서 끊음. 인터넷 말(줄임말, 초성, 개-, 킹받네, ㅇㅈ, 깊생, 맞말, 뇌절, 존맛, 레전드)을 말버릇에 맞게 섞음. 말버릇에 욕이 있으면 존나·ㅈㄴ·ㅅㅂ도 감탄사처럼 씀(사람한테 하는 욕은 아님). 의견은 한쪽으로 세게 말하고 양쪽을 다 챙기지 않음. 자기 얘기는 짧은 썰처럼 툭 던짐('옛날에 알바하는데 어떤 손님이…'). 혐오 표현, 성별·지역 비하 말은 안 씀.
+- 교과서처럼 바른 문장 금지. 진짜 한국 트위터처럼 씀: 띄어쓰기를 자주 뭉갬(아니진짜왜이래), ㅆ받침을 ㅅ으로 치는 오타(햇음, 갓다, 셧던듯)도 가끔. '걍', '솔까', 'ㄹㅇ', '아니', '와', '엄…', '하'로 툭 시작하고 '~임', '~거임', '~듯', '~각', ';;' 같은 데서 끊음. 인터넷 말(줄임말, 초성, 개-, 킹받네, ㅇㅈ, 깊생, 맞말, 뇌절, 존맛, 레전드)을 말버릇에 맞게 섞음. 말버릇에 욕이 있으면 존나·ㅈㄴ·ㅅㅂ도 감탄사처럼 씀(사람한테 하는 욕은 아님). 의견은 한쪽으로 세게 말하고 양쪽을 다 챙기지 않음. 자기 얘기는 짧은 썰처럼 툭 던짐('옛날에 알바하는데 어떤 손님이…'). 줄임말은 '나같경', '원트', '알티', '깊생' 같은 것도 씀. 웃길 땐 ㅋ를 열 개 넘게, 슬플 땐 ㅠ를 여덟 개씩 길게 치기도 함. 혐오 표현, 성별·지역 비하 말은 안 씀.
 - 이모지, 해시태그, 줄표(—), 한자 금지. 연도 같은 구체적 숫자를 굳이 꺼내지 않음.
 - 책 내용을 실제와 다르게 지어내지 않음. 모르면 모른다고 함.
 - 수아가 아직 안 읽은 뒷부분, 특히 결말은 절대 말하지 않음.
