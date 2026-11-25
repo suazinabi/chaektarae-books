@@ -747,6 +747,15 @@ body.replying #v-thread{padding-bottom:calc(var(--kb,0px) + 140px)}
 @keyframes tlr{from{opacity:0;transform:translateX(-3px)}}
 .tk.tie .tkl{animation:tkr .45s .16s var(--out) both}
 @keyframes tkr{from{opacity:0;transform:translateY(-6px)}}
+
+/* ---------- the header ball: plumper as she reads, a boing when news arrives ---------- */
+.lgw{transform:scale(var(--lgs,1));transition:transform .7s var(--spr)}
+img.logo{transform-origin:50% 82%}
+img.logo.boing{animation:lgb .64s var(--out)}
+@keyframes lgb{0%{transform:none}22%{transform:scale(1.16,.84)}46%{transform:scale(.92,1.08)}68%{transform:scale(1.04,.96)}100%{transform:none}}
+
+/* a stretched banner never makes the page scroll sideways */
+#v-profile,#v-book{overflow-x:clip}
 </style>
 </head>
 <body>
@@ -918,7 +927,7 @@ const KNOT='<svg class="tk" viewBox="0 0 24 44" aria-hidden="true"><path class="
 let rdNext=0,rdQ=[],rdY=scrollY,rdUp=false;addEventListener('scroll',()=>{const y=scrollY;if(Math.abs(y-rdY)>4){rdUp=y<rdY;rdY=y}},{passive:true});
 const rdMark=id=>{if(cur!=='thread')return;const e=document.querySelector(`#v-thread .rdth .tw[data-id="${id}"]`);if(!e||e.classList.contains('rd')||rdQ.includes(e))return;rdQ.push(e);if(rdQ.length===1)requestAnimationFrame(rdFlush)};
 function rdFlush(){const up=rdUp,L=rdQ.splice(0).sort((a,b)=>{const x=+a.dataset.id.split('.')[2],y=+b.dataset.id.split('.')[2];return up?y-x:x-y});const now=performance.now();
-for(const e of L){rdNext=Math.max(now,rdNext)+120;setTimeout(()=>{if(!e.isConnected)return;const pv=e.previousElementSibling,nx=e.nextElementSibling,pr=pv&&pv.classList.contains('rd'),nr=nx&&nx.classList.contains('rd');const ub=!!(nr&&(!pr||up));e.style.setProperty('--org',ub?'bottom':'top');if(ub!==e.classList.contains('rup')){e.classList.toggle('rup',ub);void e.offsetWidth}e.classList.add('rd');stopKnot();const tn=performance.now();if(tn-(rdMark.t||0)>220){rdMark.t=tn;buz(2)}},rdNext-now-120)}}
+for(const e of L){rdNext=Math.max(now,rdNext)+120;setTimeout(()=>{if(!e.isConnected)return;const pv=e.previousElementSibling,nx=e.nextElementSibling,pr=pv&&pv.classList.contains('rd'),nr=nx&&nx.classList.contains('rd');const ub=!!(nr&&(!pr||up));e.style.setProperty('--org',ub?'bottom':'top');if(ub!==e.classList.contains('rup')){e.classList.toggle('rup',ub);void e.offsetWidth}e.classList.add('rd');stopKnot();const tn=performance.now();if(tn-(rdMark.t||0)>220){rdMark.t=tn;buz(2);SND.read()}},rdNext-now-120)}}
 const LOCK='<svg class="lki" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 const BADGE='<svg class="bd" viewBox="0 0 24 24" aria-label="책"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 8.6c-1.3-1-3-1.3-5-1v7.8c2-.3 3.7 0 5 1 1.3-1 3-1.3 5-1V7.6c-2-.3-3.7 0-5 1zm0 0v7.8" fill="none" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>';
 const laurel=()=>{let s='';for(let k=0;k<6;k++){const deg=108+k*27,a=deg*Math.PI/180,r=10.6+(k%2?1.6:-1.4),x=20+r*Math.cos(a),y=21+r*Math.sin(a),rot=deg+90+(k%2?-28:28);s+=`<ellipse cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" rx="3.1" ry="1.35" transform="rotate(${rot.toFixed(1)} ${x.toFixed(2)} ${y.toFixed(2)})"/><ellipse cx="${(40-x).toFixed(2)}" cy="${y.toFixed(2)}" rx="3.1" ry="1.35" transform="rotate(${(180-rot).toFixed(1)} ${(40-x).toFixed(2)} ${y.toFixed(2)})"/>`}return s};
@@ -957,7 +966,7 @@ const head=(title,sub)=>`<header class="top"><div class="bar"><button class="ib"
 
 /* a card counts as read after it has stayed on screen for a moment */
 const dw=new Map();
-function markRead(id){const w=TW[id];if(!w||S.seen[id])return;S.seen[id]=1;if(w.t==='r'){const un=[];for(const k in TW){const g=TW[k];if(g.gb===w.b&&g.gat<=w.i&&!(S.ul&&S.ul[k])){S.ul=S.ul||{};const r=Math.random();S.ul[k]=Date.now()+(r<.3?0:r<.7?(3+rnd(25))*6e4:(30+rnd(150))*6e4);g.ts=S.ul[k];if(r<.3)un.push(k)}}if(un.length)newArrivals(un,true)}if(w.t==='r')rdMark(id);const d=dstr();if(S.today.d!==d)S.today={d,n:0};S.today.n++;S.days=S.days||{};S.days[d]=S.today.n;
+function markRead(id){const w=TW[id];if(!w||S.seen[id])return;S.seen[id]=1;if(w.t==='r'){const un=[];for(const k in TW){const g=TW[k];if(g.gb===w.b&&g.gat<=w.i&&!(S.ul&&S.ul[k])){S.ul=S.ul||{};const r=Math.random();S.ul[k]=Date.now()+(r<.3?0:r<.7?(3+rnd(25))*6e4:(30+rnd(150))*6e4);g.ts=S.ul[k];if(r<.3)un.push(k)}}if(un.length)newArrivals(un,true)}if(w.t==='r')rdMark(id);const d=dstr();if(S.today.d!==d)S.today={d,n:0};S.today.n++;S.days=S.days||{};S.days[d]=S.today.n;lgGrow();
 if(w.t==='r'){S.lastRead=S.lastRead||{};S.lastRead[w.b]=Date.now();if(cur==='thread')RS.add(w.b);const b=BK[w.b];if(b)sideOn(b,w.i);if(b&&b.more)setTimeout(()=>wantMore(b),50);if(cur==='thread'&&arg&&String(arg.id).startsWith(b.id+'.r.')){if(w.i<thStart)thStart=w.i;for(let j=Math.max(0,thStart);j<w.i;j++){S.seen[b.id+'.r.'+j]=1;rdMark(b.id+'.r.'+j)}}S.fin=S.fin||{};if(!S.fin[b.id]&&fin(b)){S.fin[b.id]=1;if(b._by!=='me'&&!S.fdm[b.id]){S.fdm[b.id]=1;setTimeout(()=>askDM(b._by,`수아가 방금 네가 올린 『${b.name}』 원문을 끝까지 다 읽었음. 네가 먼저 쪽지를 보냄. 이제 결말 얘기를 해도 됨.`),4000)}if(b._by!=='me'&&Math.random()<.7){const en=b.lang==='en',L=(en?['grimm_victim','basement_reader','lights_on_reader','read_first']:['kongddeok_','tissue_box','eat_then_read','two_stars','deep_night','mytaste_only','just_reading']).filter(x=>x!==b._by&&UK[x]);if(L.length){S.plan=S.plan||{};S.plan['c.'+b.id]={u:L[rnd(L.length)],at:Date.now()+(20+rnd(340))*6e4}}}const lk=b.threads.some(th=>th.lock);setTimeout(()=>{SND.knot();toast(lk?'매듭 지었어 · 다 읽은 사람만 보는 타래 열림':'『'+b.name+'』 매듭 지었어');knotNow=b.id;if(cur==='thread'&&arg&&String(arg.id).startsWith(b.id+'.r.')){const y=scrollY;rThread({id:arg.id,keep:true});scrollTo(0,y);const nx=$('#v-thread .nx');if(nx)nx.classList.add('beckon')}},400)}}save()}
 const io=new IntersectionObserver(es=>{for(const e of es){const el=e.target;if(e.isIntersecting){if(!dw.has(el))dw.set(el,setTimeout(()=>{dw.delete(el);io.unobserve(el);markRead(el.dataset.id)},650))}else if(dw.has(el)){clearTimeout(dw.get(el));dw.delete(el)}}},{threshold:.6});
 const dio=new IntersectionObserver(es=>{const now=performance.now();for(const e of es){const el=e.target;if(e.isIntersecting)el._t0=now;else if(el._t0){if(now-el._t0>3500&&TW[el.dataset.id]){const k=tkey(el.dataset.id);S.stay[k]=(S.stay[k]||0)+1;save()}el._t0=0}}},{threshold:.6});
@@ -1059,6 +1068,43 @@ return pts.map((p,i)=>{const q=pts[Math.min(pts.length-1,i+1)],r=pts[Math.max(0,
 /* sample a chain of cubic segments [p0,c1,c2,p1,c1,c2,p2…] densely, loose end first */
 function cubicPts(Q,step){const out=[];for(let j=0;j+3<Q.length;j+=3){const a=Q[j],b=Q[j+1],c=Q[j+2],d=Q[j+3],L=Math.hypot(b[0]-a[0],b[1]-a[1])+Math.hypot(c[0]-b[0],c[1]-b[1])+Math.hypot(d[0]-c[0],d[1]-c[1]),n=Math.max(6,Math.ceil(L/(step||1.1)));for(let i=j?1:0;i<=n;i++){const t=i/n,u=1-t;out.push([u*u*u*a[0]+3*u*u*t*b[0]+3*u*t*t*c[0]+t*t*t*d[0],u*u*u*a[1]+3*u*u*t*b[1]+3*u*t*t*c[1]+t*t*t*d[1]])}}return out.reverse()}
 const YB='#238ed6',YW=2.8,YP=7;
+/* ---------- 쓱뽕 sounds: the strand rubs while it moves, ticks at the line, pops, then ratchets home ---------- */
+const FR={};
+function frOn(){const c=ac();if(!c||FR.s||!NZ)return;const s=c.createBufferSource();s.buffer=NZ;s.loop=true;const f=c.createBiquadFilter();f.type='bandpass';f.Q.value=2.4;f.frequency.value=650;const g=c.createGain();g.gain.value=0;s.connect(f);f.connect(g);g.connect(MS);s.start();FR.s=s;FR.f=f;FR.g=g}
+function frSet(p,vel){if(!FR.s||!AC)return;const t=AC.currentTime;FR.f.frequency.setTargetAtTime(480+p*15,t,.03);FR.g.gain.setTargetAtTime(Math.min(.075,Math.abs(vel)*.00085),t,.035)}
+function frOff(){if(!FR.s||!AC)return;const s=FR.s;FR.g.gain.setTargetAtTime(0,AC.currentTime,.04);FR.s=null;setTimeout(()=>{try{s.stop()}catch(e){}},300)}
+let frT=0;function frPull(p,p0){const now=performance.now(),dt=Math.max(8,now-(frT||now-16));frT=now;frOn();frSet(p,(p-p0)/dt*1000)}
+SND.reel=function(n){const c=ac();if(!c)return;let t=0;for(let k=0;k<n;k++){const j=jit(),f=1-k/n*.6;osc(c,{t,f1:1950*j,f2:1500*j,dur:.012,vol:.055*f,type:'triangle'});hiss(c,{t,dur:.008,vol:.04*f,type:'highpass',f1:3800});t+=.026+k*.0065}};
+/* one chunk read: a tiny pencil-soft 'sak', so quiet it is mostly felt */
+SND.read=function(){const c=ac();if(!c)return;hiss(c,{dur:.038,vol:.032,type:'bandpass',f1:5400,f2:3500,q:1.3});osc(c,{f1:2600*jit(),f2:2150,dur:.01,vol:.022,type:'triangle'})};
+/* tension: past the line the strand thins and the ball trembles while she holds it */
+let trRaf=0;function trem(){let held=false;try{held=!!(G&&G.lock==='pull')}catch(e){}if(!(ready&&held)){trRaf=0;return}drawThread(px);trRaf=requestAnimationFrame(trem)}
+/* the logo ball bounces once when a refresh actually brought something new */
+function lgBoing(){const lg=$('img.logo');if(!lg)return;lg.classList.remove('boing');void lg.offsetWidth;lg.classList.add('boing');buz(6)}
+/* the more she reads today, the plumper the ball in the header; tomorrow it starts small again */
+function lgGrow(){const w=document.querySelector('.lgw');if(!w)return;const n=S.today&&S.today.d===dstr()?S.today.n:0;w.style.setProperty('--lgs',(1+Math.min(.2,n/300)).toFixed(3))}
+setTimeout(lgGrow,0);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(lgGrow,400)});
+
+/* ---------- backup: the whole record, locked with her own GitHub token, parked in a closed issue so a fresh install can get it back ---------- */
+const BKT='타래 기록 백업 (지우지 마)';
+async function bkKey(){const t=String(S.ghk||'').trim();if(!t)return null;const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('tarae-backup|'+t));return crypto.subtle.importKey('raw',h,'AES-GCM',false,['encrypt','decrypt'])}
+const b64=u=>{let x='';for(let i=0;i<u.length;i+=32768)x+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(x)};
+const unb64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function gz(u8,de){const r=new Response(new Blob([u8]).stream().pipeThrough(de?new DecompressionStream('gzip'):new CompressionStream('gzip')));return new Uint8Array(await r.arrayBuffer())}
+async function ghRaw(path,method,body){const t=String(S.ghk||'').trim();const r=await fetch(GHR+(path||''),{method,headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(!r.ok&&r.status!==204)throw{code:r.status};return r.status===204?null:r.json()}
+async function bkFind(){for(let pg=1;pg<=3;pg++){const L=await gh('?state=all&per_page=100&sort=created&direction=asc&page='+pg);const i=(L||[]).find(x=>x.title===BKT);if(i)return i;if(!L||L.length<100)break}return null}
+const bkPart=(i,n,x)=>`타래 앱이 쓰는 기록 백업. 수아 토큰으로만 열려.\n${i}/${n}\n\`\`\`\n${x}\n\`\`\``;
+async function backup(force){if(!S.ghk||!window.crypto||!crypto.subtle||typeof CompressionStream==='undefined')return;if(!force&&Date.now()-(S.bkAt||0)<6*36e5)return;S.bkAt=Date.now();store();
+try{const o=JSON.parse(JSON.stringify(S));delete o.key;delete o.ghk;delete o.bkAt;(o.mine||[]).forEach(m=>{delete m.img});
+const k=await bkKey(),iv=crypto.getRandomValues(new Uint8Array(12)),z=await gz(new TextEncoder().encode(JSON.stringify(o))),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,z)),P=(b64(iv)+'.'+b64(ct)).match(/[\s\S]{1,60000}/g);
+let n=S.bkN;if(n){try{await gh('/'+n)}catch(e){n=0}}if(!n){const f=await bkFind();n=f&&f.number}
+if(!n){const j=await gh('','POST',{title:BKT,body:bkPart(1,P.length,P[0])});n=j.number;await gh('/'+n,'PATCH',{state:'closed'})}else await gh('/'+n,'PATCH',{body:bkPart(1,P.length,P[0]),state:'closed'});
+S.bkN=n;store();const C=await gh('/'+n+'/comments?per_page=100')||[];
+for(let i=1;i<P.length;i++){const c=C[i-1];if(c)await gh('/comments/'+c.id,'PATCH',{body:bkPart(i+1,P.length,P[i])});else await gh('/'+n+'/comments','POST',{body:bkPart(i+1,P.length,P[i])})}
+for(let i=P.length-1;i<C.length;i++)await ghRaw('/comments/'+C[i].id,'DELETE')}catch(e){S.bkAt=Date.now()-5*36e5;store()}}
+async function bkRestore(){if(!S.ghk||!window.crypto||!crypto.subtle||typeof DecompressionStream==='undefined')return false;try{const f=await bkFind();if(!f)return false;const C=await gh('/'+f.number+'/comments?per_page=100')||[];const grab=t=>{const m=String(t||'').match(/```\n([\s\S]*?)\n```/);return m?m[1]:''};const all=[grab(f.body),...C.map(c=>grab(c.body))].join(''),[a,b]=all.split('.');if(!a||!b)return false;
+const k=await bkKey(),z=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(a)},k,unb64(b))),o=JSON.parse(new TextDecoder().decode(await gz(z,1)));const key=S.key,ghk=S.ghk;S=Object.assign(def(),o,{key,ghk,bkN:f.number,bkAt:Date.now()});store();return true}catch(e){return false}}
+setTimeout(()=>backup(),25000);document.addEventListener('visibilitychange',()=>{if(document.hidden)backup()});
 /* ---------- pull to refresh: a real spring, not a CSS curve ---------- */
 let pull=$('#pull'),pi=$('#pi'),pth=pi.querySelector('.th'),pbob=pi.querySelector('.bob');const TH=64,PIH=$('#ptr').innerHTML;
 /* the same yarn pull works on the notifications page */
@@ -1086,16 +1132,16 @@ const L=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],P0=[ax,ay],P3=[mx,my],P
 /* it leaves the ball along its rim, bows through the middle with no corner, and drops straight into the bob */
 const pull=[P0,[ax-Math.sin(an)*len*.3,ay+Math.cos(an)*len*.3],[mx-dx*h,my-dy*h],P3,[mx+dx*h,my+dy*h],[bx+(mx-bx)*.12,ty-len*.3],P6];
 const Q=RT.map((r,i)=>{const a=[ox+r[0]*sc,oy+r[1]*sc];return L(a,pull[i],k)}),f=q=>q[0].toFixed(2)+' '+q[1].toFixed(2);
-const yw=YW*(pi.classList.contains('rdy')?.86:1);pth.innerHTML=yarnPaths(plies(crinkle(cubicPts(Q),crinkleAmp(v)),yw,YP),YB,yw);
+const tn=Math.max(0,Math.min(1,(v-TH)/36)),yw=YW*(1-.26*tn);pth.innerHTML=yarnPaths(plies(crinkle(cubicPts(Q),crinkleAmp(v)),yw,YP),YB,yw);
 pbob.setAttribute('transform',`translate(${Q[6][0].toFixed(1)} ${(Q[6][1]+5.4*bs).toFixed(1)}) rotate(${(v*2.2+sx*4).toFixed(0)}) scale(${bs.toFixed(3)})`);
 const on=v>.25||busy||reel;pi.style.opacity=on?'1':'0';E.t.classList.toggle('pulling',on);
-E.lg.style.transform=v>.25?`rotate(${(v*3.1).toFixed(1)}deg)`:''}
+E.lg.style.transform=v>.25?`rotate(${(v*3.1+(tn>0&&!busy?Math.sin(performance.now()/34)*tn*2.4:0)).toFixed(2)}deg)`:''}
 function paint(x){pull.style.transform=Math.abs(x)>.05?`translate3d(0,${x.toFixed(2)}px,0)`:'';const v=Math.max(0,x);pi.style.opacity=(reel?Math.min(1,v/8):Math.min(1,v/30)).toFixed(2);const d=v-lastPx;lastPx=v;if(Math.abs(d)>.05){blv+=d*5;sway()}drawThread(v)}
 function spring(to,k,c){ptg=to;const K=k||380,C=c||21;cancelAnimationFrame(praf);let last=performance.now();const step=now=>{const dt=Math.min(.032,(now-last)/1000);last=now;pv+=(-K*(px-ptg)-C*pv)*dt;px+=pv*dt;if(Math.abs(pv)<2&&Math.abs(px-ptg)<.25){px=ptg;pv=0;paint(px);praf=0;return}paint(px);praf=requestAnimationFrame(step)};praf=requestAnimationFrame(step)}
 const resist=d=>112*(1-Math.exp(-d/210));
-function movePull(d){if(d<=0){if(px){px=0;paint(0)}return}px=resist(d);paint(px);const r=px>=TH;if(r!==ready){ready=r;pi.classList.toggle('rdy',r);if(r){pi.classList.remove('snap');void pi.offsetWidth;pi.classList.add('snap');SND.tick();blv-=70;sxv+=(Math.random()<.5?-1:1)*26;sway()}else buz(4)}}
-function endPull(){if(ready)refresh();else{pi.classList.remove('rdy');sxv+=(Math.random()<.5?-1:1)*(40+px);sway();spring(0,420,24)}}
-function refresh(){if(busy)return;busy=true;ready=false;pi.classList.remove('rdy');pi.classList.add('spin');SND.sseuk();spring(52,300,26);Promise.all([Promise.race([syncBooks(true),new Promise(r=>setTimeout(r,1500))]),Promise.race([appUpd(),new Promise(r=>setTimeout(r,1800))]),new Promise(r=>setTimeout(r,640))]).then(()=>{const nt=cur==='noti',rl=!nt&&!!lgEnd();if(rl)reel=1;else pi.classList.add('cut');sxv+=(Math.random()<.5?-1:1)*(rl?30:70);sway();if(!nt)resetFeed(true);else try{dueTick()}catch(e){}scrollTo(0,0);pi.classList.remove('spin','snap');SND.pop();if(rl){pv=-10;spring(0,62,12.5)}else{pv=-240;spring(0,430,17)}setTimeout(()=>{busy=false;pi.classList.remove('cut');reel=0;{const lg=$('img.logo');if(lg){lg.style.transform='';lg.parentNode.classList.remove('pulling')}}drawThread(0);if(nt&&cur==='noti'){rNoti();ptrUse('home')}if(UPD)setTimeout(()=>{toast('새 버전으로 바꿀게');setTimeout(()=>location.reload(),700)},rl?950:500)},rl?1150:420)})}
+function movePull(d){if(d<=0){if(px){px=0;paint(0)}frSet(0,0);return}const p0=px;px=resist(d);paint(px);frPull(px,p0);const r=px>=TH;if(r!==ready){ready=r;pi.classList.toggle('rdy',r);if(r){pi.classList.remove('snap');void pi.offsetWidth;pi.classList.add('snap');SND.tick();blv-=70;sxv+=(Math.random()<.5?-1:1)*26;sway()}else buz(4)}if(ready&&!trRaf)trRaf=requestAnimationFrame(trem)}
+function endPull(){frOff();if(ready)refresh();else{pi.classList.remove('rdy');sxv+=(Math.random()<.5?-1:1)*(40+px);sway();if(px>24&&lgEnd())SND.reel(4);spring(0,420,24)}}
+function refresh(){if(busy)return;busy=true;const k0=IDS.length+((S.lp||[]).length);ready=false;pi.classList.remove('rdy');pi.classList.add('spin');SND.sseuk();spring(52,300,26);Promise.all([Promise.race([syncBooks(true),new Promise(r=>setTimeout(r,1500))]),Promise.race([appUpd(),new Promise(r=>setTimeout(r,1800))]),new Promise(r=>setTimeout(r,640))]).then(()=>{const nt=cur==='noti',rl=!nt&&!!lgEnd();if(rl)reel=1;else pi.classList.add('cut');sxv+=(Math.random()<.5?-1:1)*(rl?30:70);sway();if(!nt)resetFeed(true);else try{dueTick()}catch(e){}scrollTo(0,0);pi.classList.remove('spin','snap');SND.pop();if(rl){pv=-10;spring(0,62,12.5);setTimeout(()=>SND.reel(9),90)}else{pv=-240;spring(0,430,17)}const got=IDS.length+((S.lp||[]).length)>k0;setTimeout(()=>{busy=false;if(got&&!nt)setTimeout(lgBoing,60);pi.classList.remove('cut');reel=0;{const lg=$('img.logo');if(lg){lg.style.transform='';lg.parentNode.classList.remove('pulling')}}drawThread(0);if(nt&&cur==='noti'){rNoti();ptrUse('home')}if(UPD)setTimeout(()=>{toast('새 버전으로 바꿀게');setTimeout(()=>location.reload(),700)},rl?950:500)},rl?1150:420)})}
 
 /* ---------- header follows the finger, exactly as far as it scrolls ---------- */
 const htop=document.querySelector('#v-home .top');let hy=0,snapT=0,lastSY=0;
@@ -1156,13 +1202,18 @@ const end=()=>{if(!D)return;const d=D;D=null;if(d.lock!=='y')return;const dy=d.l
 box.addEventListener('touchend',end,{passive:true});box.addEventListener('touchcancel',end,{passive:true})}
 shGest($('#rts'));shGest($('#mos'));
 
+/* profile and book pages: pull past the top and the banner stretches, then springs back */
+let BN=null;
+function banGrab(){const v=$('#v-'+cur),bn=v&&v.querySelector(':scope>.ban');if(!bn)return false;const sib=[];let e=bn.nextElementSibling;while(e){sib.push(e);e=e.nextElementSibling}BN={bn,sib,h:bn.offsetHeight||120};bn.style.transformOrigin='50% 0';bn.style.transition='none';sib.forEach(x=>x.style.transition='none');return true}
+function banDrag(dy){if(!BN)return;const d=96*(1-Math.exp(-Math.max(0,dy)/170));BN.bn.style.transform=`scale(${(1+d/BN.h).toFixed(4)})`;const t=`translate3d(0,${d.toFixed(1)}px,0)`;BN.sib.forEach(x=>x.style.transform=t)}
+function banRelease(){if(!BN)return;const B=BN;BN=null;const T='transform .56s '+SPRS;B.bn.style.transition=T;B.sib.forEach(x=>x.style.transition=T);requestAnimationFrame(()=>{B.bn.style.transform='';B.sib.forEach(x=>x.style.transform='')});setTimeout(()=>{B.bn.style.transition='';B.bn.style.transformOrigin='';B.sib.forEach(x=>x.style.transition='')},640)}
 /* ---------- one touch handler decides: pull, tab swipe, back swipe, or plain scroll ---------- */
 let G=null;
 addEventListener('touchstart',e=>{G=null;if(e.touches.length!==1||busy||hg||bg||!$('#sheet').hidden||!$('#drw').hidden||!$('#rts').hidden||!$('#mos').hidden||!$('#csheet').hidden||!$('#imv').hidden)return;const t=e.touches[0];G={x0:t.clientX,y0:t.clientY,lx:t.clientX,lt:performance.now(),vx:0,lock:null}},{passive:true});
 addEventListener('touchmove',e=>{if(!G)return;const t=e.touches[0],dx=t.clientX-G.x0,dy=t.clientY-G.y0,now=performance.now();G.vx=G.vx*.4+.6*(t.clientX-G.lx)/Math.max(1,now-G.lt);G.lx=t.clientX;G.lt=now;
-if(!G.lock){const ax=Math.abs(dx),ay=Math.abs(dy);if(dy>2&&dy>ax&&(cur==='home'||cur==='noti')&&scrollY<=1){G.lock='pull';ptrUse(cur);cancelAnimationFrame(praf);praf=0;pv=0;ready=false}else if(ax<9&&ay<9)return;else if(ax>ay*1.15){if(cur==='home'&&mode==='mix'&&dx>0&&!stack.length){G.lock='dw';dwGrab()}else if(cur==='home'){G.lock='tab';hStart()}else if(stack.length&&['thread','profile','book','chat'].includes(cur)&&dx>0){G.lock='back';bStart()}else G.lock='no'}else G.lock='no'}
-if(G.lock==='no')return;if(e.cancelable)e.preventDefault();if(G.lock==='pull')movePull(dy);else if(G.lock==='tab')hMove(dx);else if(G.lock==='dw')dwDrag(dx);else bMove(dx)},{passive:false});
-const tEnd=()=>{if(!G)return;const g=G;G=null;if(g.lock==='pull')endPull();else if(g.lock==='dw')dwRelease(g.vx);else if(g.lock==='tab')hEnd(g.vx);else if(g.lock==='back')bEnd(g.vx)};
+if(!G.lock){const ax=Math.abs(dx),ay=Math.abs(dy);if(dy>2&&dy>ax&&(cur==='home'||cur==='noti')&&scrollY<=1){G.lock='pull';ptrUse(cur);cancelAnimationFrame(praf);praf=0;pv=0;ready=false}else if(dy>2&&dy>ax&&(cur==='profile'||cur==='book')&&scrollY<=1&&banGrab()){G.lock='ban'}else if(ax<9&&ay<9)return;else if(ax>ay*1.15){if(cur==='home'&&mode==='mix'&&dx>0&&!stack.length){G.lock='dw';dwGrab()}else if(cur==='home'){G.lock='tab';hStart()}else if(stack.length&&['thread','profile','book','chat'].includes(cur)&&dx>0){G.lock='back';bStart()}else G.lock='no'}else G.lock='no'}
+if(G.lock==='no')return;if(e.cancelable)e.preventDefault();if(G.lock==='pull')movePull(dy);else if(G.lock==='ban')banDrag(dy);else if(G.lock==='tab')hMove(dx);else if(G.lock==='dw')dwDrag(dx);else bMove(dx)},{passive:false});
+const tEnd=()=>{if(!G)return;const g=G;G=null;if(g.lock==='pull')endPull();else if(g.lock==='ban')banRelease();else if(g.lock==='dw')dwRelease(g.vx);else if(g.lock==='tab')hEnd(g.vx);else if(g.lock==='back')bEnd(g.vx)};
 addEventListener('touchend',tEnd,{passive:true});addEventListener('touchcancel',tEnd,{passive:true});
 
 /* ---------- counts roll like an odometer ---------- */
@@ -1231,7 +1282,7 @@ async function askMine(id,ts,m,pre){const w=TW[id];if(!w)return;const note=(S.no
 const u=usr(w.ru),key=nkey(id,ts),b=m&&m.built?BK[m.id]:null,c=m&&!m.built?catOf(m.id):null;if(!pre){PEND[key]={text:'',u:u.id};if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}
 const sit=b&&w.sell===b.id?`\n[상황] 수아가 『${b.name}』 책 카드를 붙여서(책을 인용해서) 이 트윗을 씀. 이 책은 네가 타래에 올리고 있는 책임. [수아가 읽은 곳] ${readAt(b)}. 그 책 얘기에 너답게 반응함. 수아가 안 읽은 뒷내용·결말은 말하지 않음.`:b?`\n[상황] 수아가 『${b.name}』 얘기를 함. 이 책은 네가 타래에 올리고 있는 책임. [수아가 읽은 곳] ${readAt(b)}. 같이 읽자고 너답게 꼬심. 수아가 안 읽은 뒷내용·결말은 말하지 않음.`:c?`\n[상황] 수아가 『${c.name}』(${c.author}) 읽고 싶다고 함. 아직 타래에 없는 책이라 네가 방금 올리기로 함(앞부분부터 곧 올라옴). 같이 읽자고 너답게 꼬심. 줄거리·결말 스포 금지.`:'';
 const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아가 올린 트윗에 네가 먼저 다는 답글임. '+LEN()+' 너답게 진짜로 반응함.'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+(w.q&&TW[w.q]?`\n[수아가 인용한 트윗] ${TW[w.q].u===u.id?'(네 트윗) ':''}${TW[w.q].t==='r'&&BK[TW[w.q].b]?'『'+BK[TW[w.q].b].name+'』 원문: ':'@'+usr(TW[w.q].u).handle+': '}${TW[w.q].x}`:'')+sit+'\n\n답글 본문만 출력.'+LKP;
-const QM=pre&&!b&&!c&&!w.q&&Math.random()<.35,qp=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아(탐라에서 오래 본 트친)가 올린 트윗을 네가 인용해서, 네 팔로워들한테 하는 혼잣말 트윗을 쓰는 중임. 수아를 직접 부르지 않고 그 트윗에 대한 네 반응만 씀. 보통 한 줄, 길어도 두 줄. 너답게 진짜로 반응함(공감, 웃음, 딴소리, 태클 무엇이든).'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+'\n\n인용 트윗 본문만 출력.'+LKP;try{const res=await smp(QM?qp:prompt,{cache:false,model:MODEL,effort:'medium',img:w.img,onText:({text})=>{if(PEND[key]){PEND[key].text=lkStrip(text).x;if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}}});const lv=lkStrip(String(res&&res.text||'')),t=lv.x;delete PEND[key];if(t&&pre){note.pre={x:t.slice(0,500),u:u.id,v:lv.v,q:QM?1:0};store();lnSync();return}if(t){note.r={x:t.slice(0,500),ts:Date.now(),u:u.id};{const L=[];if(lv.v>=1){L.push(u.id);if(lv.v>=2)L.push(...personas(2+rnd(3),u.id));else if(Math.random()<.25)L.push(...personas(1,u.id))}addLikes(id,L)}store();SND.reply();if(!(cur==='thread'&&curTh&&curTh.ids.includes(id)))toast('@'+u.handle+' 님이 답글 달았어')}}
+const QM=pre&&!b&&!c&&!w.q&&(note.lq||Math.random()<.35),qp=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아(탐라에서 오래 본 트친)가 올린 트윗을 네가 인용해서, 네 팔로워들한테 하는 혼잣말 트윗을 쓰는 중임. 수아를 직접 부르지 않고 그 트윗에 대한 네 반응만 씀. 보통 한 줄, 길어도 두 줄. 너답게 진짜로 반응함(공감, 웃음, 딴소리, 태클 무엇이든).'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+'\n\n인용 트윗 본문만 출력.'+LKP;try{const res=await smp(QM?qp:prompt,{cache:false,model:MODEL,effort:'medium',img:w.img,onText:({text})=>{if(PEND[key]){PEND[key].text=lkStrip(text).x;if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}}});const lv=lkStrip(String(res&&res.text||'')),t=lv.x;delete PEND[key];if(t&&pre){note.pre={x:t.slice(0,500),u:u.id,v:lv.v,q:QM?1:0};store();lnSync();return}if(t){note.r={x:t.slice(0,500),ts:Date.now(),u:u.id};{const L=[];if(lv.v>=1){L.push(u.id);if(lv.v>=2)L.push(...personas(2+rnd(3),u.id));else if(Math.random()<.25)L.push(...personas(1,u.id))}addLikes(id,L)}store();SND.reply();if(!(cur==='thread'&&curTh&&curTh.ids.includes(id)))toast('@'+u.handle+' 님이 답글 달았어')}}
 catch(err){delete PEND[key];const c2=err&&err.code;toast(c2==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어')}if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}
 const reqBtn=id=>{const on=!!(S.req&&S.req[id]);return `<button class="pk${on?' on':''}" data-req="${id}" aria-label="읽고 싶어">${ic('heart',on)}</button>`};
 const CATN={'근대':'한국 근대소설','고전':'한국 고전소설','영어':'쉬운 영어 원문','시':'시','추리':'추리·괴담','로맨스':'로맨스','러시아':'러시아 단편','일본':'일본 단편','철학':'철학·에세이','모험':'모험·SF'};
@@ -1299,6 +1350,8 @@ if(k==='글'&&fresh.length<2){const sp=a.split('|').map(x=>x.trim());if(sp.lengt
 if(fresh.length){rebuild();sysMsg(u.id,`새 글 ${fresh.length}개 올림 · 홈에서 보기`,'fresh');newArrivals(fresh)}store()}
 /* a DM is written at once but sent like a person: read a bit later, answered later still, fast only mid-conversation */
 const DMW={},DLV={};
+const dmLive=uid=>{const m=S.dm[uid]||[],lu=[...m].reverse().find(x=>x.f==='u');return!!(lu&&Date.now()-lu.ts<10*6e4)};
+function dmGhost(uid){if(DMP[uid]||DLV[uid]||!(S.dq||{})[uid])return;DMP[uid]=1;paintChat(uid,true);setTimeout(()=>{if(DMP[uid]&&!DLV[uid]){delete DMP[uid];paintChat(uid)}},1600+rnd(3400))}
 function dmDelay(uid){const m=S.dm[uid]||[],lu=[...m].reverse().find(x=>x.f==='u'),live=lu&&Date.now()-lu.ts<10*6e4,r=Math.random(),M=6e4;return live?(r<.5?(8+rnd(22))*1000:r<.9?(30+rnd(150))*1000:(3+rnd(7))*M):(r<.15?(20+rnd(40))*1000:r<.5?(1+rnd(5))*M:r<.8?(6+rnd(24))*M:r<.95?(30+rnd(60))*M:(2+rnd(3))*60*M)}
 function dmTick(){const Q=S.dq||{},now=Date.now();for(const uid in Q){const q=Q[uid];if(!UK[uid]){delete Q[uid];continue}if(q.due<=now)dmDeliver(uid);else if(q.rd<=now&&!q.rs){q.rs=1;store();paintChat(uid)}}}
 setInterval(()=>{if(!document.hidden)dmTick()},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(dmTick,700)});
@@ -1310,7 +1363,7 @@ async function askDM(uid,kick){const u=UK[uid];if(!u||DMP[uid]||DMW[uid]||(S.dq|
 S.dm[uid]=S.dm[uid]||[];const n0=S.dm[uid].length;DMW[uid]=1;let raw='';
 try{const res=await smp(dmPrompt(u,kick)+'\n\n[하트] 쪽지 맨 끝 줄에 [맘찍:0] 또는 [맘찍:1]을 붙임(앱이 지워서 수아는 못 봄). 수아가 마지막에 보낸 쪽지가 진짜 웃기거나 좋아서 네가 하트를 누를 만하면 1. 대부분 0.',{cache:false,model:MODEL,effort:'medium'});raw=String(res&&res.text||'').trim();{const lv=lkStrip(raw);raw=lv.x;if(lv.v>=1){const M=S.dm[uid]||[];for(let i=M.length-1;i>=0;i--)if(M[i].f==='me'){M[i].hl=1;break}}}}catch(err){delete DMW[uid];paintChat(uid);const c=err&&err.code;if(!kick&&c!=='not_granted')toast(c==='rate_limited'?'답장이 밀렸어. 조금 뒤에 다시 남겨 봐':c==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어');return}
 const{body,acts}=parseActs(raw),parts=body.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);delete DMW[uid];if(!parts.length){paintChat(uid);return}
-const now=Date.now(),due=kick?now:now+dmDelay(uid);S.dq=S.dq||{};S.dq[uid]={due,rd:kick?now:now+Math.round((due-now)*(.25+Math.random()*.6)),parts,acts,n:n0};store();if(kick)dmDeliver(uid)}
+const now=Date.now(),due=kick?now:now+habit(uid,dmDelay(uid),dmLive(uid));S.dq=S.dq||{};S.dq[uid]={due,rd:kick?now:now+Math.round((due-now)*(.25+Math.random()*.6)),parts,acts,n:n0};store();if(kick)dmDeliver(uid);else if(due-now>6e4&&Math.random()<phOf(uid).g){const rd=S.dq[uid].rd;setTimeout(()=>dmGhost(uid),Math.min(rd-now+(due-rd)*(.2+Math.random()*.5),2147e6))}}
 let rpT=null,fresh=0;
 /* ---------- the book writes back ---------- */
 const PEND={};let curTh=null,thStart=0;
@@ -1327,16 +1380,31 @@ const LEN=dm=>{const r=Math.random();return dm?(r<.5?'이번 쪽지는 아주 �
 const LKP='\n\n[맘찍] 글 맨 끝 줄에 [맘찍:0], [맘찍:1], [맘찍:2] 중 하나를 붙임(앱이 지워서 수아는 못 봄). 트위터 사람들은 맘찍이 박함. 평범하거나 별 의미 없는 말이면 0(대부분 0). 진짜 웃기거나 와닿거나 공감 가서 네가 실제로 누를 만하면 1. 탐라 여러 사람이 누를 만큼 좋으면 2(아주 드물게).';
 const lkStrip=t=>{t=String(t||'');const m=t.match(/\[\s*맘찍\s*[:：]\s*(\d)\s*\]/);const v=m?+m[1]:0;t=t.replace(/\s*\[\s*맘찍[^\]]*\]\s*/g,' ').replace(/\s*\[[^\]]{0,8}$/,'');return{x:t.trim(),v}};
 /* replies and hearts never arrive on a fixed beat: sometimes at once, sometimes after she has moved on */
+/* ---------- phone habits: some never put it down, some answer tomorrow. never shown, only felt ---------- */
+const PH={kongddeok_:{on:[19,13],p:.5,g:.12,l:.06},mytaste_only:{on:[10,2],p:1.9,g:.28,l:.22},grimm_victim:{on:[11,4],p:.6,g:.08,l:.05},just_reading:{on:[7,0],p:1.7,g:.14,l:.3,w:[10,18]},lights_on_reader:{on:[10,3],p:1,g:.22,l:.1},two_stars:{on:[18,3],p:1.3,g:.1,l:.14},eat_then_read:{on:[7,1],p:.7,g:.08,l:.04},basement_reader:{on:[21,6],p:.8,g:.16,l:.15},read_first:{on:[6,23],p:.75,g:.05,l:.1},deep_night:{on:[9,2],p:1,g:.26,l:.1},tissue_box:{on:[9,1],p:.9,g:.16,l:.12}};
+const phOf=u=>PH[u]||{on:[9,1],p:1,g:.12,l:.1};
+const hourOf=t=>{const d=new Date(t);return d.getHours()+d.getMinutes()/60};
+const inWin=(h,w)=>w[0]<w[1]?h>=w[0]&&h<w[1]:h>=w[0]||h<w[1];
+const awake=(u,t)=>inWin(hourOf(t),phOf(u).on);
+function wakeAfter(u,t){let x=t;for(let k=0;k<96&&!awake(u,x);k++)x+=15*6e4;return x}
+/* stretch a delay by the person's habits; asleep by then means it waits until they wake */
+function habit(u,ms,live){const P=phOf(u),now=Date.now();let d=Math.max(0,ms)*P.p;if(P.w&&!live&&inWin(hourOf(now),P.w))d*=1.8;if(awake(u,now+d))return d;if(live&&awake(u,now)&&d<5*6e4)return d;return wakeAfter(u,now+d)-now+(5+rnd(70))*6e4}
 const rpDelay=live=>{const r=Math.random(),m=6e4;return live?(r<.35?(20+rnd(70))*1000:r<.8?(2+rnd(8))*m:(10+rnd(30))*m):(r<.08?(30+rnd(60))*1000:r<.5?(2+rnd(9))*m:r<.8?(11+rnd(30))*m:r<.94?(40+rnd(80))*m:(2+rnd(5))*60*m)};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const lkAt=()=>{const r=Math.random(),m=6e4;return Date.now()+(r<.25?(5+rnd(50))*1000:r<.6?(2+rnd(25))*m:r<.85?(30+rnd(150))*m:(3+rnd(9))*60*m)};
-function addLikes(key,uids){S.lk=S.lk||{};const L=S.lk[key]=S.lk[key]||[];for(const u of uids)if(u&&UK[u]&&!L.some(x=>x.u===u))L.push({u,at:lkAt()});store()}
+function addLikes(key,uids){S.lk=S.lk||{};const L=S.lk[key]=S.lk[key]||[];for(const u of uids)if(u&&UK[u]&&!L.some(x=>x.u===u))L.push({u,at:Date.now()+habit(u,lkAt()-Date.now(),false)});store()}
 const lkNow=key=>((S.lk||{})[key]||[]).filter(x=>x.at<=Date.now());
 const lkTag=key=>{const n=lkNow(key).length;return n?`<button class="mlk" data-lkk="${esc(key)}" aria-label="마음 ${n}">${ic('heart',true)}<span data-lkc="${esc(key)}">${n}</span></button>`:`<button class="mlk off" data-lkk="${esc(key)}" hidden>${ic('heart',true)}<span data-lkc="${esc(key)}"></span></button>`};
 function lkTick(){const now=Date.now();S.lkShown=S.lkShown||{};let ch=false;document.querySelectorAll('[data-lkc]').forEach(sp=>{const k=sp.dataset.lkc,n=lkNow(k).length,was=S.lkShown[k]||0;if(n>was){const bt=sp.closest('.mlk,.lkx');if(bt){bt.hidden=false;bt.classList.remove('off','pop');void bt.offsetWidth;bt.classList.add('pop')}roll(sp,was,n);S.lkShown[k]=n;ch=true}else if(!sp.textContent&&n)sp.textContent=n});if(ch){SND.tick();buz(4);store()}}
 setInterval(()=>{if(!document.hidden)lkTick()},15000);
 const ASK={},LR0=Object.assign({},S.lastRead||{}),RS=new Set();
-function queueReply(id,ts){const n=(S.notes[id]||[]).find(x=>x.ts===ts);if(!n)return;const pr=n.to&&(S.notes[id]||[]).find(x=>x.ts===n.to),live=!!(pr&&pr.r&&Date.now()-pr.r.ts<15*6e4);n.due=Date.now()+rpDelay(live);store();setTimeout(dueTick,Math.min(n.due-Date.now()+50,2147e6));lnPerm();pregen(id,n)}
+function queueReply(id,ts){const n=(S.notes[id]||[]).find(x=>x.ts===ts);if(!n)return;const pr=n.to&&(S.notes[id]||[]).find(x=>x.ts===n.to),live=!!(pr&&pr.r&&Date.now()-pr.r.ts<15*6e4),ru=noteResp(id,n),P=phOf(ru);
+/* sometimes only a heart now, and hours later they bring the tweet back as a quote */
+if(n.sys&&!live&&Math.random()<P.l){n.lq=1;addLikes(id,[ru]);n.due=Date.now()+habit(ru,(2+rnd(7))*36e5,false)}else n.due=Date.now()+habit(ru,rpDelay(live),live);
+store();setTimeout(dueTick,Math.min(n.due-Date.now()+50,2147e6));lnPerm();pregen(id,n);
+/* and sometimes they start typing, think better of it, and come back later */
+const gap=n.due-Date.now();if(!n.lq&&gap>9e4&&Math.random()<P.g)setTimeout(()=>ghostType(id,ts,ru),Math.min(gap*(.15+Math.random()*.5),2147e6))}
+function ghostType(id,ts,ru){const n=(S.notes[id]||[]).find(x=>x.ts===ts);if(!n||n.r||n.done)return;const key=nkey(id,ts);if(PEND[key]||!(cur==='thread'&&curTh&&curTh.ids.includes(id)))return;PEND[key]={text:'',u:ru,gh:1};curTh.post?renderNotes():paintReply(key);setTimeout(()=>{if(PEND[key]&&PEND[key].gh){delete PEND[key];if(cur==='thread'&&curTh)curTh.post?renderNotes():paintReply(key)}},1800+rnd(3800))}
 /* the answer is written right away and held until its moment, so it can still arrive (and ping the phone) after she has closed the app */
 function pregen(id,n){const k=nkey(id,n.ts),w=TW[id];if(!w||ASK[k]||n.r||n.pre)return;ASK[k]=1;(n.sys?askMine(id,n.ts,mbk(w),1):askBook(id,n.ts,1)).finally(()=>{delete ASK[k];store();if(n.pre&&n.due<=Date.now())reveal(id,n)})}
 const RV=new Set();
@@ -1362,7 +1430,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=28,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=29,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;const put=()=>{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v};
 try{put()}catch(e){try{localStorage.removeItem('tarae.app');localStorage.removeItem('tarae.appv');for(let k=0;k<12&&!UPD;k++){const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}else if(S.lp&&S.lp.length>20){S.lp.splice(0,10);try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}try{put()}catch(e3){if(!m&&!(S.lp&&S.lp.length>20))break}}}catch(e4){}}}catch(e){}}
@@ -1567,7 +1635,7 @@ $('#drw').addEventListener('click',e=>{if(e.target.id==='drw')shut('#drw')});
 $('#rts').addEventListener('click',e=>{if(e.target.id==='rts')rtsClose()});
 $('#mos').addEventListener('click',e=>{if(e.target.id==='mos')shut('#mos')});
 $('#drw').addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('dset'))dsetOpen=e.target.open},true);
-$('#drw').addEventListener('change',e=>{if(e.target.id==='pf-banf'){pfBanPick(e.target.files&&e.target.files[0])}else if(e.target.id==='pf-img'){pfPick(e.target.files&&e.target.files[0]);return}if(e.target.id==='kgh'){const v=e.target.value.trim();if(!v)return;S.ghk=v;store();rDrawer();SND.tick();toast('토큰 저장했어');settleReqs();return}if(e.target.id!=='kkey')return;const v=e.target.value.trim();if(!v)return;S.key=v;store();rDrawer();SND.tick();toast('키 저장했어')});
+$('#drw').addEventListener('change',e=>{if(e.target.id==='pf-banf'){pfBanPick(e.target.files&&e.target.files[0])}else if(e.target.id==='pf-img'){pfPick(e.target.files&&e.target.files[0]);return}if(e.target.id==='kgh'){const v=e.target.value.trim();if(!v)return;S.ghk=v;store();rDrawer();SND.tick();toast('토큰 저장했어');settleReqs();if(Object.keys(S.seen||{}).filter(k=>k.includes('.r.')).length<3&&!Object.keys(S.dm||{}).length&&!(S.mine||[]).length)bkRestore().then(ok=>{if(ok){toast('예전 기록 되살렸어');setTimeout(()=>location.reload(),1100)}});return}if(e.target.id!=='kkey')return;const v=e.target.value.trim();if(!v)return;S.key=v;store();rDrawer();SND.tick();toast('키 저장했어')});
 
 /* ---------- like burst, the way the timeline does it ---------- */
 const PAIRS=[['#9cd8c3','#8ce1d4'],['#f48ea7','#f0a5b5'],['#cc8ef5','#b38ef5'],['#91d2fa','#9fc7fa'],['#f5c26b','#f4b45f'],['#f48ea7','#cc8ef5'],['#9fd6f5','#9cd8c3']];
