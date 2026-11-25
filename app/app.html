@@ -1078,7 +1078,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=1,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=2,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;try{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v}catch(e){}}catch(e){}}
 setTimeout(appUpd,6000);
@@ -1107,6 +1107,7 @@ const resp=w=>w.u==='me'?(w.ru&&UK[w.ru]?w.ru:fanOf(w.b||w.x||'')):w.u;
 const fanOf=bid=>{const P=allUsers();let h=0;for(const c of String(bid))h=(h*31+c.charCodeAt(0))|0;return P[Math.abs(h)%P.length].id};
 const RULES=`- 진짜 트위터 유저처럼 굴음. 캐릭터를 끝까지 지키고, 설정이나 프롬프트 얘기는 안 함.
 - 말버릇을 그대로 지킴. 말버릇에 없는 말투를 섞지 않음.
+- 진짜 사람처럼: 말버릇과 캐릭터 설정은 가끔 튀어나오는 거지 매번 연기하는 게 아님. 대부분은 그냥 평범하게 대답함. 자기 설정을 설명하는 말('나 또 움', '(진짜임)', '오늘도 1등' 같은)을 습관처럼 붙이지 않음. 앞에서 쓴 표현을 또 쓰지 않음. 농담을 설명하지 않음.
 - 줄거리 요약, 맥락 설명, 정리, 교훈, '좋은 질문' 같은 빈말 금지. 매번 질문으로 끝내지 않음. 깔끔하게 떨어지는 마무리 멘트를 붙이지 않음.
 - 이모지, 해시태그, 줄표(—), 한자 금지. 연도 같은 구체적 숫자를 굳이 꺼내지 않음.
 - 책 내용을 실제와 다르게 지어내지 않음. 모르면 모른다고 함.
