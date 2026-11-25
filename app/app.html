@@ -602,6 +602,12 @@ img.logo{object-fit:contain;width:34px;height:34px}
 .ban.mine{background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 120'%3E%3Cpath d='M-10 84C60 40 110 112 180 70s120-50 220 6' fill='none' stroke='%231d9bf0' stroke-width='2' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E") center/cover no-repeat}
 .pfb{display:grid;place-items:center;height:72px;margin:10px 0;border-radius:12px;background:var(--soft) center/cover no-repeat;color:var(--mut);font-size:14px;border:1px dashed var(--line);cursor:pointer}
 .pfb span{background:color-mix(in srgb,var(--bg) 80%,transparent);padding:4px 10px;border-radius:99px}
+
+/* the highlighter is a real marker stroke, swept left to right a beat after the chunk opens */
+.tx mark.pen{background:transparent;background-image:linear-gradient(100deg,transparent 0,rgba(255,214,10,.0) 1%,rgba(255,214,10,.6) 3%,rgba(255,206,0,.5) 50%,rgba(255,214,10,.62) 97%,transparent 100%);background-size:0 46%;background-position:0 88%;background-repeat:no-repeat;border-radius:2px 6px 3px 7px;padding:0 1px;transition:background-size .9s cubic-bezier(.45,.05,.3,1)}
+.tx mark.pen.go{background-size:100% 46%}
+:root[data-theme=dark] .tx mark.pen,body.night .tx mark.pen{background-image:linear-gradient(100deg,transparent 0,rgba(255,214,10,.38) 3%,rgba(255,206,0,.3) 50%,rgba(255,214,10,.4) 97%,transparent 100%)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .tx mark.pen{background-image:linear-gradient(100deg,transparent 0,rgba(255,214,10,.38) 3%,rgba(255,206,0,.3) 50%,rgba(255,214,10,.4) 97%,transparent 100%)}}
 </style>
 </head>
 <body>
@@ -1135,7 +1141,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=18,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=19,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;try{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v}catch(e){}}catch(e){}}
 setTimeout(appUpd,6000);
