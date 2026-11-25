@@ -21,7 +21,8 @@
 "x": "장인 핑계가 딸 키 작아서임. 키.\n그걸로 몇 년을 버팀ㅋ"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/bombom.jpg"
 },
 {
 "id": "sonakbi",
@@ -33,7 +34,8 @@
 "src": "https://ko.wikisource.org/wiki/소낙비",
 "color": "#b07a2a",
 "cvs": 1,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/sonakbi.jpg"
 },
 {
 "id": "manmubang",
@@ -51,7 +53,8 @@
 "x": "범인 찾기 좋아하는 사람..?\n밤에 벼 도둑 잡으려고 숨어 있는 얘긴데 나 끝까지 못 맞힘\n답 말하지 마 아무도"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/manmubang.jpg"
 },
 {
 "id": "geumkong",
@@ -70,7 +73,8 @@
 "if": "dongbaek"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/geumkong.jpg"
 },
 {
 "id": "ttaengbyeot",
@@ -88,7 +92,8 @@
 "x": "땡볕 읽지 마\n아니 읽어\n아픈 아내 지게에 지고 병원 가는데ㅠㅠㅠㅠ\n나 또 움"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/ttaengbyeot.jpg"
 },
 {
 "id": "sangol",
@@ -106,7 +111,8 @@
 "x": "산골 나그네. 읽어.\n여자 정체 끝까지 궁금함."
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/sangol.jpg"
 },
 {
 "id": "nodaji",
@@ -124,7 +130,8 @@
 "x": "노다지 다 읽음 ㅋ 한 시간도 안 걸림\n너넨 아직 시작도 안 했지"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/nodaji.jpg"
 },
 {
 "id": "bincheo",
@@ -143,7 +150,8 @@
 "if": "unsu"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/bincheo.jpg"
 },
 {
 "id": "sulgwon",
@@ -162,7 +170,8 @@
 "if": "unsu"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/sulgwon.jpg"
 },
 {
 "id": "bsagam",
@@ -181,7 +190,8 @@
 "if": "unsu"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/bsagam.jpg"
 },
 {
 "id": "gohyang",
@@ -200,7 +210,8 @@
 "if": "unsu"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/gohyang.jpg"
 },
 {
 "id": "halmeoni",
@@ -218,7 +229,8 @@
 "x": "할머니 위독하다고 다 모였는데 다들 효도하는 척 경쟁함\n별 세 개. 표정 관리 못 하는 사람 찾는 맛"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/halmeoni.jpg"
 },
 {
 "id": "bongbyeol",
@@ -237,7 +249,8 @@
 "if": "nalgae"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/bongbyeol.jpg"
 },
 {
 "id": "jongsaeng",
@@ -256,7 +269,8 @@
 "if": "nalgae"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/jongsaeng.jpg"
 },
 {
 "id": "jijuhoesi",
@@ -275,7 +289,8 @@
 "if": "nalgae"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/jijuhoesi.jpg"
 },
 {
 "id": "samnyong",
@@ -293,7 +308,8 @@
 "x": "벙어리 삼룡이\n제목부터 마음 준비해ㅠㅠㅠㅠ\n말을 못 하니까 다 행동으로만 보여 주는데 그게 더 아픔"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/samnyong.jpg"
 },
 {
 "id": "mullebanga",
@@ -305,7 +321,8 @@
 "src": "https://ko.wikisource.org/wiki/물레방아",
 "color": "#8c5a3c",
 "cvs": 0,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/mullebanga.jpg"
 },
 {
 "id": "ppong",
@@ -317,7 +334,8 @@
 "src": "https://ko.wikisource.org/wiki/뽕",
 "color": "#b07a2a",
 "cvs": 1,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/ppong.jpg"
 },
 {
 "id": "gamja",
@@ -335,7 +353,8 @@
 "x": "기분 좋은 얘기 아님. 별 두 개\n근데 손에서 못 놓음 이게 문제임"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/gamja.jpg"
 },
 {
 "id": "baettaragi",
@@ -353,7 +372,8 @@
 "x": "형이 아내랑 동생 사이 의심하는 얘긴데 쥐 한 마리 때문에 그렇게 돼??? 진짜로???\n물 한 잔 떠 놓고 읽어 목 탐"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/baettaragi.jpg"
 },
 {
 "id": "gwangyeom",
@@ -371,7 +391,8 @@
 "x": "불이 나야 곡이 나오는 작곡가 얘기…\n예술 때문이면 어디까지 괜찮을까…\n너는…?"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/gwangyeom.jpg"
 },
 {
 "id": "balgarak",
@@ -389,7 +410,8 @@
 "x": "제목 보고 개그인 줄 알았으면 틀렸거든?\n의사 친구 시점이라 더 숨 막힘."
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/balgarak.jpg"
 },
 {
 "id": "bulgeunsan",
@@ -407,7 +429,8 @@
 "x": "붉은 산 제목 뜻 나오는 데서 나 무너짐ㅠㅠㅠㅠ\n짧은데 휴지 다 씀"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/bulgeunsan.jpg"
 },
 {
 "id": "yakhanja",
@@ -419,7 +442,8 @@
 "src": "https://ko.wikisource.org/wiki/약한_자의_슬픔",
 "color": "#a8463f",
 "cvs": 3,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/yakhanja.jpg"
 },
 {
 "id": "readymade",
@@ -437,7 +461,8 @@
 "x": "공부는 할 만큼 했는데 취직이 안 되는 얘기임\n남 얘기 같지 않아서 별 하나 깎음ㅋ"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/readymade.jpg"
 },
 {
 "id": "chisuk",
@@ -455,7 +480,8 @@
 "x": "화자 말 믿고 읽으면 안 되는 책.\n조카가 아저씨 흉을 보는데 읽다 보면 이상한 게 누군지 보이거든?"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/chisuk.jpg"
 },
 {
 "id": "memil",
@@ -477,7 +503,8 @@
 "x": "\"피기 시작한 꽃이 소금을 뿌린 듯이 흐붓한 달빛에 숨이 막힐 지경이다.\"\n읽어."
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/memil.jpg"
 },
 {
 "id": "talchulgi",
@@ -495,7 +522,8 @@
 "x": "편지 한 통이 전부인데ㅠㅠㅠ\n왜 집을 나왔는지 털어놓는 편지\n읽다가 숨 참음"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/talchulgi.jpg"
 },
 {
 "id": "hongyeom",
@@ -507,7 +535,8 @@
 "src": "https://ko.wikisource.org/wiki/홍염",
 "color": "#a0602f",
 "cvs": 0,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/hongyeom.jpg"
 },
 {
 "id": "adada",
@@ -519,7 +548,8 @@
 "src": "https://ko.wikisource.org/wiki/백치_아다다",
 "color": "#3f6e8c",
 "cvs": 1,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/adada.jpg"
 },
 {
 "id": "jihachon",
@@ -531,7 +561,8 @@
 "src": "https://ko.wikisource.org/wiki/지하촌",
 "color": "#2f7a74",
 "cvs": 2,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/jihachon.jpg"
 },
 {
 "id": "kkeoraei",
@@ -543,7 +574,8 @@
 "src": "https://ko.wikisource.org/wiki/꺼래이",
 "color": "#6e4b8a",
 "cvs": 3,
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/kkeoraei.jpg"
 },
 {
 "id": "mujeong",
@@ -561,7 +593,8 @@
 "x": "무정 길긴 긴데 삼각관계야??? 아니 형식아 하나만 정해??\n조금씩 읽어 밥은 먹으면서"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/mujeong.jpg"
 },
 {
 "id": "taepyeong",
@@ -579,7 +612,8 @@
 "x": "아니 서술이 판소리임 진짜 판소리 듣는 거 같음\n윤직원 영감 입 열 때마다ㅋㅋㅋㅋㅋㅋ 이 영감 진짜"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/taepyeong.jpg"
 },
 {
 "id": "bakssi",
@@ -598,7 +632,8 @@
 "x": "남편이 얼굴 보고 부인 무시하는 데서 시작함.\n부인 능력 나오고부터는 남편 꼴 보는 맛으로 읽음ㅋ"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/bakssi.jpg"
 },
 {
 "id": "simcheong",
@@ -617,7 +652,8 @@
 "x": "심청전 다 안다는 사람 원문 읽어 봐\n심봉사 생각보다 사고 많이 침. 별 두 개는 심봉사 몫"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/simcheong.jpg"
 },
 {
 "id": "heungbu",
@@ -636,7 +672,8 @@
 "x": "흥부전 박 다 탐 ㅋ\n박 하나 탈 때마다 뭐 나올지 몰라서 못 멈췄음\n너넨 첫 박도 안 탔지"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/heungbu.jpg"
 },
 {
 "id": "sugungga",
@@ -655,7 +692,8 @@
 "x": "토끼의 말솜씨를 보며 언어의 본질을 생각했어…\n(사실 소리 내서 읽다가 혼자 신남ㅋ)"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/sugungga.jpg"
 },
 {
 "id": "guunmong",
@@ -674,7 +712,8 @@
 "x": "한평생이 하룻밤 꿈이라면…\n구운몽은 그 덧없음에 대한 오래된 대답이야\n(길어서 아직 반 읽음ㅋ)"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/guunmong.jpg"
 },
 {
 "id": "rapunzel",
@@ -693,7 +732,8 @@
 "if": "hansel"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/rapunzel.jpg"
 },
 {
 "id": "snowwhite",
@@ -712,7 +752,8 @@
 "if": "hansel"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/snowwhite.jpg"
 },
 {
 "id": "rumpel",
@@ -730,7 +771,8 @@
 "x": "헉 룸펠슈틸츠헨 이름 맞히기 게임인 거 알았어..?\n못맞히면아기데려간대 무서워ㅠ"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/rumpel.jpg"
 },
 {
 "id": "frogprince",
@@ -748,7 +790,8 @@
 "x": "개구리 왕자 키스로 풀리는 거 아니었어??\n어떻게 풀리는지 보고 소리 지름ㅋㅋㅋ 공주 성격 무슨 일이야"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/frogprince.jpg"
 },
 {
 "id": "redcap",
@@ -767,7 +810,8 @@
 "if": "hansel"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/redcap.jpg"
 },
 {
 "id": "aschen",
@@ -786,7 +830,8 @@
 "if": "hansel"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/aschen.jpg"
 },
 {
 "id": "bremen",
@@ -804,7 +849,8 @@
 "x": "브레멘 음악대 오 분 컷 ㅋ\n제목에 속지 마 끝까지 읽은 사람만 앎"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/bremen.jpg"
 },
 {
 "id": "elves",
@@ -822,7 +868,8 @@
 "x": "밤에 읽기 좋은 거 찾는 사람\n밤마다 누가 몰래 구두 지어 놓는 얘기임 귀엽지?? 따뜻한 거 마시면서 읽어"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/elves.jpg"
 },
 {
 "id": "fisherman",
@@ -840,7 +887,8 @@
 "x": "소원 스케일 커지는 속도 미쳤음\n바다 색 변하는 거 하나는 인정. 별 세 개"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/fisherman.jpg"
 },
 {
 "id": "briarrose",
@@ -859,7 +907,8 @@
 "if": "hansel"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/briarrose.jpg"
 },
 {
 "id": "sixswans",
@@ -877,7 +926,8 @@
 "x": "동생이 오빠들 살리려고 몇 년을 말도 안 하고 웃지도 않아ㅠㅠㅠㅠ\n억울한 일 당해도 말을 못 해\n나 또 움"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/sixswans.jpg"
 },
 {
 "id": "goosegirl",
@@ -895,7 +945,8 @@
 "x": "성문에 말 머리가 걸려 있는데… 말을 해…\n이름이 팔라다래…\n왜 걸렸는지는… 읽어 봐…"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/goosegirl.jpg"
 },
 {
 "id": "almond",
@@ -914,7 +965,8 @@
 "if": "telltale"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/almond.jpg"
 },
 {
 "id": "robber",
@@ -933,7 +985,8 @@
 "if": "telltale"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/robber.jpg"
 },
 {
 "id": "sevengoats",
@@ -951,7 +1004,8 @@
 "x": "엄마 염소 외출하는 장면부터 내가 불안함ㅠㅠ\n늑대가 목소리 바꾸려고 뭐 먹는지 알아?? 애들아 문 열지 마"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/sevengoats.jpg"
 },
 {
 "id": "mermaid",
@@ -969,7 +1023,8 @@
 "x": "애니 인어공주만 아는 사람 마음 단단히 먹어ㅠㅠㅠㅠ\n걸을 때마다… 아니 말 안 할래\n휴지 챙겨"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/mermaid.jpg"
 },
 {
 "id": "duckling",
@@ -987,7 +1042,8 @@
 "x": "구박하는 놈들 다 기억해 둠\n결말 알아도 원문 묘사는 다름. 별 두 개 반"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/duckling.jpg"
 },
 {
 "id": "matchgirl",
@@ -1005,7 +1061,8 @@
 "x": "성냥팔이 소녀 읽고 보일러 올렸어ㅠㅠ\n너네도 따뜻하게 입고 읽어"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/matchgirl.jpg"
 },
 {
 "id": "redshoes",
@@ -1023,7 +1080,8 @@
 "x": "한 번 신으면 춤이 안 멈추는 구두…\n멈추고 싶은데 발이 말을 안 들으면 어떡하지…"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/redshoes.jpg"
 },
 {
 "id": "emperor",
@@ -1041,7 +1099,8 @@
 "x": "다 아는 얘기라고 넘기지 마 원문 신하들 연기 미쳤음ㅋㅋㅋㅋ\n안 보이는데 보이는 척 경쟁하는 거 개웃겨"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/emperor.jpg"
 },
 {
 "id": "snowqueen",
@@ -1059,7 +1118,8 @@
 "x": "아니 눈의 여왕 산적 딸 얘기 왜 아무도 안 해 줬어\n게르다랑 산적 딸 관계성 미친ㄴ 나 이거 때문에 앓는 중"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/snowqueen.jpg"
 },
 {
 "id": "nightingale",
@@ -1077,7 +1137,8 @@
 "x": "살아 있는 새와 보석 박힌 태엽 새…\n아름다움의 본질은 어느 쪽일까\n(솔직히 태엽 새 갖고 싶음ㅋ)"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/nightingale.jpg"
 },
 {
 "id": "wildswans",
@@ -1096,7 +1157,8 @@
 "if": "hansel"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/wildswans.jpg"
 },
 {
 "id": "thumbelina",
@@ -1114,7 +1176,8 @@
 "x": "엄지 공주 청혼 상대들 좀 봐 두꺼비 아들에 두더지???\n나 이 결혼 반대야 반대"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/thumbelina.jpg"
 },
 {
 "id": "happyprince",
@@ -1132,7 +1195,8 @@
 "x": "아는 얘기라고 생각했지ㅠㅠㅠ\n제비가 왜 안 떠나는지 보다가 무너짐\n휴지 다 씀"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/happyprince.jpg"
 },
 {
 "id": "selfishgiant",
@@ -1150,7 +1214,8 @@
 "x": "짧은데 마지막 장면은 인정함\n별 네 개. 기분 좋아서 준 거 아님"
 }
 ],
-"tone": "light"
+"tone": "light",
+"cover": "covers/selfishgiant.jpg"
 },
 {
 "id": "nightrose",
@@ -1168,7 +1233,8 @@
 "x": "사랑 얘기라길래 설레서 들어갔는데??\n다 읽고 나랑 얘기 좀 해 진짜로ㅠㅠ"
 }
 ],
-"tone": "heavy"
+"tone": "heavy",
+"cover": "covers/nightrose.jpg"
 }
 ]
 }
