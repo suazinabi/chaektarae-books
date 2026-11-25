@@ -626,6 +626,10 @@ img.logo{transform-origin:50% 50%;will-change:transform}
 /* the library button inside a tweet is a quiet outline, not a black slab */
 .promo .pk.big:not(.on){background:none;color:var(--ink);border:1px solid var(--line);font-weight:600;font-size:14px;height:32px}
 .promo .pk.big:not(.on) svg{color:var(--pink)}
+
+/* the keyboard lies over the page: the page grows by its height so nothing hides behind it */
+.chat{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px) + var(--kb,0px))}
+#v-thread{padding-bottom:var(--kb,0px)}
 </style>
 </head>
 <body>
@@ -1168,7 +1172,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=22,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=23,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;const put=()=>{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v};
 try{put()}catch(e){try{localStorage.removeItem('tarae.app');localStorage.removeItem('tarae.appv');for(let k=0;k<12&&!UPD;k++){const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}else if(S.lp&&S.lp.length>20){S.lp.splice(0,10);try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}try{put()}catch(e3){if(!m&&!(S.lp&&S.lp.length>20))break}}}catch(e4){}}}catch(e){}}
@@ -1301,7 +1305,12 @@ if(!store()){S.books.pop();toast('너무 커서 저장이 안 돼. 조금 나눠
 
 /* ---------- phone notifications: only while she is away ---------- */
 /* the keyboard covers fixed bars on some phones: lift them by what the visible viewport lost */
-{let vk=0;const vv=window.visualViewport,f=()=>{const a=vv?Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop)):0;document.documentElement.style.setProperty('--kb',Math.max(a,vk)+'px')};const K=navigator.virtualKeyboard;if(K){try{K.overlaysContent=true;K.addEventListener('geometrychange',e=>{vk=Math.round(e.target.boundingRect.height||0);f()})}catch(e){}}if(vv){vv.addEventListener('resize',f);vv.addEventListener('scroll',f)}f()}
+{let vk=0,kb0=0;const vv=window.visualViewport,f=()=>{const a=vv?Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop)):0,kb=Math.max(a,vk),d=kb-kb0;kb0=kb;document.documentElement.style.setProperty('--kb',kb+'px');
+/* when the keyboard comes up over the page, the last lines must stay above it */
+if(d>0)requestAnimationFrame(()=>{if(cur==='chat')scrollTo(0,document.documentElement.scrollHeight);else{const ae=document.activeElement;if(!ae||!/TEXTAREA|INPUT/.test(ae.tagName)||ae.closest('#csheet,#drw'))return;
+/* keep the line she is answering just above the composer, no further */
+const tg=cur==='thread'&&(rpTo&&document.querySelector(`#v-thread [data-r="${rpTo.id}~${rpTo.ts}"]`)||[...document.querySelectorAll('#v-thread .card .tw')].pop()),bar=ae.closest('.cmp,.cbar');if(!tg){scrollBy(0,d);return}
+const lim=(bar?bar.getBoundingClientRect().top:innerHeight-kb)-8,over=tg.getBoundingClientRect().bottom-lim;if(over>0)scrollBy(0,over)}})};const K=navigator.virtualKeyboard;if(K){try{K.overlaysContent=true;K.addEventListener('geometrychange',e=>{vk=Math.round(e.target.boundingRect.height||0);f()})}catch(e){}}if(vv){vv.addEventListener('resize',f);vv.addEventListener('scroll',f)}f()}
 const LNP=()=>{const C=window.Capacitor;return C&&C.Plugins&&C.Plugins.LocalNotifications};
 const lnId=k=>{let h=7;for(const c of String(k))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)%2e9+1};
 function lnPerm(){const L=LNP();if(!L||S.lnAsk)return;S.lnAsk=1;store();try{L.requestPermissions().catch(()=>{})}catch(e){}}
