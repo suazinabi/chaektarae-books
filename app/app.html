@@ -996,7 +996,7 @@ function pickHost(m){const ok=id=>UK[id];if(m&&m.built&&BK[m.id]&&ok(BK[m.id]._b
 const recent=new Set((S.mine||[]).slice(-3).map(p=>p.ru)),P=allUsers().filter(u=>!recent.has(u.id));return(P.length?P:allUsers())[rnd(P.length||allUsers().length)].id}
 let cQuote=null;
 const sbk=id=>{const B=BK[id];return B&&!B.user?{id,name:B.name,built:true}:null};
-const mbk=w=>w&&w.sell&&sbk(w.sell)||mbk(w);
+const mbk=w=>w&&w.sell&&sbk(w.sell)||findBook(w.x);
 function postMine(x,q,img,sb){const ts=Date.now(),id='m'+ts,m=sb&&sbk(sb)||findBook(x),qa=q&&TW[q]&&TW[q].u,ru=qa&&UK[qa]&&qa!=='me'&&!UK[qa].user?qa:pickHost(m);S.mine=S.mine||[];S.mine.push(Object.assign({id,x,ts,ru,bk:m?m.id:''},q?{q}:{},img?{img}:{},sb&&sbk(sb)?{sell:sb}:{}));if(S.mine.length>200)S.mine.shift();{let k=0;for(let i=S.mine.length-1;i>=0;i--)if(S.mine[i].img&&++k>15)delete S.mine[i].img}
 const tid='l.'+id;S.notes[tid]=[{ts:ts+1,sys:1,x:''}];store();rebuild();if(m&&!m.built){if(S.ghk&&!(S.req&&S.req[m.id]))reqBook(m.id,ru);else if(!S.ghk)setTimeout(()=>toast('나 메뉴에 깃허브 토큰을 넣으면 진짜로 신청돼'),2600)}
 newArrivals([tid]);push('thread',{id:tid});SND.send();queueReply(tid,ts+1)}
@@ -1135,7 +1135,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=16,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=17,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;try{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v}catch(e){}}catch(e){}}
 setTimeout(appUpd,6000);
