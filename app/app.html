@@ -629,7 +629,7 @@ img.logo{transform-origin:50% 50%;will-change:transform}
 .lgt{position:absolute;left:0;top:0;width:34px;height:34px;overflow:visible;pointer-events:none}
 .lgt path,#pi .th{stroke:#238ed6}
 .lgt path{fill:none;stroke-width:1.6;stroke-linecap:round}
-.lgw.pulling .lgt{opacity:0}
+.lgw.pulling .lgt{opacity:0}.lgw.pulling img.logo{transform-origin:50% 50%}
 #pi .bb{fill:#279be5}
 
 
@@ -1518,7 +1518,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=34,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=35,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;const put=()=>{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v};
 try{put()}catch(e){try{localStorage.removeItem('tarae.app');localStorage.removeItem('tarae.appv');for(let k=0;k<12&&!UPD;k++){const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}else if(S.lp&&S.lp.length>20){S.lp.splice(0,10);try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}try{put()}catch(e3){if(!m&&!(S.lp&&S.lp.length>20))break}}}catch(e4){}}}catch(e){}}
