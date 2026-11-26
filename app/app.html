@@ -764,7 +764,7 @@ img.logo.boing{animation:lgb .64s var(--out)}
 /* the ones reading along, sitting on the thread where they have got to */
 .rdth .lc .cob{position:absolute;left:50%;bottom:calc(6px + var(--k,0)*25px);width:22px;height:22px;margin-left:-11px;padding:0;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--bg),0 1px 3px rgba(0,0,0,.16);z-index:3;animation:cobin .5s var(--spr) both}
 .rdth .lc .cob img,.rdth .lc .cob svg{width:100%;height:100%;display:block;object-fit:cover}
-.rdth .lc .cob.drop{filter:grayscale(1);opacity:.42}
+.rdth .lc .cob.drop{filter:grayscale(1) contrast(.72) brightness(1.08)}
 .rdth .lc .cob.tie{margin-left:3px}
 @keyframes cobin{from{transform:scale(0)}to{transform:scale(1)}}
 /* beads left where they said something */
@@ -784,7 +784,7 @@ img.logo.boing{animation:lgb .64s var(--out)}
 /* book page: who is reading it with her */
 .cor{display:flex;align-items:center;margin-top:10px;font-size:13px;color:var(--mut)}
 .cor .av{width:20px;height:20px;box-shadow:0 0 0 2px var(--bg);margin-right:-5px;animation:none;filter:none}
-.cor span:last-child{margin-left:12px}
+.tw.lkd .lkh .lka{width:16px;height:16px;border-radius:50%;overflow:hidden;display:block;flex:none;margin-left:2px}.tw.lkd .lkh .lka img,.tw.lkd .lkh .lka svg{width:100%;height:100%;display:block;object-fit:cover}.tw.lkd .lkh b{font-weight:600;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.rdth .lc .cob,.rdth .lc .cop.pop,.rdth .lc .cop.pop .av{animation:none}}
 </style>
 </head>
@@ -844,7 +844,21 @@ const paintMe=()=>{syncMe();document.querySelectorAll('.bar .me[data-go=me],.av.
 const K='chaektarae.v1',PAL=['#7aa6c2','#c98b6b','#8fae7e','#b48ac0','#d4a548','#6f8fb0'];
 const def=()=>({liked:{},marks:{},notes:{},seen:{},today:{d:'',n:0},books:[],stay:{},unf:{},rest:{},dm:{},dmu:{},xh:{},fdm:{},lib:{},bseen:{}});
 let S;try{S=Object.assign(def(),JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){S=def()}
-const store=()=>{for(let t=0;t<12;t++){try{localStorage.setItem(K,JSON.stringify(S));return true}catch(e){/* full: let the oldest photos go first, never the words */const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;if(!S.imgCut){S.imgCut=1;setTimeout(()=>toast('저장 공간이 차서 오래된 사진부터 정리했어'),300)}continue}if(S.lp&&S.lp.length>20){S.lp.splice(0,10);continue}return false}}return false};
+/* the big things (book text made on the phone, its source cache) live in IndexedDB; localStorage keeps only the small record, so reading a long novel can never push her notes and messages off the edge */
+let IDBP=null,idbOK=false,bkReady=true,bkQ=Promise.resolve(),stWarn=0;
+const idb=()=>IDBP||(IDBP=new Promise((res,rej)=>{try{const r=indexedDB.open('tarae',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);r.onblocked=()=>rej('blocked')}catch(e){rej(e)}}));
+const idbGet=k=>idb().then(d=>new Promise((res,rej)=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)}));
+const idbPut=(k,v)=>idb().then(d=>new Promise((res,rej)=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res(true);t.onerror=t.onabort=()=>rej(t.error)}));
+const slim=()=>{if(!idbOK&&!S._idb)return JSON.stringify(S);const mk=S.mk,ext=S.ext;S._idb=1;S.mk=undefined;S.ext=undefined;try{return JSON.stringify(S)}finally{S.mk=mk;S.ext=ext}};
+const bkFlush=()=>{const rec={bv:S.bv||0,mk:S.mk||{},ext:S.ext||{}};bkQ=bkQ.then(()=>idbPut('books',rec)).catch(()=>{});return bkQ};
+/* call after S.mk or S.ext changes */
+const bkTouch=()=>{S.bv=(S.bv||0)+1;if(idbOK)bkFlush()};
+async function bkBoot(retry){let rec;try{rec=await Promise.race([idbGet('books'),new Promise((_,rej)=>setTimeout(()=>rej('slow'),2500))])}catch(e){if(S._idb&&!S.mk){bkReady=false;if((retry|0)<8)setTimeout(()=>bkBoot((retry|0)+1).then(()=>{if(bkReady){rebuild();try{resetFeed(false,'mix')}catch(e){}}}),4000)}return}
+idbOK=true;bkReady=true;const has=!!(S.mk||S.ext);if(rec&&(!has||(rec.bv||0)>(S.bv||0))){S.mk=rec.mk||{};S.ext=rec.ext||{};S.bv=rec.bv||0}else if(has){await bkFlush();store()}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
+/* source caches left in localStorage by the old way move over too */
+try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(K+'.src.'))ks.push(k)}for(const k of ks){try{await idbPut('src.'+k.slice((K+'.src.').length),JSON.parse(localStorage.getItem(k)));localStorage.removeItem(k)}catch(e){}}}catch(e){}}
+const store=()=>{for(let t=0;t<12;t++){try{localStorage.setItem(K,slim());return true}catch(e){/* full: let the oldest photos go first, never the words */const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;if(!S.imgCut){S.imgCut=1;setTimeout(()=>toast('저장 공간이 차서 오래된 사진부터 정리했어'),300)}continue}if(S.lp&&S.lp.length>20){S.lp.splice(0,10);continue}break}}if(!stWarn){stWarn=1;setTimeout(()=>{try{toast('저장 공간이 꽉 찼어 · 지금부터는 기록이 안 남아')}catch(e){}},400)}return false};
 let svT=0;const save=()=>{clearTimeout(svT);svT=setTimeout(store,250)};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -869,14 +883,14 @@ for(const[id,b]of m){if(b.user||!b.orig)continue;const x=S.ext&&S.ext[id];if(x||
 let BK={},TW={},IDS=[];
 const NB={name:'',threads:[],lang:''};
 const rebuild=()=>{rebuild0();setTimeout(()=>{try{navNoti()}catch(e){}},0)};
-const rebuild0=()=>{BK={};TW={};IDS=[];UK={};for(const u of allUsers())UK[u.id]=u;
+const rebuild0=()=>{BK={};TW={};IDS=[];UK={};for(const u of allUsers())UK[u.id]=u;const hp={},HP=b=>{if(hp[b]==null){const B=BK[b];let m=0;if(B&&B.orig)for(let i=0;i<B.orig.length;i++)if(S.seen[b+'.r.'+i])m=i+1;hp[b]=m}return hp[b]};
 for(const b of allBooks()){BK[b.id]=b;b.threads=b.threads||[];const by=b.user?'me':(UK[b.by]?b.by:USERS[0].id);b._by=by;const pu=x=>x&&UK[x.by]?x.by:by;
 if(b.orig&&b.orig.length){b.read={title:'원문',tw:b.orig};b.orig.forEach((x,i)=>{TW[b.id+'.r.'+i]={b:b.id,t:'r',i,x,n:b.orig.length,u:by}})}
 (b.hooks||[]).forEach((hk,j)=>{TW[b.id+'.h.'+j]={b:b.id,t:'h',i:j,x:hk.x,n:1,hk,u:pu(hk)}});
 (S.xh[b.id]||[]).forEach((hk,j)=>{if(b.orig&&b.orig[hk.at]!=null)TW[b.id+'.g.'+j]={b:b.id,t:'h',i:j,x:hk.x,n:1,hk,u:pu(hk),ts:hk.ts}});
 (b.zzal||[]).forEach((zz,j)=>{TW[b.id+'.z.'+j]={b:b.id,t:'z',i:j,x:zz.c||'',n:1,zz,u:pu(zz)}});
 b.threads.forEach((th,t)=>{const u=pu(th);th.tw.forEach((x,i)=>{const id=b.id+'.'+t+'.'+i;TW[id]={b:b.id,t,i,x,n:th.tw.length,u};IDS.push(id)})})}
-for(const p of PST.concat(S.gp||[])){if(!p||!UK[p.u])continue;const id='l.'+p.id;TW[id]={b:'',t:'l',i:0,x:p.x,n:1,u:p.u,ts:+p.ts};if(p.co)TW[id].co=1;if(typeof p.q==='string'&&p.q)TW[id].q='l.'+p.q;if(p.co&&p.qb&&BK[p.b]&&BK[p.b].orig&&BK[p.b].orig[p.at]!=null)TW[id].q=p.b+'.r.'+p.at;if(typeof p.r==='string'&&p.r)TW[id].r='l.'+p.r;if(typeof p.sell==='string'&&/^[a-z0-9_-]+$/.test(p.sell))TW[id].sell=p.sell;if(typeof p.b==='string'&&p.at>=0){TW[id].gb=p.b;TW[id].gat=+p.at;S.ul=S.ul||{};if(!S.ul[id]&&(S.seen[p.b+'.r.'+p.at]||(S.fin&&S.fin[p.b])))S.ul[id]=Date.now();if(S.ul[id]&&!p.co)TW[id].ts=Math.max(+p.ts,S.ul[id])}IDS.push(id)}
+for(const p of PST.concat(S.gp||[])){if(!p||!UK[p.u])continue;const id='l.'+p.id;TW[id]={b:'',t:'l',i:0,x:p.x,n:1,u:p.u,ts:+p.ts};if(p.co)TW[id].co=1;if(typeof p.q==='string'&&p.q)TW[id].q='l.'+p.q;if(p.co&&p.qb&&BK[p.b]&&BK[p.b].orig&&BK[p.b].orig[p.at]!=null)TW[id].q=p.b+'.r.'+p.at;if(typeof p.r==='string'&&p.r)TW[id].r='l.'+p.r;if(typeof p.sell==='string'&&/^[a-z0-9_-]+$/.test(p.sell))TW[id].sell=p.sell;if(typeof p.b==='string'&&p.at>=0){TW[id].gb=p.b;TW[id].gat=+p.at;S.ul=S.ul||{};if(!S.ul[id]&&(HP(p.b)>+p.at||(S.fin&&S.fin[p.b])))S.ul[id]=Date.now();if(S.ul[id]&&!p.co)TW[id].ts=Math.max(+p.ts,S.ul[id])}IDS.push(id)}
 for(const c of CAT){if(!Array.isArray(c.sell))continue;c.sell.forEach((s,j)=>{const k=c.id+'.'+j,ts=S.sl&&S.sl[k];if(!ts||!s||!UK[s.u]||typeof s.x!=='string')return;const id='l.s.'+k;TW[id]={b:'',t:'l',i:0,x:s.x,n:1,u:s.u,ts,sell:c.id};IDS.push(id)})}
 for(const p of(S.lp||[])){if(!UK[p.u])continue;const id='l.'+p.id;TW[id]={b:'',t:'l',i:0,x:p.x,n:1,u:p.u,ts:+p.ts,sell:p.sell};if(p.q)TW[id].q=p.q;IDS.push(id)}
 for(const p of(S.mine||[])){const id='l.'+p.id;TW[id]={b:'',t:'l',i:0,x:p.x,n:1,u:'me',ts:+p.ts,ru:p.ru,bk:p.bk,mt:p.mt};if(p.q)TW[id].q=p.q;if(typeof p.sell==='string'&&/^[a-z0-9_-]+$/.test(p.sell))TW[id].sell=p.sell;if(typeof p.img==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.img))TW[id].img=p.img;IDS.push(id)}
@@ -1010,7 +1024,7 @@ const watch=el=>el.querySelectorAll('.tw[data-id]').forEach(n=>{dio.observe(n);i
 let tT=0;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.remove('on');void t.offsetWidth;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1600)};
 
 /* ---------- feed (one per tab, each keeps its own place) ---------- */
-let FRESH=[],mixEnd=false,lastB='';
+let FRESH=[],mixEnd=false,lastB='',lastIds=[],booted=false;
 let mode='mix',shown=new Set(),recent=[],oList=[],oPos=0,done=false,AFF=null,hg=null,bg=null;
 const FS={mix:{el:$('#f-mix'),y:0},order:{el:$('#f-order'),y:0}};
 const fd=()=>FS[mode].el;
@@ -1050,7 +1064,7 @@ const freshC=()=>{let ids=FRESH.filter(id=>TW[id]&&(vis(id)||coTeaser(id)));FRES
 const inQ=new Set(ids.map(id=>TW[id].q).filter(Boolean));ids=ids.filter((id,i)=>!(inQ.has(id)&&ids.slice(Math.max(0,i-3),i).some(x=>TW[x].q===id)));for(let i=1;i<ids.length;i++)if(TW[ids[i]].q===ids[i-1]&&i+1<ids.length){const t=ids[i];ids[i]=ids[i+1];ids[i+1]=t}lastIds=ids.slice(-5);return ids.map(id=>TW[id].t==='h'?hookC(id):single(id)).join('')};
 function newPill(ids){const p=$('#newp');const us=[...new Set(ids.map(id=>TW[id]&&TW[id].u).filter(Boolean))].slice(0,3).map(usr);p.innerHTML=`<svg class="npa" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5.5M6 11l6-6 6 6"/></svg><span class="nps">${us.map(u=>`<span class="av">${avatar(u)}</span>`).join('')}</span>새 트윗`;p.hidden=false;p.classList.remove('on');void p.offsetWidth;p.classList.add('on');SND.tick()}
 function newArrivals(ids,quiet){FRESH.push(...ids);const el=FS.mix.el;if(quiet||!el.children.length)return;const h=freshC();if(!h)return;const nx=el.querySelector(':scope>.nxc');if(nx)nx.insertAdjacentHTML('afterend',h);else el.insertAdjacentHTML('afterbegin',h);const set=new Set(ids);[...el.querySelectorAll(':scope>article')].filter(a=>{const r=a.querySelector('.tw[data-id]');return r&&set.has(r.dataset.id)}).forEach((c,k)=>{c.classList.add('in');c.style.setProperty('--d',k*60+'ms')});watch(el);if(cur==='home'&&mode==='mix'&&scrollY>300)newPill(ids);saveSoon()}
-function more(){if(cur!=='home'||hg)return false;const h=batch(mode);if(!h)return false;fd().insertAdjacentHTML('beforeend',h);watch(fd());return true}
+function more(){if(cur!=='home'||hg||!booted)return false;const h=batch(mode);if(!h)return false;fd().insertAdjacentHTML('beforeend',h);watch(fd());return true}
 function fill(){requestAnimationFrame(()=>{const r=$('#sent').getBoundingClientRect();if(cur==='home'&&!hg&&r.top<innerHeight+600&&!(mode==='order'&&done)){if(more())fill()}})}
 new IntersectionObserver(es=>{if(es[0].isIntersecting){more();fill()}},{rootMargin:'0px 0px 800px 0px'}).observe($('#sent'));
 
@@ -1139,7 +1153,7 @@ S.bkN=n;store();const C=await gh('/'+n+'/comments?per_page=100')||[];
 for(let i=1;i<P.length;i++){const c=C[i-1];if(c)await gh('/comments/'+c.id,'PATCH',{body:bkPart(i+1,P.length,P[i])});else await gh('/'+n+'/comments','POST',{body:bkPart(i+1,P.length,P[i])})}
 for(let i=P.length-1;i<C.length;i++)await ghRaw('/comments/'+C[i].id,'DELETE')}catch(e){S.bkAt=Date.now()-5*36e5;store()}}
 async function bkRestore(){if(!S.ghk||!window.crypto||!crypto.subtle||typeof DecompressionStream==='undefined')return false;try{const f=await bkFind();if(!f)return false;const C=await gh('/'+f.number+'/comments?per_page=100')||[];const grab=t=>{const m=String(t||'').match(/```\n([\s\S]*?)\n```/);return m?m[1]:''};const all=[grab(f.body),...C.map(c=>grab(c.body))].join(''),[a,b]=all.split('.');if(!a||!b)return false;
-const k=await bkKey(),z=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(a)},k,unb64(b))),o=JSON.parse(new TextDecoder().decode(await gz(z,1)));const key=S.key,ghk=S.ghk;S=Object.assign(def(),o,{key,ghk,bkN:f.number,bkAt:Date.now()});store();return true}catch(e){return false}}
+const k=await bkKey(),z=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(a)},k,unb64(b))),o=JSON.parse(new TextDecoder().decode(await gz(z,1)));const key=S.key,ghk=S.ghk;S=Object.assign(def(),o,{key,ghk,bkN:f.number,bkAt:Date.now()});bkTouch();if(idbOK)await bkQ;store();return true}catch(e){return false}}
 setTimeout(()=>backup(),25000);document.addEventListener('visibilitychange',()=>{if(document.hidden)backup()});
 /* ---------- pull to refresh: a real spring, not a CSS curve ---------- */
 let pull=$('#pull'),pi=$('#pi'),pth=pi.querySelector('.th'),pbob=pi.querySelector('.bob');const TH=64,PIH=$('#ptr').innerHTML;
@@ -1299,12 +1313,12 @@ if(q.k==='new'&&b&&b.orig&&b.orig.length){delete S.req[id];ch=true;setPick(id,tr
 else if(q.k==='more'&&b&&(b.orig.length>q.len||!b.more)){delete S.req[id];ch=true;setTimeout(()=>{SND.follow();toast('『'+b.name+'』 다음 부분 들어왔어')},900)}
 else if(q.k==='new'&&!b&&c&&c.no){delete S.req[id];ch=true;setTimeout(()=>toast('『'+c.name+'』은 못 만들었어 · '+c.no),900)}
 else if(q.k==='new'&&!b&&c&&!MKB[id]){if(q.x){delete S.req[id];ch=true}else if(S.key&&!inClaude()&&!(q.fail&&Date.now()-q.fail<15*6e4)&&!(q.mk&&!q.fail&&Date.now()-q.at<20*6e4))makeBook(id,q.host,q.co)}}
-{let cut=false;for(const id of Object.keys(S.ext||{})){const x=S.ext[id],b0=REM.find(b=>b.id===id)||(S.mk||{})[id];if(b0&&b0.lang!=='en'&&(x.orig||[]).some(isEn)){delete S.ext[id];if(S.grF)delete S.grF[id];EXC.delete(id);cut=ch=true}}if(cut)rebuild()}
+{let cut=false;for(const id of Object.keys(S.ext||{})){const x=S.ext[id],b0=REM.find(b=>b.id===id)||(S.mk||{})[id];if(b0&&b0.lang!=='en'&&(x.orig||[]).some(isEn)){delete S.ext[id];if(S.grF)delete S.grF[id];EXC.delete(id);cut=ch=true}}if(cut){bkTouch();rebuild()}}
 if(ch)store();for(const b of allBooks())if(b.more&&inLib(b.id))wantMore(b)}
 /* my tweet: find a book she wants to read, let the right person answer and offer to read it together */
 const WANT=/읽|볼까|보고\s*싶|궁금|추천|같이|땡|싶다|싶어|어때/;
 const CATP={'근대':['kongddeok_','tissue_box','eat_then_read','two_stars'],'고전':['deep_night'],'영어':['grimm_victim','basement_reader','lights_on_reader']};
-function findBook(x){if(!WANT.test(x))return null;const L=[...allBooks().filter(b=>!b.user).map(b=>({id:b.id,name:b.name,built:true})),...CAT.filter(c=>!BK[c.id]).map(c=>({id:c.id,name:c.name,built:false,cat:c.cat}))].filter(o=>o.name&&o.name.length>=2).sort((a,b)=>b.name.length-a.name.length);
+function findBook(x){if(!WANT.test(x))return null;const L=[...allBooks().filter(b=>!b.user).map(b=>({id:b.id,name:b.name,built:true})),...CAT.filter(c=>!BK[c.id]&&srcOK(c)).map(c=>({id:c.id,name:c.name,built:false,cat:c.cat}))].filter(o=>o.name&&o.name.length>=2).sort((a,b)=>b.name.length-a.name.length);
 const flat=x.replace(/\s+/g,'');return L.find(o=>flat.includes(o.name.replace(/\s+/g,'')))||null}
 function pickHost(m){const ok=id=>UK[id];if(m&&m.built&&BK[m.id]&&ok(BK[m.id]._by))return BK[m.id]._by;if(m&&m.cat){const L=(CATP[m.cat]||[]).filter(ok);if(L.length)return L[Math.abs([...m.id].reduce((h,c)=>h*31+c.charCodeAt(0)|0,0))%L.length]}
 const recent=new Set((S.mine||[]).slice(-3).map(p=>p.ru)),P=allUsers().filter(u=>!recent.has(u.id));return(P.length?P:allUsers())[rnd(P.length||allUsers().length)].id}
@@ -1334,8 +1348,8 @@ for(let i=0;i<n&&P.length;i++){const F=P.filter(fit),Lt=P.filter(light),L=tired&
 S.slLast=now;S.slGap=(1.2+Math.random()*5)*36e5;store();return ids}
 function rBooks(anim){const v=$('#v-books'),L=allBooks().filter(b=>!b.user),mine=allBooks().filter(b=>inLib(b.id)).sort((a,c)=>(S.lib[c.id]||0)-(S.lib[a.id]||0));
 let h=`<header class="top"><div class="bar"><div class="ht"><b>${shTab==='store'?'서점':'내 서재'}</b>${shTab==='store'?'':`<small>담은 책 ${mine.length}권</small>`}</div></div><div class="tabs" id="shtabs"><button class="tab${shTab==='store'?' on':''}" data-sh="store">서점</button><button class="tab${shTab==='lib'?' on':''}" data-sh="lib">내 서재</button><i class="ind"></i></div></header>`;
-const have0=new Set(L.map(b=>b.id)),cnt=k=>k==='now'?L.length:CAT.filter(c=>c.cat===k&&!have0.has(c.id)).length;if(shTab==='store'&&CAT.length)h+=`<div class="chips">${[['now','바로 읽기'],['근대','한국 근대'],['시','시'],['추리','추리·괴담'],['로맨스','로맨스'],['러시아','러시아'],['일본','일본'],['고전','한국 고전'],['철학','철학'],['모험','모험·SF'],['영어','영어 원문']].map(([k,n])=>`<button class="chip${stCat===k?' on':''}" data-sc="${k}">${n}</button>`).join('')}</div>`;
-if(shTab==='store'&&stCat!=='now'&&CAT.length){const rest=CAT.filter(c=>c.cat===stCat&&!have0.has(c.id));h+=`<div class="shop">${rest.map(c=>{const q=S.req&&S.req[c.id];return `<div class="bk ct2" data-cid="${c.id}">${coverOf(c)}${reqBtn(c.id)}${q?'<span class="nw rq">만드는 중</span>':''}<b class="bt2">${esc(c.name)}</b><span class="ba">${esc(c.author||'')}</span><span class="bl">${esc(c.blurb||'')}</span></div>`}).join('')}</div>`}
+const have0=new Set(L.map(b=>b.id)),cnt=k=>k==='now'?L.length:CAT.filter(c=>c.cat===k&&!have0.has(c.id)&&srcOK(c)).length;if(shTab==='store'&&CAT.length)h+=`<div class="chips">${[['now','바로 읽기'],['근대','한국 근대'],['시','시'],['추리','추리·괴담'],['로맨스','로맨스'],['러시아','러시아'],['일본','일본'],['고전','한국 고전'],['철학','철학'],['모험','모험·SF'],['영어','영어 원문']].filter(([k])=>k==='now'||k===stCat||cnt(k)).map(([k,n])=>`<button class="chip${stCat===k?' on':''}" data-sc="${k}">${n}</button>`).join('')}</div>`;
+if(shTab==='store'&&stCat!=='now'&&CAT.length){const rest=CAT.filter(c=>c.cat===stCat&&!have0.has(c.id)&&srcOK(c));h+=`<div class="shop">${rest.map(c=>{const q=S.req&&S.req[c.id];return `<div class="bk ct2" data-cid="${c.id}">${coverOf(c)}${reqBtn(c.id)}${q?'<span class="nw rq">만드는 중</span>':''}<b class="bt2">${esc(c.name)}</b><span class="ba">${esc(c.author||'')}</span><span class="bl">${esc(c.blurb||'')}</span></div>`}).join('')}</div>`}
 else if(shTab==='store'){h+=L.length?`<div class="shop">${[...L].sort((a,c)=>(S.bseen[c.id]||0)-(S.bseen[a.id]||0)).map(b=>{const u=usr(b._by);return `<div class="bk" data-bk="${b.id}">${coverOf(b)}${pickBtn(b.id)}${isNew(b.id)?'<span class="nw">새 책</span>':''}<b class="bt2">${esc(b.name)}</b><span class="ba">${esc(b.author||'')}</span><span class="bu"><span class="av">${avatar(u)}</span>${esc(u.name)}</span></div>`}).join('')}</div>`:'<div class="empty"><b>서점이 아직 비었어</b></div>';
 }
 else{const done=mine.filter(b=>fin(b));if(done.length)h+=`<div class="shelf"><div class="shl">매듭 지은 책 <b>${done.length}</b></div><div class="shr">${done.map(b=>`<button class="shb" data-bk="${b.id}" aria-label="${esc(b.name)}">${yarn(1,esc(thc(b.color)),{done:true,seed:b.id})}<span>${esc(b.name)}</span></button>`).join('')}</div></div>`;h+=mine.length?mine.map(b=>{const[r,n]=progress(b.id),o=b.orig&&b.orig.length,i=o?Math.max(0,b.orig.findIndex((x,k)=>!S.seen[b.id+'.r.'+k])):0,N=b.more?(b.total||n):n,st=r===0?'아직 안 읽음':b.more&&r>=n?'다음 부분 기다리는 중':r>=N?'다 읽음':`${r}/${N} 읽음`;return `<div class="lr" ${o&&r<n?`data-open="${b.id}.r.${i}"`:`data-bk="${b.id}"`}><span class="lcv" data-bk="${b.id}">${coverOf(b,'sm')}</span><div class="lrb"><b>${esc(b.name)}</b><span>${esc(b.author||'')} · ${st}</span></div><span class="lyr">${S.sdot&&S.sdot[b.id]?'<i class="sdot" aria-label="새 반응"></i>':''}${(()=>{const dn=fin(b),tie=dn&&!(S.tied||{})[b.id];if(tie){S.tied=S.tied||{};S.tied[b.id]=1;setTimeout(()=>{store();SND.knot()},700)}const last=(S.lastRead||{})[b.id]||S.lib[b.id]||Date.now();return yarn(N?r/N:0,esc(thc(b.color)),{seed:b.id,done:dn,tie,wait:b.more&&r>=n,stale:dn?0:(Date.now()-last)/864e5})})()}</span></div>`}).join(''):'<div class="empty"><b>서재가 비었어</b></div>';h+=`<button class="addr" data-go="import"><span>${ic('plus')}</span>내 책 넣기</button>`}
@@ -1471,7 +1485,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=32,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=33,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;const put=()=>{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v};
 try{put()}catch(e){try{localStorage.removeItem('tarae.app');localStorage.removeItem('tarae.appv');for(let k=0;k<12&&!UPD;k++){const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}else if(S.lp&&S.lp.length>20){S.lp.splice(0,10);try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}try{put()}catch(e3){if(!m&&!(S.lp&&S.lp.length>20))break}}}catch(e4){}}}catch(e){}}
@@ -1591,7 +1605,7 @@ const l=$('#svlist');l.innerHTML=h;if(anim)[...l.children].slice(0,6).forEach((c
 let q='',pplAll=false;const KW=['시간','아침','습관','오늘','칭찬','판단','완벽','바쁜'];
 function rSearch(){const v=$('#v-search');if(!v.firstChild){v.innerHTML=`<header class="top"><div class="bar"><label class="sbox">${ic('search')}<input id="q" type="search" placeholder="타래 검색" autocomplete="off"></label></div></header><div id="sres"></div>`;$('#q').addEventListener('input',e=>{q=e.target.value.trim();sres()})}sres()}
 function sres(){const r=$('#sres');if(!q){const tr=trends();const us=allUsers();r.innerHTML=(tr.length?'<div class="sec">트렌드</div>'+tr.map((t,i)=>`<button class="trd" data-q="${esc(t.k)}"><b>${esc(t.k)}</b><small>트윗 ${t.n}개</small></button>`).join(''):'')+'<div class="sec">타래 사람들</div>'+(pplAll?us:us.slice(0,4)).map(u=>urow(u)).join('')+(pplAll||us.length<=4?'':'<button class="more pad" data-go="moreppl">더 보기</button>')+'';return}
-const low=q.toLowerCase(),pool=[...IDS.filter(id=>!locked(BK[TW[id].b],TW[id].t)&&!gated(id)),...Object.keys(TW).filter(id=>TW[id].t==='r')],ids=pool.filter(id=>TW[id].x.toLowerCase().includes(low)||(BK[TW[id].b]||NB).name.toLowerCase().includes(low)),ppl=allUsers().filter(u=>(u.name+' '+u.handle+' '+(u.bio||'')).toLowerCase().includes(low));r.innerHTML=(ppl.length?'<div class="sec">사람</div>'+ppl.map(u=>urow(u)).join(''):'')+(ids.length||ppl.length?ids.slice(0,60).map(id=>single(id,q)).join(''):`<div class="empty"><b>"${esc(q)}" 결과 없음</b></div>`);watch(r)}
+const low=q.toLowerCase(),pool=[...IDS.filter(id=>!locked(BK[TW[id].b],TW[id].t)&&!gated(id)),...Object.keys(TW).filter(id=>TW[id].t==='r'&&S.seen[id])],ids=pool.filter(id=>TW[id].x.toLowerCase().includes(low)||(BK[TW[id].b]||NB).name.toLowerCase().includes(low)),ppl=allUsers().filter(u=>(u.name+' '+u.handle+' '+(u.bio||'')).toLowerCase().includes(low));r.innerHTML=(ppl.length?'<div class="sec">사람</div>'+ppl.map(u=>urow(u)).join(''):'')+(ids.length||ppl.length?ids.slice(0,60).map(id=>single(id,q)).join(''):`<div class="empty"><b>"${esc(q)}" 결과 없음</b></div>`);watch(r)}
 
 /* ---------- import ---------- */
 function split(raw){const paras=raw.replace(/\r/g,'').split(/\n\s*\n+/).map(p=>p.replace(/\s*\n\s*/g,' ').trim()).filter(Boolean),M=170,ch=[];
@@ -1748,7 +1762,7 @@ if(mine.length)t+=`\n담당 책: `+mine.map(b=>`『${b.name}』(책id ${b.id}, �
 const co=Object.keys((S.co||{})[id]||{}).map(bid=>coState(id,bid)&&BK[bid]?`『${BK[bid].name}』: ${coState(id,bid)}`:'').filter(Boolean);if(co.length)t+='\n같이 읽는 책: '+co.join(' / ');
 const mp=gpRecent(60).filter(k=>TW[k].u===id).slice(0,4).map(k=>'· '+TW[k].x.replace(/\n/g,' ⏎ ').slice(0,90));if(mp.length)t+='\n최근 이 사람 트윗:\n'+mp.join('\n');out.push(t)}return out.join('\n\n')}
 function gpDrips(uids){const o=[];for(const id of uids)for(const b of allBooks()){if(b._by!==id||!b.orig||!b.orig.length||!inLib(b.id))continue;const cand=[...coCand(b)].filter(i=>i<b.orig.length).sort(()=>Math.random()-.5).slice(0,3);for(const i of cand)o.push(`- @${UK[id].handle} 담당 『${b.name}』 책id ${b.id} 조각 ${i}: ${b.orig[i].replace(/\n/g,' ').slice(0,200)}`)}return o.slice(0,8).join('\n')}
-const makeable=c=>!!c&&!c.no&&!(S.cno&&S.cno[c.id])&&/(ko|en)\.wikisource\.org/.test(c.src||'');
+const srcOK=c=>!!c&&!c.no&&/(ko|en)\.wikisource\.org/.test(c.src||''),makeable=c=>srcOK(c)&&!(S.cno&&S.cno[c.id]);
 function gpSells(){const L=CAT.filter(c=>!BK[c.id]&&makeable(c)&&!(S.req&&S.req[c.id])).sort(()=>Math.random()-.5).slice(0,7);return{L,t:L.map(c=>`- id ${c.id}: 『${c.name}』 ${c.author||''} · ${CATN[c.cat]||''} · ${c.blurb||''}`).join('\n')}}
 const GPR=`- 진짜 한국 트위터 20~30대 여자 유저처럼 씀. 맥락 설명·정리·교훈·깔끔한 마무리 멘트 금지. 길이는 들쭉날쭉(한 줄짜리, 한 단어짜리도 많게). 매번 질문으로 끝내지 않음.
 - 말버릇을 정확히 지킴. 유저들이 같은 말투로 들리면 실패. 캐릭터 설정은 가끔만 튀어나옴(세 번에 한 번 이하). 자기 설정을 설명하는 말을 습관처럼 붙이지 않음. 그 사람 최근 트윗과 같은 버릇·끝맺음·소재를 반복하지 않음.
@@ -1810,17 +1824,23 @@ return made}
 
 /* ---------- making a book on the phone: wikisource → paragraphs → chunks → one careful pass ---------- */
 async function wsApi(host,q){const u=`https://${host}/w/api.php?`+new URLSearchParams(Object.assign({format:'json',formatversion:'2',origin:'*'},q));for(let k=0;k<4;k++){let r;try{r=await fetch(u)}catch(e){await sleep(1500);continue}if(r.status===429||r.status>=500){await sleep(2500*(k+1));continue}if(!r.ok)break;try{return await r.json()}catch(e){await sleep(2500*(k+1))}}throw{code:'net'}}
-function ptext(html){const doc=new DOMParser().parseFromString(String(html||''),'text/html'),root=doc.querySelector('.mw-parser-output')||doc.body,out=[];const skip=el=>/^(STYLE|SCRIPT|SUP)$/.test(el.tagName)||/pagenum|ws-noexport/.test(typeof el.className==='string'?el.className:'');
-const txt=n=>{if(n.nodeType===3)return n.nodeValue;if(n.nodeType!==1||skip(n))return'';if(n.tagName==='BR')return' ';let s='';for(const c of n.childNodes)s+=txt(c);return s};
-for(const p of root.querySelectorAll('p')){let a=p.parentElement,bad=false;while(a&&a!==root){if(skip(a)){bad=true;break}a=a.parentElement}if(bad)continue;const y=txt(p).replace(/\s+/g,' ').trim();if(y)out.push(y)}return out}
+function ptext(html,o){o=o||{};const doc=new DOMParser().parseFromString(String(html||''),'text/html'),root=doc.querySelector('.mw-parser-output')||doc.body,out=[];const skip=el=>/^(STYLE|SCRIPT|SUP)$/.test(el.tagName)||/pagenum|ws-noexport/.test(typeof el.className==='string'?el.className:'');
+/* a decorated first letter is a picture: its alt text is the letter. a poem keeps its lines */
+const txt=n=>{if(n.nodeType===3)return n.nodeValue.replace(/\s+/g,' ');if(n.nodeType!==1||skip(n))return'';if(n.tagName==='BR')return o.poem?'\n':' ';if(n.tagName==='IMG'){const a=n.getAttribute('alt')||'';return!o.old&&/^[A-Za-z“"‘']{1,2}$/.test(a)?a:''}let s='';for(const c of n.childNodes)s+=txt(c);return s};
+for(const p of root.querySelectorAll('p')){let a=p.parentElement,bad=false;while(a&&a!==root){if(skip(a)){bad=true;break}a=a.parentElement}if(bad)continue;const y=txt(p).split('\n').map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean).join('\n');if(y)out.push(y)}return out}
+/* what wikisource puts around the text but is not the text: ornaments, font notices, page markers, the title said again, a bare hanja byline */
+const JUNK=/^(?:[🙝🙟\s*·•※—–=~-]+|Layout \d+|To face page \d+.*|\(\d+\)|[←→↑\s]+|관련 글꼴이 설치되지 않은 경우.*|[\u4E00-\u9FFF\s]{2,10})$/u;
+function tidy(ps,T,lang){const nm=s=>String(s).toLowerCase().replace(/[^a-z0-9가-힣]/g,''),tt=nm(String(T||'').split('/').pop()),head=p=>{if(JUNK.test(p))return true;const n=nm(p);if(n&&tt&&p.length<90&&(n===tt||(n.length>=3&&tt.includes(n))))return true;
+return lang==='en'&&p.length<80&&(p===p.toUpperCase()||!/[.!?"”’:;]$/.test(p)||/^.{3,40}\.\s*[—–-]+\s*.{3,60}$/.test(p))};
+let a=0;while(a<ps.length-3&&a<6&&head(ps[a]))a++;let z=ps.length;while(z>a+3&&(JUNK.test(ps[z-1])||PDR.test(ps[z-1])))z--;return ps.slice(a,z)}
 const PDR=/퍼블릭\s*도메인|public domain|저작권|copyright|이 저작물은|this work is/i;
-async function wsGet(src){let u;try{u=new URL(src)}catch(e){throw{code:'nosrc'}}const host=u.host;if(!/^(ko|en)\.wikisource\.org$/.test(host))throw{code:'nosrc'};let title='';
+async function wsGet(src,o){o=o||{};let u;try{u=new URL(src)}catch(e){throw{code:'nosrc'}}const host=u.host;if(!/^(ko|en)\.wikisource\.org$/.test(host))throw{code:'nosrc'};let title='';
 if(/\/wiki\//.test(u.pathname))title=decodeURIComponent(u.pathname.split('/wiki/')[1]).replace(/_/g,' ');else if(u.searchParams.get('title'))title=u.searchParams.get('title');
 else if(u.searchParams.get('search')){const j=await wsApi(host,{action:'query',list:'search',srsearch:u.searchParams.get('search'),srlimit:'1',srnamespace:'0'});title=j&&j.query&&j.query.search&&j.query.search[0]&&j.query.search[0].title}
-if(!title)throw{code:'nosrc'};const j=await wsApi(host,{action:'parse',page:title,prop:'text',redirects:'1'});if(!j||!j.parse)throw{code:j&&j.error&&/missing|invalid|nosuch/.test(j.error.code||'')?'nosrc':'net'};const html=j.parse.text,T=j.parse.title||title;let ps=ptext(html);
+if(!title)throw{code:'nosrc'};const j=await wsApi(host,{action:'parse',page:title,prop:'text',redirects:'1'});if(!j||!j.parse)throw{code:j&&j.error&&/missing|invalid|nosuch/.test(j.error.code||'')?'nosrc':'net'};const html=j.parse.text,T=j.parse.title||title,lg=/^en\./.test(host)?'en':'ko',get=(h,t)=>o.old?ptext(h,o):tidy(ptext(h,o),t,lg);let ps=get(html,T);
 /* an index page: follow its chapters in the order they are listed */
 if(ps.join('').length<1500){const doc=new DOMParser().parseFromString(html,'text/html'),seen=new Set(),subs=[];for(const a of doc.querySelectorAll('a[href]')){const h=a.getAttribute('href')||'';const m=h.match(/\/wiki\/([^#?]+)/);if(!m)continue;const t=decodeURIComponent(m[1]).replace(/_/g,' ');if(t.startsWith(T+'/')&&!seen.has(t)){seen.add(t);subs.push(t)}}
-if(subs.length>=2){ps=[];for(const t of subs.slice(0,90)){const k=await wsApi(host,{action:'parse',page:t,prop:'text',redirects:'1'});if(k&&k.parse)ps.push(...ptext(k.parse.text));await sleep(250)}}}
+if(subs.length>=2){ps=[];for(const t of subs.slice(0,90)){const k=await wsApi(host,{action:'parse',page:t,prop:'text',redirects:'1'});if(k&&k.parse)ps.push(...get(k.parse.text,k.parse.title||t));await sleep(250)}}}
 while(ps.length&&PDR.test(ps[ps.length-1]))ps.pop();if(ps.join('').length<200)throw{code:'nosrc'};return ps}
 /* tools/chunk.py, line for line, so a book cut on the phone is cut the same way */
 function sentsKo(p){const out=[];let cur='',depth=0;for(let i=0;i<p.length;i++){const ch=p[i];cur+=ch;if(ch==='“')depth++;else if(ch==='”')depth=Math.max(0,depth-1);const nx=p[i+1]||'';if(depth===0&&'.!?…”'.includes(ch)&&nx===' '){out.push(cur.trim());cur=''}}if(cur.trim())out.push(cur.trim());const res=[];for(const x of out){if(res.length&&x.length<6)res[res.length-1]+=' '+x;else res.push(x)}return res}
@@ -1831,12 +1851,15 @@ function sentsEn(p){const out=[];let cur='',q=false;for(let i=0;i<p.length;i++){
 function chunkEn(P){const max=235,min=80,ps=[];for(const p of P){if(p.length<=max){ps.push([p,true]);continue}let cur='',first=true;for(const s of sentsEn(p)){if(cur&&cur.length+1+s.length>max){ps.push([cur,first]);first=false;cur=s}else cur=(cur+' '+s).trim()}if(cur)ps.push([cur,first])}
 const C=[];let cur=null;for(const[t,st]of ps){const sep=st?'\n':' ';if(cur===null)cur=t;else if(cur.length<min||(cur.length+t.length+1<=max&&(t.length<min||cur.length<120)))cur=cur+sep+t;else{C.push(cur);cur=t}}if(cur)C.push(cur);if(C.length>1&&C[C.length-1].length<40)C[C.length-2]+='\n'+C.pop();return C}
 function fixLongEn(C){const out=[];for(const c of C){if(c.length<=258){out.push(c);continue}const at=re=>{const o=[];let m;re.lastIndex=0;while((m=re.exec(c))){const e=m.index+m[0].length;if(e>30&&e<c.length-30)o.push(e)}return o};let cuts=at(/; |\n|(?<=[.!?]) /g);if(!cuts.length)cuts=at(/, /g);if(!cuts.length){out.push(c);continue}const best=cuts.reduce((a,k)=>Math.abs(k-c.length/2)<Math.abs(a-c.length/2)?k:a);out.push(...fixLongEn([c.slice(0,best).trimEnd(),c.slice(best).trimStart()]))}return out}
-function chunkAll(P,lang){const C=lang==='en'?fixLongEn(chunkEn(P)):fixLongKo(chunkKo(P));const ns=s=>s.replace(/\s/g,'');if(ns(C.join(''))!==ns(P.join('')))throw{code:'chunk'};return C}
+/* a poem is cut between stanzas; text with no sentence ends at all (old prints) is cut at a space, or failing that by length */
+function chunkPoem(P){const C=[];let cur='';for(const p of P){if(cur&&cur.length+p.length+2>230){C.push(cur);cur=p}else cur=cur?cur+'\n\n'+p:p}if(cur)C.push(cur);return C}
+function hardCut(C,max){const out=[];for(let c of C){while(c.length>max){let k=c.lastIndexOf(' ',Math.floor(max*.8));if(k<max*.4)k=Math.floor(max*.72);out.push(c.slice(0,k).trimEnd());c=c.slice(k).trimStart()}if(c)out.push(c)}return out}
+function chunkAll(P,lang,o){o=typeof o==='object'&&o?o:{};let C=o.poem?fixLongKo(chunkPoem(P)):lang==='en'?fixLongEn(chunkEn(P)):fixLongKo(chunkKo(P));if(!o.old)C=hardCut(C,300);const ns=s=>s.replace(/\s/g,'');if(ns(C.join(''))!==ns(P.join('')))throw{code:'chunk'};return C}
 const SRCK=id=>K+'.src.'+id;
 const SRCM=new Map();
-function srcSave(id,o){SRCM.set(id,o);if(!(S.mk&&S.mk[id])&&!MKB[id])return;try{const t=JSON.stringify(o);if(t.length<4e5)localStorage.setItem(SRCK(id),t)}catch(e){}}
-function srcLoad(id){if(SRCM.has(id))return SRCM.get(id);try{return JSON.parse(localStorage.getItem(SRCK(id))||'null')}catch(e){return null}}
-async function srcOf(b){let o=srcLoad(b.id);if(o&&o.chunks)return o;if(S.mk&&S.mk[b.id]){const c=catOf(b.id);if(!c)return null;const ps=await wsGet(c.src);o={lang:c.lang==='en'?'en':'ko',chunks:chunkAll(ps,c.lang==='en'?'en':'ko')};srcSave(b.id,o);return o}
+function srcSave(id,o){SRCM.set(id,o);if(!(S.mk&&S.mk[id])&&!MKB[id])return;idbPut('src.'+id,o).catch(()=>{try{const t=JSON.stringify(o);if(t.length<4e5)localStorage.setItem(SRCK(id),t)}catch(e){}})}
+async function srcLoad(id){if(SRCM.has(id))return SRCM.get(id);let o=null;try{o=await idbGet('src.'+id)}catch(e){}if(!o){try{o=JSON.parse(localStorage.getItem(SRCK(id))||'null')}catch(e){}}if(o)SRCM.set(id,o);return o||null}
+async function srcOf(b){let o=await srcLoad(b.id);if(o&&o.chunks)return o;if(S.mk&&S.mk[b.id]){const c=catOf(b.id);if(!c)return null;/* a book cut by the old rules keeps being cut by them, so the pieces still line up */const old=!S.mk[b.id].cv,poem=c.cat==='시'&&!old,lang=c.lang==='en'?'en':'ko',ps=await wsGet(c.src,{old,poem});o={lang,chunks:chunkAll(ps,lang,{old,poem})};srcSave(b.id,o);return o}
 const r=await fetch(CVB+'src/'+b.id+'.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return null;o=await r.json();if(o&&Array.isArray(o.chunks)){srcSave(b.id,o);return o}return null}
 const BKR=`[훅] 원문 한 대목을 가리키는 어그로 트윗. 담당 유저 말버릇 그대로, 실제 트위터 덕계가 과몰입해서 올리는 느낌("아니", "진짜", "미친", "ㅠㅠ", "ㅋㅋㅋㅋㅋ", 짧게 끊은 줄, 말줄임표). 정보를 파는 게 아니라 이거 보고 미쳤다는 쪽. 답·결말은 주지 않고 궁금하게만. 그 조각에 진짜 그 장면이 있어야 함(낚시 금지). 결말 쪽을 가리키는 훅은 표식어만 던짐. 훅마다 여는 말과 리듬을 다르게. hl은 그 조각 안에 글자 그대로 있는 짧은 구절.
 [터지는 대목만] 훅·짤·반응·드립은 웃기거나 충격적이거나 설레거나 소름 돋거나 어이없거나 울컥하는 대목에만. 기준은 실제 사람이 그 대목 읽다가 폰 들고 "아 미친" 하고 트윗했겠냐. 밋밋한 묘사, 배경 설명, 평범한 대사, 예쁘기만 한 문장, 해설로는 쓰지 않음. 그런 대목밖에 없으면 개수를 줄임.
@@ -1865,13 +1888,18 @@ for(const z of(o&&o.zzal)||[])if(z&&inR(z.at)&&typeof z.x==='string'&&z.x.length
 const ss=new Set();for(const x of(o&&o.side)||[])if(x&&inR(x.at)&&!ss.has(+x.at)&&typeof x.x==='string'&&x.x.trim()&&!/[0-9]{3,4}년/.test(x.x)){ss.add(+x.at);R.side.push(Object.assign({at:+x.at,x:clean(x.x)},x.tmi?{tmi:1}:{}))}
 for(const d of(o&&o.drip)||[])if(d&&inR(d.at)&&typeof d.x==='string'&&d.x.trim())R.drip.push({at:+d.at,x:clean(d.x)});return R}
 async function trOf(C,name){let j=null;try{j=await askJSON(`다음은 영어 원작 『${name}』의 조각들임. 원작 분위기를 살려 자연스러운 한국어로 옮김(번역투 금지). 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{model:SON,effort:'low',max:32000})}catch(e){}return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string')?j:null}
-async function modOf(C){let j=null;try{j=await askJSON(`다음은 옛 한글 표기(아래아 등)로 된 고전소설 조각들임. 낱말과 문장은 그대로 두고 표기만 지금 맞춤법으로 고침. 한자는 한글로, 꼭 필요한 뜻풀이만 괄호로. 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{max:32000})}catch(e){}return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string'&&x.length>10)?j:null}
+const OLDJ=/[\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FF]/,bareHj=t=>(String(t).replace(/\([^)]*\)/g,'').match(/[\u4E00-\u9FFF]/g)||[]).length;
+async function hjOf(C){let j=null;try{j=await askJSON(`다음 소설 조각들에 섞인 한자를 한글 독음으로 바꿈. 한글·문장부호·띄어쓰기는 한 글자도 바꾸지 않음. 뜻이 어려운 말만 독음 뒤 괄호에 짧게 풀이. 이미 괄호 안에 든 한자는 그대로 둠. ⏎는 줄바꿈 표시니 그 자리에 그대로 둠. 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ⏎ ')}`).join('\n'),{max:32000})}catch(e){}
+if(!Array.isArray(j)||j.length!==C.length)return null;return C.map((x,i)=>{const y=typeof j[i]==='string'?j[i].replace(/[ \t]*⏎[ \t]*/g,'\n').trim():'';return y&&bareHj(y)<=bareHj(x)/4&&y.length>x.length*.7&&y.length<x.length*1.8?y:x})}
+/* old spelling is put into today's, hanja into hangul: whichever the batch needs, whatever shelf the book sits on */
+async function readable(C,gojeon){if(gojeon||OLDJ.test(C.join('')))return await modOf(C);if(C.reduce((s,x)=>s+bareHj(x),0)>=6)return await hjOf(C);return null}
+async function modOf(C){let j=null;try{j=await askJSON(`다음은 옛 한글 표기(아래아 등)로 된 옛 소설 조각들임. 낱말과 문장은 그대로 두고 표기와 띄어쓰기만 지금 맞춤법으로 고침. 한자는 한글로, 꼭 필요한 뜻풀이만 괄호로. 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{max:32000})}catch(e){}return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string'&&x.length>10)?j:null}
 const drips=(bid,u,L)=>{S.gp=S.gp||[];const out=[];L.slice(0,2).forEach((d,k)=>{const ts=Date.now()-(5+rnd(90))*MN-k*7*MN,id='j'+ts+'-'+bid+'-'+d.at;S.gp.push({id,u,x:d.x,ts,b:bid,at:d.at});out.push('l.'+id)});return out};
 const MKB={},MODC=new Map();
-async function makeBook(cid,host,coU){const c=catOf(cid);if(!c||MKB[cid]||BK[cid])return;if(!makeable(c)){S.cno=S.cno||{};S.cno[cid]=c.no||'원문을 못 받아 와';store();toast('『'+c.name+'』은 못 만들어 · '+S.cno[cid]);if(cur==='books')rBooks();return}if(!S.key){toast('나 메뉴에 API 키를 넣어야 책을 만들 수 있어');return}if(!spendOK(1)){toast('이번 달 API를 거의 다 써서 책은 다음 달에 만들 수 있어');return}
+async function makeBook(cid,host,coU){const c=catOf(cid);if(!c||MKB[cid]||BK[cid]||!bkReady)return;if(!makeable(c)){S.cno=S.cno||{};S.cno[cid]=c.no||'원문을 못 받아 와';store();toast('『'+c.name+'』은 못 만들어 · '+S.cno[cid]);if(cur==='books')rBooks();return}if(!S.key){toast('나 메뉴에 API 키를 넣어야 책을 만들 수 있어');return}if(!spendOK(1)){toast('이번 달 API를 거의 다 써서 책은 다음 달에 만들 수 있어');return}
 MKB[cid]=1;S.req=S.req||{};S.req[cid]=Object.assign({},S.req[cid]||{},{k:'new',at:Date.now(),mk:1,host:host||'',co:coU||''});delete S.req[cid].fail;store();if(cur==='books')rBooks();
-try{const lang=c.lang==='en'?'en':'ko',ps=await wsGet(c.src),all=chunkAll(ps,lang),whole=all.length<=42,first=whole?all:all.slice(0,30);srcSave(cid,{lang,chunks:all});
-let orig=first.slice();if(c.cat==='고전'){const m=MODC.get(cid)||await modOf(first);if(m){orig=m;MODC.set(cid,m)}}
+try{const lang=c.lang==='en'?'en':'ko',poem=c.cat==='시',ps=await wsGet(c.src,{poem}),all=chunkAll(ps,lang,{poem}),whole=all.length<=42,first=whole?all:all.slice(0,30);srcSave(cid,{lang,chunks:all});
+let orig=first.slice(),mod=false;if(lang==='ko'){const m=MODC.get(cid)||await readable(first,c.cat==='고전');if(m){mod=m.some((x,i)=>x!==first[i]);orig=m;MODC.set(cid,m)}}
 const us=allUsers().filter(u=>u.id!=='me'&&!u.user&&u.id!==coU),cnt=id=>allBooks().filter(b=>b._by===id).length,hostU=host&&UK[host]&&host!==coU?UK[host]:null;
 const cands=hostU?[hostU]:us,uc=cands.map(u=>`id ${u.id} @${u.handle} (${u.name}) · 지금 맡은 책 ${cnt(u.id)}권\n성격: ${u.soul}\n말버릇: ${u.voice}`+(u.taste?`\n책 취향: ${u.taste}`:'')).join('\n\n');
 const prompt=`'타래'는 수아 한 사람이 쓰는 트위터 같은 독서 앱이고, 책 한 권은 앱 속 유저 한 명이 맡아서 원문을 타래로 올림. 저작권 끝난 책 『${c.name}』(${c.author||''}, ${CATN[c.cat]||''})을 앱에 넣으려고 함.
@@ -1879,14 +1907,14 @@ const prompt=`'타래'는 수아 한 사람이 쓰는 트위터 같은 독서 �
 [담당 후보]${hostU?' (이 유저로 확정)':' 장르·성격이 맞는 사람을 골라. 한 사람에게 몰리지 않게 맡은 책 수도 봐.'}
 ${uc}
 
-[원문] ${whole?`전체 ${all.length}조각`:`전체 ${all.length}조각 중 앞 ${first.length}조각(이번에 넣을 부분)`}${lang==='en'?' · 영어 원문':''}${c.cat==='고전'?' · 표기를 지금 맞춤법으로 고친 것':''}
+[원문] ${whole?`전체 ${all.length}조각`:`전체 ${all.length}조각 중 앞 ${first.length}조각(이번에 넣을 부분)`}${lang==='en'?' · 영어 원문':''}${mod?' · 옛 표기와 한자를 지금 읽기 쉽게 고친 것':''}
 ${numd(orig,0)}
 
 [할 일] 원문을 끝까지 읽고 나서 기획함. 담당 유저 말버릇으로 씀.
 - by: 담당 유저 id
 - handle: 이 책 계정용 영문 아이디(영문 소문자, 숫자, _만)
 - when: 발표 연도(web_search로 확인, 모르면 "")
-- bio: 3줄(\\n으로 구분). 결말 스포 없이, 장면과 사실로. "~하는 이야기다"로 시작하거나 끝내지 않음. "~할 수 있다", "숨 돌릴 틈을 주지 않는다", "오래 남는다" 같은 광고·해설 문구 금지. 1줄: 무슨 일이 벌어지는지, 2줄: 누가 무엇 때문에 얽히는지, 3줄: 지금 읽을 만한 이유${lang==='en'?'(조각마다 번역이 붙어 있다는 사실을 짧게)':c.cat==='고전'?'(옛 표기를 지금 맞춤법으로 고쳐 실었다는 사실을 짧게)':''}. 세 줄 다 주어가 분명한 완결 문장.
+- bio: 3줄(\\n으로 구분). 결말 스포 없이, 장면과 사실로. "~하는 이야기다"로 시작하거나 끝내지 않음. "~할 수 있다", "숨 돌릴 틈을 주지 않는다", "오래 남는다" 같은 광고·해설 문구 금지. 1줄: 무슨 일이 벌어지는지, 2줄: 누가 무엇 때문에 얽히는지, 3줄: 지금 읽을 만한 이유${lang==='en'?'(조각마다 번역이 붙어 있다는 사실을 짧게)':mod&&c.cat==='고전'?'(옛 표기를 지금 맞춤법으로 고쳐 실었다는 사실을 짧게)':''}. 세 줄 다 주어가 분명한 완결 문장.
 - hooks: ${whole?'8~13':'4~6'}개 {"at":조각,"hl":"구절","x":"훅"}
 - zzal: ${whole?'3~4':'1~2'}개 {"at":조각,"x":"원문 문장 그대로","c":"캡션"}
 - side: ${whole?'8~12':'4~6'}개 {"at":조각,"x":"반응"}. 그중 하나는 "tmi":1을 붙인 뒷얘기(그 조각에 나온 장소·물건·말이 지금 무엇인지, 작가 뒷얘기, 이름 뜻 같은 것. web_search로 확인한 사실만, 추정은 추정이라고. 결말·반전 금지). 마지막 조각${whole?'에는 다 읽은 반응':''}.
@@ -1900,11 +1928,11 @@ ${BKR}
 const o=await askJSON(prompt,{model:MODEL,max:24000,search:4,effort:'high'});if(!o||typeof o!=='object'||Array.isArray(o))throw{code:'gen'};
 const R=okBatch(o,orig,0);if(R.hooks.length<2)throw{code:'gen'};let by=hostU?hostU.id:(UK[o.by]&&cands.some(u=>u.id===o.by)?o.by:cands.slice().sort((a,b)=>cnt(a.id)-cnt(b.id))[0].id);
 let bio=String(o.bio||'').split('\n').map(x=>x.trim()).filter(Boolean);if(bio.length!==3)bio=(c.blurb?[c.blurb]:[]).concat(bio).slice(0,3);
-const b={id:cid,name:c.name,handle:/^[a-z0-9_]{2,30}$/.test(o.handle||'')?o.handle:cid.replace(/-/g,'_'),author:c.author||'',when:typeof o.when==='string'?o.when.slice(0,12):'',color:c.color||'#7d8fa6',cvs:c.cvs,tone:c.tone,lang,by,bio:bio.join('\n'),orig,tr:[],hooks:R.hooks,zzal:R.zzal,side:R.side,threads:[],cover:c.cover,made:'app'};
+const b={id:cid,name:c.name,handle:/^[a-z0-9_]{2,30}$/.test(o.handle||'')?o.handle:cid.replace(/-/g,'_'),author:c.author||'',when:typeof o.when==='string'?o.when.slice(0,12):'',color:c.color||'#7d8fa6',cvs:c.cvs,tone:c.tone,lang,by,bio:bio.join('\n'),orig,tr:[],hooks:R.hooks,zzal:R.zzal,side:R.side,threads:[],cover:c.cover,made:'app',cv:2};
 if(lang==='en'){const t=await trOf(orig,c.name);if(t)b.tr=t}
 if(whole){const th=Array.isArray(o.threads)&&o.threads.find(t=>t&&Array.isArray(t.tw)&&t.tw.length>=2);if(th)b.threads=[{title:'다 읽은 사람만',lock:true,tw:th.tw.filter(x=>typeof x==='string').slice(0,8).map(clean)}]}else{b.more=true;b.total=all.length}
 if(S.req&&S.req[cid]&&S.req[cid].x){delete S.req[cid];store();return}
-S.mk=S.mk||{};S.mk[cid]=b;delete S.req[cid];S.gp=S.gp||[];const ts=Date.now()-rnd(4)*MN,fresh=drips(cid,by,R.drip);if(typeof o.arrive==='string'&&clean(o.arrive)){S.gp.push({id:'a'+ts+'-'+by,u:by,x:clean(o.arrive),ts,sell:cid});fresh.unshift('l.a'+ts+'-'+by)}
+S.mk=S.mk||{};S.mk[cid]=b;bkTouch();delete S.req[cid];S.gp=S.gp||[];const ts=Date.now()-rnd(4)*MN,fresh=drips(cid,by,R.drip);if(typeof o.arrive==='string'&&clean(o.arrive)){S.gp.push({id:'a'+ts+'-'+by,u:by,x:clean(o.arrive),ts,sell:cid});fresh.unshift('l.a'+ts+'-'+by)}
 store();rebuild();setPick(cid,true);SND.follow();toast('신청한 『'+c.name+'』 들어왔어 · 탐라에 떠');newArrivals(fresh.filter(id=>TW[id]&&vis(id)),cur!=='home');navBooksDot();if(cur==='books')rBooks()}
 catch(e){const cd=e&&e.code,q=S.req&&S.req[cid];if(cd==='nosrc'||cd==='chunk'){S.cno=S.cno||{};S.cno[cid]=cd==='nosrc'?'원문을 못 찾았어':'원문이 이상해';delete S.req[cid];store();toast('『'+c.name+'』은 못 만들었어 · '+S.cno[cid])}
 else if(cd==='net'||cd==='budget'||cd==='rate_limited'){if(q)q.fail=Date.now();store();toast(cd==='budget'?'이번 달 API를 거의 다 써서 책은 다음 달에 만들 수 있어':cd==='net'?'인터넷이 불안해서 『'+c.name+'』 원문을 못 받았어 · 조금 뒤에 다시 해 볼게':'『'+c.name+'』 만들다가 밀렸어 · 조금 뒤에 다시 해 볼게')}
@@ -1916,10 +1944,10 @@ const GRW={};
 function extMerge(b,x){const o=Object.assign({},b),n0=b.orig.length,s0=x.s0;const add=(x.orig||[]).slice(Math.max(0,n0-s0));o.orig=b.orig.concat(add);if(b.lang==='en'||x.tr)o.tr=(b.tr||[]).slice(0,n0).concat((x.tr||[]).slice(Math.max(0,n0-s0)));const L=o.orig.length,f=a=>(a||[]).filter(h=>+h.at<L);
 o.hooks=(b.hooks||[]).concat(f(x.hooks));o.zzal=(b.zzal||[]).concat(f(x.zzal));o.side=(b.side||[]).concat(f(x.side).filter(s=>!(b.side||[]).some(t=>+t.at===+s.at)));if(x.threads&&x.threads.length&&x.done)o.threads=(b.threads||[]).filter(t=>!t.lock).concat(x.threads);
 if(x.done&&L>=(x.total||L)){delete o.more;delete o.total}else{o.more=true;o.total=x.total||b.total}return o}
-async function growBook(b){if(!b||!b.more||!inLib(b.id)||GRW[b.id]||!S.key||inClaude()||!spendOK(1))return;const left=b.orig.filter((x,i)=>!S.seen[b.id+'.r.'+i]).length;if(left>15)return;S.grF=S.grF||{};S.grN=S.grN||{};if(Date.now()-(S.grF[b.id]||0)<Math.min(6*36e5,10*MN*Math.pow(2,S.grN[b.id]||0)))return;
+async function growBook(b){if(!b||!b.more||!inLib(b.id)||GRW[b.id]||!S.key||inClaude()||!spendOK(1)||!bkReady)return;const left=b.orig.filter((x,i)=>!S.seen[b.id+'.r.'+i]).length;if(left>15)return;S.grF=S.grF||{};S.grN=S.grN||{};if(Date.now()-(S.grF[b.id]||0)<Math.min(6*36e5,10*MN*Math.pow(2,S.grN[b.id]||0)))return;
 GRW[b.id]=1;if(cur==='thread')paintMore(b);try{const src=await srcOf(b);if(!src||!Array.isArray(src.chunks))throw{code:'src'};const all=src.chunks,s0=b.orig.length;
-if(s0>=all.length){S.ext=S.ext||{};const x=S.ext[b.id]||{s0,orig:[],tr:[],hooks:[],zzal:[],side:[]};x.done=1;x.total=all.length;x.v=(x.v||0)+1;S.ext[b.id]=x;store();rebuild();return}
-let e=Math.min(all.length,s0+30);if(all.length-e<=12)e=all.length;const raw=all.slice(s0,e),done=e>=all.length,cat=(catOf(b.id)||{}).cat;let C=raw;if(cat==='고전'&&b.made==='app'){const m=await modOf(raw);if(m)C=m}
+if(s0>=all.length){S.ext=S.ext||{};const x=S.ext[b.id]||{s0,orig:[],tr:[],hooks:[],zzal:[],side:[]};x.done=1;x.total=all.length;x.v=(x.v||0)+1;S.ext[b.id]=x;bkTouch();store();rebuild();return}
+let e=Math.min(all.length,s0+30);if(all.length-e<=12)e=all.length;const raw=all.slice(s0,e),done=e>=all.length,cat=(catOf(b.id)||{}).cat;let C=raw;if(b.made==='app'&&b.lang!=='en'&&src.lang!=='en'){const m=await readable(raw,cat==='고전');if(m)C=m}
 if(src.lang==='en'&&b.lang!=='en'){const k=await koOf(raw,b,src);if(!k)throw{code:'tr'};C=k}
 const u=usr(b._by),prev=(b.hooks||[]).map(h=>'- '+String(h.x).replace(/\n/g,' ')).slice(-12).join('\n');
 const o=await askJSON(`'타래'는 수아 한 사람이 쓰는 트위터 같은 독서 앱이고, 책 『${b.name}』(${b.author||''})은 유저 @${u.handle}(${u.name})이 원문을 타래로 올리는 중임. 수아가 읽다가 거의 따라와서 다음 부분을 이어 붙임.
@@ -1943,7 +1971,7 @@ ${BKR}
 const R=okBatch(o||{},C,s0);let tr=[];if(b.lang==='en'){tr=Array.isArray(src.tr)&&src.tr.length>=e?src.tr.slice(s0,e):await trOf(C,b.name)||[]}
 S.ext=S.ext||{};const x=S.ext[b.id]&&S.ext[b.id].s0<=s0?S.ext[b.id]:{s0,orig:[],tr:[],hooks:[],zzal:[],side:[]},off=s0-x.s0;x.orig=x.orig.slice(0,off).concat(C);if(b.lang==='en'){x.tr=(x.tr||[]).slice(0,off);while(x.tr.length<off)x.tr.push('');x.tr=x.tr.concat(tr.length===C.length?tr:C.map(()=>''))}
 x.hooks=(x.hooks||[]).concat(R.hooks);x.zzal=(x.zzal||[]).concat(R.zzal);x.side=(x.side||[]).concat(R.side);x.total=all.length;if(done){x.done=1;const th=o&&Array.isArray(o.threads)&&o.threads.find(t=>t&&Array.isArray(t.tw)&&t.tw.length>=2);if(th)x.threads=[{title:'다 읽은 사람만',lock:true,tw:th.tw.filter(t=>typeof t==='string').slice(0,8).map(clean)}]}
-x.v=(x.v||0)+1;S.ext[b.id]=x;delete S.grN[b.id];const fresh=drips(b.id,b._by,R.drip);store();rebuild();SND.follow();toast('『'+b.name+'』 다음 부분 들어왔어');if(cur==='thread'&&arg&&String(arg.id).startsWith(b.id+'.r.')){const y=scrollY;rThread({id:arg.id,keep:true});scrollTo(0,y)}newArrivals(fresh.filter(id=>TW[id]&&vis(id)),true)}
+x.v=(x.v||0)+1;S.ext[b.id]=x;bkTouch();delete S.grN[b.id];const fresh=drips(b.id,b._by,R.drip);store();rebuild();SND.follow();toast('『'+b.name+'』 다음 부분 들어왔어');if(cur==='thread'&&arg&&String(arg.id).startsWith(b.id+'.r.')){const y=scrollY;rThread({id:arg.id,keep:true});scrollTo(0,y)}newArrivals(fresh.filter(id=>TW[id]&&vis(id)),true)}
 catch(e){S.grF[b.id]=Date.now();if(!e||(e.code!=='net'&&e.code!=='budget'))S.grN[b.id]=(S.grN[b.id]||0)+1;store()}finally{delete GRW[b.id];if(cur==='thread')paintMore(BK[b.id])}}
 function paintMore(b){const el=document.querySelector('#v-thread .nx.more');if(!el||!b)return;el.querySelector('b').textContent=GRW[b.id]?'다음 부분 붙이는 중':'여기까지 들어왔어';el.querySelector('span').textContent=(S.key?(GRW[b.id]?'조금만 기다려':'거의 다 읽으면 내가 알아서 붙여 둘게'):'나 메뉴에 API 키를 넣어야 다음 부분이 와')+' · '+b.orig.length+'/'+(b.total||'?')+'조각'}
 
@@ -1952,13 +1980,13 @@ function coBeads(v,b){if(!v||!b)return;v.querySelectorAll('.cob').forEach(x=>x.r
 for(const[uid,c]of L){const p=Math.min(n,Math.floor(c.pos)),tie=c.st==='f'&&fin(b),row=v.querySelector(`.rdth .tw[data-id="${b.id}.r.${p-1}"] .lc`);if(!row)continue;const k=stack[p]=(stack[p]||0)+1,u=UK[uid];
 row.insertAdjacentHTML('beforeend',`<button class="cob${c.st==='d'?' drop':''}${tie?' tie':''}" data-prof="${uid}" style="--k:${k-1};--uc:${esc(u.color||'#8899a6')}" aria-label="${esc(u.name)}">${avatar(u)}</button>`);if(tie){const tk=row.querySelector('.tk'),el=row.lastElementChild;if(tk){const tt=tk.getBoundingClientRect().top-row.getBoundingClientRect().top;el.style.cssText+=`;top:${Math.round(tt+20+(k-1)*14)}px;bottom:auto`}}}
 /* the beads left behind where they said something she has now read */
-for(const id of IDS){const w=TW[id];if(!w||!w.co||w.gb!==b.id||w.gat>=me||!(S.ul&&S.ul[id]))continue;const row=v.querySelector(`.rdth .tw[data-id="${b.id}.r.${w.gat}"] .lc`);if(!row||row.querySelector(`.cop[data-open="${id}"]`))continue;const u=usr(w.u);row.insertAdjacentHTML('beforeend',`<button class="cop" data-open="${id}" style="--uc:${esc(u.color||'#8899a6')}" aria-label="${esc(u.name)}"></button>`)}}
+for(const id of IDS){const w=TW[id];if(!w||!w.co||w.gb!==b.id||w.gat>=me||!(S.ul&&S.ul[id]))continue;const row=v.querySelector(`.rdth .tw[data-id="${b.id}.r.${w.gat}"] .lc`);if(!row||row.querySelector(`.cop[data-open="${id}"]`))continue;const u=usr(w.u),k=row.querySelectorAll('.cop').length;if(k>=6)continue;row.insertAdjacentHTML('beforeend',`<button class="cop" data-open="${id}" style="--uc:${esc(u.color||'#8899a6')};top:${50+14*k}px" aria-label="${esc(u.name)}"></button>`)}}
 /* the moment she reaches a line they already reacted to: their face pops out of the thread and settles into a bead */
-function coPop(id){const w=TW[id];if(!w||cur!=='thread')return;const row=document.querySelector(`#v-thread .rdth .tw[data-id="${w.gb}.r.${w.gat}"] .lc`);if(!row||row.querySelector(`.cop[data-open="${id}"]`))return;const u=usr(w.u);
-row.insertAdjacentHTML('beforeend',`<button class="cop pop" data-open="${id}" style="--uc:${esc(u.color||'#8899a6')}" aria-label="${esc(u.name)}"><span class="av">${avatar(u)}</span></button>`);setTimeout(()=>{SND.bead();buz(5)},180)}
+function coPop(id){const w=TW[id];if(!w||cur!=='thread')return;const row=document.querySelector(`#v-thread .rdth .tw[data-id="${w.gb}.r.${w.gat}"] .lc`);if(!row||row.querySelector(`.cop[data-open="${id}"]`))return;const u=usr(w.u),k=row.querySelectorAll('.cop').length;if(k>=6)return;
+row.insertAdjacentHTML('beforeend',`<button class="cop pop" data-open="${id}" style="--uc:${esc(u.color||'#8899a6')};top:${50+14*k}px" aria-label="${esc(u.name)}"><span class="av">${avatar(u)}</span></button>`);setTimeout(()=>{SND.bead();buz(5)},180)}
 /* a locked co-reader tweet in the feed: one teaser per person per book, the rest wait */
 function coTeaser(id){const w=TW[id];if(!w||!w.co||!w.gb||!gated(id))return false;let best=null;for(const k of IDS){const g=TW[k];if(g.co&&g.u===w.u&&g.gb===w.gb&&gated(k)&&(!best||TW[best].ts<g.ts))best=k}return best===id&&Date.now()-w.ts<3*864e5}
-const coLine=b=>{const L=coOf(b.id).filter(([,c])=>c.st==='r'||c.st==='f');if(!L.length)return'';const us=L.map(([u])=>UK[u]);return `<div class="cor">${us.slice(0,3).map(u=>`<span class="av">${avatar(u)}</span>`).join('')}<span>${us.slice(0,2).map(u=>esc(u.name)+'님').join(', ')}${us.length>2?` 외 ${us.length-2}명`:''}이 같이 읽는 중</span></div>`};
+const coLine=b=>{const L=coOf(b.id).filter(([,c])=>c.st==='r'||c.st==='f');if(!L.length)return'';const us=L.map(([u])=>UK[u]);return `<div class="cor" aria-label="${us.map(u=>esc(u.name)).join(', ')} 님이 같이 읽는 중">${us.slice(0,5).map(u=>`<span class="av">${avatar(u)}</span>`).join('')}</div>`};
 
 /* ---------- writing first: the ones who can't wait, and the ones who remember ---------- */
 const kickOK=()=>{const d=dstr();if(!S.kd||S.kd.d!==d)S.kd={d,n:0};return S.kd.n<3};
@@ -1976,10 +2004,10 @@ function coDM(u,bud){let cx='';for(const[bid,c]of Object.entries((S.co||{})[u.id
 return cx?`\n\n[수아 영업으로 같이 읽는 책]${cx}\n- 같이 읽는 책은 둘 다 읽은 데까지만 얘기함. 네가 더 읽었으면 뒷내용은 말하지 않고 약만 올림. 수아가 더 읽었으면 스포하지 말라고 함.`:''}
 /* a reaction she can't read yet: the shape of it, and where it opens */
 function lkRow(id,o){const w=TW[id],u=usr(w.u),b=BK[w.gb],nx=b&&b.orig?Math.max(0,Math.min(herPos(w.gb),b.orig.length-1)):0;
-return `<div class="tw lkd${o.cls||''}" data-id="${id}" data-open="${w.gb}.r.${nx}"><div class="lc"><button class="av" data-prof="${u.id}" aria-label="${esc(u.name)}">${avatar(u)}</button>${o.ln?'<i class="ln"></i>':''}</div><div class="rc"><div class="hd"><b class="nm" data-prof="${u.id}">${esc(u.name)}</b><span class="hn">@${esc(u.handle)}</span><span class="dt">·</span><span class="wh">${esc(ago(w.ts))}</span></div><div class="tx blr" aria-hidden="true">${esc(w.x)}</div><div class="lkh">${LOCK}<span>『${esc(b?b.name:'')}』 ${w.gat+1}조각까지 읽으면 보여</span></div></div></div>`}
+return `<div class="tw lkd${o.cls||''}" data-id="${id}" data-open="${w.gb}.r.${nx}"><div class="lc"><button class="av" data-prof="${u.id}" aria-label="${esc(u.name)}">${avatar(u)}</button>${o.ln?'<i class="ln"></i>':''}</div><div class="rc"><div class="hd"><b class="nm" data-prof="${u.id}">${esc(u.name)}</b><span class="hn">@${esc(u.handle)}</span><span class="dt">·</span><span class="wh">${esc(ago(w.ts))}</span></div><div class="tx blr" aria-hidden="true">${esc(w.x)}</div><div class="lkh" aria-label="『${esc(b?b.name:'')}』 ${w.gat+1}조각까지 읽으면 보여">${LOCK}${b?`<span class="lka">${avatar(b)}</span>`:''}<b>${w.gat+1}</b></div></div></div>`}
 function mentionOf(x){const hs=String(x||'').match(/@([A-Za-z0-9_]{2,30})/g);if(!hs)return'';for(const h of hs){const k=h.slice(1).toLowerCase(),u=allUsers().find(v=>v.id!=='me'&&!v.user&&String(v.handle||'').toLowerCase()===k);if(u)return u.id}return''}
 /* test hook: only when a test sets it, never on her phone */
-try{if(localStorage.getItem('__t30'))window.__T={get S(){return S},get BK(){return BK},get TW(){return TW},askDM:(u,k)=>askDM(u,k),gated:id=>gated(id),coTick,gpTick:f=>gpTick(f),coSet,stAt,lookAt,dmWhen,rpWhen,ptext,chunkAll,makeBook,growBook,rebuild,herPos,coOf,spent}}catch(e){}
+try{if(localStorage.getItem('__t30'))window.__T={get S(){return S},get BK(){return BK},get TW(){return TW},askDM:(u,k)=>askDM(u,k),gated:id=>gated(id),coTick,gpTick:f=>gpTick(f),coSet,stAt,lookAt,dmWhen,rpWhen,ptext,chunkAll,makeBook,growBook,rebuild,herPos,coOf,spent,tidy,idbGet,get idbOK(){return idbOK},get bkQ(){return bkQ},store:()=>store()}}catch(e){}
 
 /* ---------- ⋯ on every tweet ---------- */
 let moId=null,moArm=false;
@@ -2107,7 +2135,7 @@ if(g==='delbook'){const id=t.dataset.id;if(delArm!==id){delArm=id;t.textContent=
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#sheet').hidden)$('#sheet').hidden=true;else if(!$('#drw').hidden)shut('#drw');else if(stack.length)back()}});
 {const C=window.Capacitor,P=C&&C.Plugins;if(P){if(P.App)P.App.addListener('backButton',()=>{if(!$('#imv').hidden)shut('#imv');else if(!$('#mos').hidden)shut('#mos');else if(!$('#rts').hidden)rtsClose();else if(!$('#csheet').hidden)shut('#csheet');else if(!$('#sheet').hidden)$('#sheet').hidden=true;else if(!$('#drw').hidden)shut('#drw');else if(stack.length)back();else if(cur!=='home')nav('home');else P.App.minimizeApp?P.App.minimizeApp():P.App.exitApp()});
 if(P.StatusBar){const mq=matchMedia('(prefers-color-scheme: dark)'),sb=()=>{const d=mq.matches;P.StatusBar.setBackgroundColor({color:d?'#000000':'#ffffff'}).catch(()=>{});P.StatusBar.setStyle({style:d?'DARK':'LIGHT'}).catch(()=>{})};sb();mq.addEventListener('change',sb)}}}
-const resumed=restore();show('home');if(resumed)requestAnimationFrame(toAnchor);navDot();navBooksDot();syncBooks();setTimeout(dueTick,2500);setTimeout(()=>gpTick(),9000);setInterval(()=>{if(!document.hidden)gpTick()},6e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>gpTick(),4000)});
+bkBoot().then(()=>{if(S.mk||S.ext)rebuild();booted=true;const resumed=restore();show('home');if(resumed)requestAnimationFrame(toAnchor);navDot();navBooksDot();syncBooks();setTimeout(dueTick,2500);setTimeout(()=>gpTick(),9000);setInterval(()=>{if(!document.hidden)gpTick()},6e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>gpTick(),4000)})});
 }
 </script>
 </body>
