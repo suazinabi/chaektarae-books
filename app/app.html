@@ -52,7 +52,7 @@ svg{display:block}
 .pi.snap .bsp{animation:snap .26s var(--pop)}
 .pi.spin .bsp{animation:sp .42s linear infinite}
 .pi.cut .th{transition:stroke-dashoffset .26s var(--in);stroke-dashoffset:100}
-.pi.cut .bob{transition:opacity .26s;opacity:0}
+.pi .bob{display:none}
 .pi svg{width:30px;height:30px;overflow:visible}
 @keyframes snap{45%{transform:scale(1.24)}}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -1109,9 +1109,10 @@ addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')
 function hexRGB(h){h=String(h||'').trim();if(h[0]!=='#')return[136,136,136];if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];const n=parseInt(h.slice(1,7),16);return[n>>16&255,n>>8&255,n&255]}
 function mixC(a,b,t){const A=hexRGB(a),B=hexRGB(b);return'#'+A.map((x,i)=>Math.round(x+(B[i]-x)*t).toString(16).padStart(2,'0')).join('')}
 /* pts run from the loose end inward, so the twist travels with the yarn as it is drawn out */
-function plies(pts,T,P,ph){const out={c:'',b:'',f:'',h:''},a=T*.2,hs=T*.13,f2=v=>v.toFixed(2);let s=ph||0,k0=null,cb='',cf='',ch='';out.c='M'+pts.map(q=>f2(q[0])+' '+f2(q[1])).join('L');
+function plies(pts,T,P,ph,fr){const out={c:'',b:'',f:'',h:''},a=T*.2,hs=T*.13,f2=v=>v.toFixed(2);let s=ph||0,d0=0,phi=2*Math.PI*s/P,k0=null,cb='',cf='',ch='';
+if(fr){const C=[];let dd=0;for(let i=0;i<pts.length;i++){if(i)dd+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);if(dd>=fr*.6)C.push(pts[i])}out.c='M'+(C.length>1?C:pts.slice(-2)).map(q=>f2(q[0])+' '+f2(q[1])).join('L')}else out.c='M'+pts.map(q=>f2(q[0])+' '+f2(q[1])).join('L');
 for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[Math.min(pts.length-1,i+1)],r=pts[Math.max(0,i-1)];let tx=q[0]-r[0],ty=q[1]-r[1];const tl=Math.hypot(tx,ty)||1;tx/=tl;ty/=tl;let nx=-ty,ny=tx;
-if(i)s+=Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]);const phi=2*Math.PI*s/P,off=a*Math.sin(phi),k=Math.floor(phi/Math.PI),A=[p[0]+nx*off,p[1]+ny*off],B=[p[0]-nx*off,p[1]-ny*off],F=k%2===0?A:B,Bk=k%2===0?B:A;
+let u=0;if(i){const ds=Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]);d0+=ds;u=fr?Math.max(0,1-d0/fr):0;phi+=2*Math.PI*ds/(P*(1+1.8*u*u))}else u=fr?1:0;const w=u*u,off=a*(1+2.4*w)*((1-w)*Math.sin(phi)+w),k=Math.floor(phi/Math.PI),A=[p[0]+nx*off,p[1]+ny*off],B=[p[0]-nx*off,p[1]-ny*off],F=k%2===0?A:B,Bk=k%2===0?B:A;
 if(nx+ny>0){nx=-nx;ny=-ny}const H=[F[0]+nx*hs,F[1]+ny*hs],pf=f2(F[0])+' '+f2(F[1]),pb=f2(Bk[0])+' '+f2(Bk[1]),phh=f2(H[0])+' '+f2(H[1]);
 if(k!==k0){if(k0!==null){const m=f2(p[0])+' '+f2(p[1]);out.b+=cb+'L'+m;out.f+=cf+'L'+m;out.h+=ch}cb='M'+pb;cf='M'+pf;ch='M'+phh;k0=k}else{cb+='L'+pb;cf+='L'+pf;ch+='L'+phh}}
 out.b+=cb;out.f+=cf;out.h+=ch;return out}
@@ -1192,7 +1193,7 @@ let px=0,pv=0,ptg=0,praf=0,ready=false,busy=false;
 /* thread physics: bulge (bl) wobbles toward its slack target, the bob swings sideways (sx) like a pendulum */
 let bl=0,blv=0,sx=0,sxv=0,swRaf=0,swLast=0,lastPx=0;
 function swStep(now){const dt=Math.min(.032,(now-swLast)/1000||.016);swLast=now;const v=Math.max(0,px),T=pi.classList.contains('spin')?0:9*(1-Math.min(1,v/TH))*Math.min(1,v/24);
-blv+=(-260*(bl-T)-7*blv)*dt;bl+=blv*dt;sxv+=(-90*sx-2.6*sxv)*dt;sx+=sxv*dt;drawThread(v);
+blv+=(-260*(bl-T)-7*blv)*dt;bl+=blv*dt;sxv+=(-90*sx-2*sxv)*dt;sx+=sxv*dt;drawThread(v);
 if(Math.abs(blv)<.3&&Math.abs(bl-T)<.05&&Math.abs(sx)<.05&&Math.abs(sxv)<.3){bl=T;sx=0;sxv=0;blv=0;drawThread(v);swRaf=0;return}swRaf=requestAnimationFrame(swStep)}
 function sway(){if(!swRaf){swLast=performance.now();swRaf=requestAnimationFrame(swStep)}}
 let reel=0;
@@ -1203,24 +1204,26 @@ const RT=[[28.8,26.9],[31.5,27.5],[35.5,28.5],[35.25,32],[35,35.5],[31,37],[29,3
 /* the logo's own loose end is the very same yarn the pull draws out */
 const lgtPaint=()=>document.querySelectorAll('.lgt').forEach(g=>{if(!g.dataset.y){g.dataset.y=1;g.innerHTML='<g fill="none" stroke-linecap="round" stroke-linejoin="round">'+yarnPaths(plies(cubicPts(RT),YW,YP),YB,YW)+'</g>'}});lgtPaint();
 function drawThread(v){const E=lgEnd();
-if(!E){const by=Math.max(6,v-9),bx=15+sx,c=[15+bl+sx*.45,(by-86)/2],e=[bx,by-5.4],q0=[15,-80];pth.innerHTML=yarnPaths(plies(crinkle(cubicPts([q0,[q0[0]+(c[0]-q0[0])*2/3,q0[1]+(c[1]-q0[1])*2/3],[e[0]+(c[0]-e[0])*2/3,e[1]+(c[1]-e[1])*2/3],e]),crinkleAmp(v)),YW,YP),YB,YW);pbob.setAttribute('transform',`translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${(v*2.2+sx*4).toFixed(0)})`);return}
+if(!E){const by=Math.max(6,v-9),bx=15+sx*1.15,c=[15+bl+sx*.45,(by-86)/2],e=[bx,by],q0=[15,-80];pth.innerHTML=yarnPaths(plies(crinkle(cubicPts([q0,[q0[0]+(c[0]-q0[0])*2/3,q0[1]+(c[1]-q0[1])*2/3],[e[0]+(c[0]-e[0])*2/3,e[1]+(c[1]-e[1])*2/3],e]),crinkleAmp(v)),YW,YP,ptw(),10),YB,YW);return}
 const sc=E.w/34,ox=E.x-17*sc,oy=E.y-17*sc,k0=Math.min(1,Math.max(0,v)/38),k=k0*k0*(3-2*k0),bs=Math.min(1,k*1.25);
 const an=(40-36*k)*Math.PI/180,Rr=15.4*sc,ax=E.x+Rr*Math.cos(an),ay=E.y+Rr*Math.sin(an);
-const bx=ax+sx,by=Math.max(ay+10,v-9),ty=by-5.4*bs,mx=(ax+bx)/2+bl+sx*.45,my=(ay+ty)/2+Math.min(12,v*.1);
+const bx=ax+sx*1.15,by=Math.max(ay+10,v-9),ty=by-2*bs,mx=(ax+bx)/2+bl+sx*.45,my=(ay+ty)/2+Math.min(12,v*.1);
 const L=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],P0=[ax,ay],P3=[mx,my],P6=[bx,ty],len=Math.hypot(bx-ax,ty-ay)||1,dx=(bx-ax)/len,dy=(ty-ay)/len,h=len*.2;
 /* it leaves the ball along its rim, bows through the middle with no corner, and drops straight into the bob */
 const pull=[P0,[ax-Math.sin(an)*len*.3,ay+Math.cos(an)*len*.3],[mx-dx*h,my-dy*h],P3,[mx+dx*h,my+dy*h],[bx+(mx-bx)*.12,ty-len*.3],P6];
 const Q=RT.map((r,i)=>{const a=[ox+r[0]*sc,oy+r[1]*sc];return L(a,pull[i],k)}),f=q=>q[0].toFixed(2)+' '+q[1].toFixed(2);
-const tn=Math.max(0,Math.min(1,(v-TH)/36)),yw=YW*(1-.26*tn);pth.innerHTML=yarnPaths(plies(crinkle(cubicPts(Q),crinkleAmp(v)),yw,YP),YB,yw);
-pbob.setAttribute('transform',`translate(${Q[6][0].toFixed(1)} ${(Q[6][1]+5.4*bs).toFixed(1)}) rotate(${(v*2.2+sx*4).toFixed(0)}) scale(${bs.toFixed(3)})`);
+const tn=Math.max(0,Math.min(1,(v-TH)/36)),yw=YW*(1-.26*tn);pth.innerHTML=yarnPaths(plies(crinkle(cubicPts(Q),crinkleAmp(v)),yw,YP,ptw(),10*bs),YB,yw);
 const on=v>.25||busy||reel;pi.style.opacity=on?'1':'0';E.t.classList.toggle('pulling',on);
-E.lg.style.transform=v>.25?`rotate(${(v*3.1+(tn>0&&!busy?Math.sin(performance.now()/34)*tn*2.4:0)).toFixed(2)}deg)`:''}
+if(pi.classList.contains('spin'))lgS0=lgS=(performance.now()-spT0)*.11;else if(reel)lgS=lgS0*Math.min(1,Math.max(0,v)/52);else lgS=lgS0=0;
+E.lg.style.transform=v>.25?`rotate(${(v*3.1+lgS+(tn>0&&!busy?Math.sin(performance.now()/34)*tn*2.4:0)).toFixed(2)}deg)`:''}
+let spT0=0,lgS=0,lgS0=0,spRaf=0;const ptw=()=>pi.classList.contains('spin')?(performance.now()-spT0)/1000*14:0;
+function spinLoop(){if(!pi.classList.contains('spin')){spRaf=0;return}drawThread(Math.max(0,px));spRaf=requestAnimationFrame(spinLoop)}
 function paint(x){pull.style.transform=Math.abs(x)>.05?`translate3d(0,${x.toFixed(2)}px,0)`:'';const v=Math.max(0,x);pi.style.opacity=(reel?Math.min(1,v/8):Math.min(1,v/30)).toFixed(2);const d=v-lastPx;lastPx=v;if(Math.abs(d)>.05){blv+=d*5;sway()}drawThread(v)}
 function spring(to,k,c){ptg=to;const K=k||380,C=c||21;cancelAnimationFrame(praf);let last=performance.now();const step=now=>{const dt=Math.min(.032,(now-last)/1000);last=now;pv+=(-K*(px-ptg)-C*pv)*dt;px+=pv*dt;if(Math.abs(pv)<2&&Math.abs(px-ptg)<.25){px=ptg;pv=0;paint(px);praf=0;return}paint(px);praf=requestAnimationFrame(step)};praf=requestAnimationFrame(step)}
 const resist=d=>112*(1-Math.exp(-d/210));
 function movePull(d){if(d<=0){if(px){px=0;paint(0)}frSet(0,0);return}const p0=px;px=resist(d);paint(px);frPull(px,p0);const r=px>=TH;if(r!==ready){ready=r;pi.classList.toggle('rdy',r);if(r){pi.classList.remove('snap');void pi.offsetWidth;pi.classList.add('snap');SND.tick();blv-=70;sxv+=(Math.random()<.5?-1:1)*26;sway()}else buz(4)}if(ready&&!trRaf)trRaf=requestAnimationFrame(trem)}
 function endPull(){frOff();if(ready)refresh();else{pi.classList.remove('rdy');sxv+=(Math.random()<.5?-1:1)*(40+px);sway();if(px>24&&lgEnd())SND.reel(4);spring(0,420,24)}}
-function refresh(){if(busy)return;busy=true;const k0=IDS.length+((S.lp||[]).length);ready=false;pi.classList.remove('rdy');pi.classList.add('spin');SND.sseuk();spring(52,300,26);Promise.all([Promise.race([syncBooks(true),new Promise(r=>setTimeout(r,1500))]),Promise.race([appUpd(),new Promise(r=>setTimeout(r,1800))]),new Promise(r=>setTimeout(r,640))]).then(()=>{const nt=cur==='noti',rl=!nt&&!!lgEnd();if(rl)reel=1;else pi.classList.add('cut');sxv+=(Math.random()<.5?-1:1)*(rl?30:70);sway();if(!nt)resetFeed(true);else try{dueTick()}catch(e){}scrollTo(0,0);pi.classList.remove('spin','snap');SND.pop();if(rl){pv=-10;spring(0,62,12.5);setTimeout(()=>SND.reel(9),90)}else{pv=-240;spring(0,430,17)}const got=IDS.length+((S.lp||[]).length)>k0;setTimeout(()=>{busy=false;if(got&&!nt)setTimeout(lgBoing,60);pi.classList.remove('cut');reel=0;{const lg=$('img.logo');if(lg){lg.style.transform='';lg.parentNode.classList.remove('pulling')}}drawThread(0);if(nt&&cur==='noti'){rNoti();ptrUse('home')}if(UPD)setTimeout(()=>{toast('새 버전으로 바꿀게');setTimeout(()=>location.reload(),700)},rl?950:500)},rl?1150:420)})}
+function refresh(){if(busy)return;busy=true;const k0=IDS.length+((S.lp||[]).length);ready=false;pi.classList.remove('rdy');pi.classList.add('spin');spT0=performance.now();if(!spRaf)spRaf=requestAnimationFrame(spinLoop);SND.sseuk();spring(52,300,26);Promise.all([Promise.race([syncBooks(true),new Promise(r=>setTimeout(r,1500))]),Promise.race([appUpd(),new Promise(r=>setTimeout(r,1800))]),new Promise(r=>setTimeout(r,640))]).then(()=>{const nt=cur==='noti',rl=!nt&&!!lgEnd();if(rl)reel=1;else pi.classList.add('cut');sxv+=(Math.random()<.5?-1:1)*(rl?30:70);sway();if(!nt)resetFeed(true);else try{dueTick()}catch(e){}scrollTo(0,0);pi.classList.remove('spin','snap');SND.pop();if(rl){pv=-10;spring(0,62,12.5);setTimeout(()=>SND.reel(9),90)}else{pv=-240;spring(0,430,17)}const got=IDS.length+((S.lp||[]).length)>k0;setTimeout(()=>{busy=false;if(got&&!nt)setTimeout(lgBoing,60);pi.classList.remove('cut');reel=0;{const lg=$('img.logo');if(lg){lg.style.transform='';lg.parentNode.classList.remove('pulling')}}drawThread(0);if(nt&&cur==='noti'){rNoti();ptrUse('home')}if(UPD)setTimeout(()=>{toast('새 버전으로 바꿀게');setTimeout(()=>location.reload(),700)},rl?950:500)},rl?1150:420)})}
 
 /* ---------- header follows the finger, exactly as far as it scrolls ---------- */
 const htop=document.querySelector('#v-home .top');let hy=0,snapT=0,lastSY=0;
@@ -1518,7 +1521,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=35,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=36,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;const put=()=>{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v};
 try{put()}catch(e){try{localStorage.removeItem('tarae.app');localStorage.removeItem('tarae.appv');for(let k=0;k<12&&!UPD;k++){const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}else if(S.lp&&S.lp.length>20){S.lp.splice(0,10);try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}try{put()}catch(e3){if(!m&&!(S.lp&&S.lp.length>20))break}}}catch(e4){}}}catch(e){}}
