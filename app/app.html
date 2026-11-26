@@ -1288,7 +1288,7 @@ const catOf=id=>CAT.find(c=>c.id===id);
 async function gh(path,method,body){const t=String(S.ghk||'').trim();if(!t)throw{code:'nokey'};let r;try{r=await fetch(GHR+(path||''),{method:method||'GET',headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:body?JSON.stringify(body):undefined})}catch(e){throw{code:'net'}}if(r.status===401||r.status===403||r.status===404)throw{code:'auth'};if(!r.ok)throw{code:'net'};return r.json()}
 const ghErr=c=>c==='auth'?'깃허브 토큰이 안 먹혀. 나 메뉴에서 다시 넣어 줘':'인터넷이 불안해. 조금 뒤에 다시 눌러 봐';
 let reqBusy={};
-async function reqBook(id,host,coU){const c=catOf(id);if(!c||reqBusy[id]||MKB[id])return;if(S.cno&&S.cno[id]){toast('『'+c.name+'』은 못 만들어 · '+S.cno[id]);return}if(!S.key&&!inClaude()){toast('책을 만들려면 나 메뉴에 API 키부터 넣어 줘');delArm=null;dsetOpen=true;rDrawer();dwOpen();return}
+async function reqBook(id,host,coU){const c=catOf(id);if(!c||reqBusy[id]||MKB[id])return;if(c.no){toast('『'+c.name+'』은 못 만들어 · '+c.no);return}if(S.cno&&S.cno[id]){delete S.cno[id];store()}if(!S.key&&!inClaude()){toast('책을 만들려면 나 메뉴에 API 키부터 넣어 줘');delArm=null;dsetOpen=true;rDrawer();dwOpen();return}
 SND.like();toast(coU&&UK[coU]?'『'+c.name+'』 만드는 중이야 · 다 되면 @'+UK[coU].handle+' 님이랑 같이 읽어':host&&UK[host]&&!UK[host].user?'@'+UK[host].handle+' 영업 성공 · 만드는 중이야':'『'+c.name+'』 만드는 중이야 · 다 되면 알려 줄게');makeBook(id,host,coU);reqSync(id);if(cur==='books')rBooks()}
 const reqSync=id=>document.querySelectorAll(`.slc [data-req="${id}"]`).forEach(b=>{const c=b.closest('.slc'),sm=c.querySelector('.sli small'),k=catOf(id);b.outerHTML=reqBtn(id);if(sm&&k)sm.textContent=(k.author||'')+' · '+(S.req&&S.req[id]?'만드는 중':(CATN[k.cat]||''))})
 async function cancelReq(id,quiet){const q=S.req&&S.req[id];if(!q)return;if(MKB[id])q.x=1;else delete S.req[id];store();if(q.n)try{await gh('/'+q.n,'PATCH',{state:'closed',state_reason:'not_planned'})}catch(e){}if(!quiet){SND.unmark();toast('신청 취소했어')}reqSync(id);if(cur==='books')rBooks()}
@@ -1299,6 +1299,7 @@ if(q.k==='new'&&b&&b.orig&&b.orig.length){delete S.req[id];ch=true;setPick(id,tr
 else if(q.k==='more'&&b&&(b.orig.length>q.len||!b.more)){delete S.req[id];ch=true;setTimeout(()=>{SND.follow();toast('『'+b.name+'』 다음 부분 들어왔어')},900)}
 else if(q.k==='new'&&!b&&c&&c.no){delete S.req[id];ch=true;setTimeout(()=>toast('『'+c.name+'』은 못 만들었어 · '+c.no),900)}
 else if(q.k==='new'&&!b&&c&&!MKB[id]){if(q.x){delete S.req[id];ch=true}else if(S.key&&!inClaude()&&!(q.fail&&Date.now()-q.fail<15*6e4)&&!(q.mk&&!q.fail&&Date.now()-q.at<20*6e4))makeBook(id,q.host,q.co)}}
+{let cut=false;for(const id of Object.keys(S.ext||{})){const x=S.ext[id],b0=REM.find(b=>b.id===id)||(S.mk||{})[id];if(b0&&b0.lang!=='en'&&(x.orig||[]).some(isEn)){delete S.ext[id];if(S.grF)delete S.grF[id];EXC.delete(id);cut=ch=true}}if(cut)rebuild()}
 if(ch)store();for(const b of allBooks())if(b.more&&inLib(b.id))wantMore(b)}
 /* my tweet: find a book she wants to read, let the right person answer and offer to read it together */
 const WANT=/읽|볼까|보고\s*싶|궁금|추천|같이|땡|싶다|싶어|어때/;
@@ -1318,7 +1319,7 @@ const u=usr(note.u||w.ru),key=nkey(id,ts),own=!!(m&&m.built&&BK[m.id]&&BK[m.id].
 const sit=b&&w.sell===b.id?`\n[상황] 수아가 『${b.name}』 책 카드를 붙여서(책을 인용해서) 이 트윗을 씀. 이 책은 네가 타래에 올리고 있는 책임. [수아가 읽은 곳] ${readAt(b)}. 그 책 얘기에 너답게 반응함. 수아가 안 읽은 뒷내용·결말은 말하지 않음.`:b?`\n[상황] 수아가 『${b.name}』 얘기를 함. 이 책은 네가 타래에 올리고 있는 책임. [수아가 읽은 곳] ${readAt(b)}. 같이 읽자고 너답게 꼬심. 수아가 안 읽은 뒷내용·결말은 말하지 않음.`:c?`\n[상황] 수아가 『${c.name}』(${c.author}) 읽고 싶다고 함. 아직 타래에 없는 책이라 네가 방금 올리기로 함(앞부분부터 곧 올라옴). 같이 읽자고 너답게 꼬심. 줄거리·결말 스포 금지.`:'';
 const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아가 올린 트윗에 네가 먼저 다는 답글임. '+LEN()+' 너답게 진짜로 반응함.'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+(w.q&&TW[w.q]?`\n[수아가 인용한 트윗] ${TW[w.q].u===u.id?'(네 트윗) ':''}${TW[w.q].t==='r'&&BK[TW[w.q].b]?'『'+BK[TW[w.q].b].name+'』 원문: ':'@'+usr(TW[w.q].u).handle+': '}${TW[w.q].x}`:'')+sit+yp+spT+(note.hint||'')+'\n\n답글 본문만 출력.'+LKP;
 const QM=pre&&!b&&!c&&!yp&&!note.sp&&!note.u&&!w.q&&(note.lq||Math.random()<.35),qp=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 수아(탐라에서 오래 본 트친)가 올린 트윗을 네가 인용해서, 네 팔로워들한테 하는 혼잣말 트윗을 쓰는 중임. 수아를 직접 부르지 않고 그 트윗에 대한 네 반응만 씀. 보통 한 줄, 길어도 두 줄. 너답게 진짜로 반응함(공감, 웃음, 딴소리, 태클 무엇이든).'+`\n\n[수아가 올린 트윗]\n${w.x}${w.img?'\n(사진도 같이 올림. 붙어 있는 사진을 보고 반응해도 됨)':''}`+'\n\n인용 트윗 본문만 출력.'+LKP;try{const res=await smp(QM?qp:prompt,{cache:false,model:MODEL,effort:'medium',img:w.img,onText:({text})=>{if(PEND[key]){PEND[key].text=coStrip(lkStrip(text).x);if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}}});const lv=lkStrip(String(res&&res.text||'')),tg=coTag(lv.x),t=tg.x;delete PEND[key];if(t&&pre){note.pre={x:t.slice(0,500),u:u.id,v:lv.v,q:QM?1:0,co:tg.tag};store();lnSync();return}if(t&&tg.tag)coSet(u.id,tg.tag[0],tg.tag[1]);if(t){note.r={x:t.slice(0,500),ts:Date.now(),u:u.id};{const L=[];if(lv.v>=1){L.push(u.id);if(lv.v>=2)L.push(...personas(2+rnd(3),u.id));else if(Math.random()<.25)L.push(...personas(1,u.id))}addLikes(id,L)}store();SND.reply();if(!(cur==='thread'&&curTh&&curTh.ids.includes(id)))toast('@'+u.handle+' 님이 답글 달았어')}}
-catch(err){delete PEND[key];const c2=err&&err.code;toast(c2==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어')}if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}
+catch(err){delete PEND[key];const c2=err&&err.code;toast(c2==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':c2==='budget'?BUDT:'답장을 못 받았어')}if(cur==='thread'&&curTh&&curTh.ids.includes(id))renderNotes()}
 const reqBtn=id=>{const on=!!(S.req&&S.req[id]);return `<button class="pk${on?' on':''}" data-req="${id}" aria-label="읽고 싶어">${ic('heart',on)}</button>`};
 const CATN={'근대':'한국 근대소설','고전':'한국 고전소설','영어':'쉬운 영어 원문','시':'시','추리':'추리·괴담','로맨스':'로맨스','러시아':'러시아 단편','일본':'일본 단편','철학':'철학·에세이','모험':'모험·SF'};
 /* 영업 트윗: users pitch store books they love; the attached card is the whole funnel (heart = read it) */
@@ -1396,8 +1397,8 @@ if(cur==='chat'&&arg===uid){paintChat(uid,true);if(k)SND.tap();else SND.reply()}
 delete DMP[uid];delete S.dq[uid];delete DLV[uid];store();applyActs(u,q.acts||[]);paintChat(uid);if(cur==='dm')rDM();if(S.dm[uid].slice(q.n).some(x=>x.f==='me'))setTimeout(()=>askDM(uid),500)}
 async function askDM(uid,kick){const u=UK[uid];if(!u||DMP[uid]||DMW[uid]||(S.dq||{})[uid])return;const smp=await smpGet();if(!smp){if(!kick&&!inClaude()){sysMsg(uid,'나 메뉴에 API 키를 넣으면 답장이 와');store();paintChat(uid)}return}
 S.dm[uid]=S.dm[uid]||[];const n0=S.dm[uid].length;DMW[uid]=1;let raw='';const M0=S.dm[uid],li=M0.map(x=>x.f).lastIndexOf('u'),said=M0.slice(li+1).filter(x=>x.f==='me').map(x=>x.x).join('\n'),urg=!kick&&URG.test(said),W=kick?null:dmWhen(uid,urg,dmLive(uid)),bm=kick?null:bookIn(said);
-try{const res=await smp(dmPrompt(u,kick,bm)+(W?hintAt(uid,W.due,urg):'')+(urg?'\n- 수아가 급해 보임. 짧게 바로 답함.':'')+'\n\n[하트] 쪽지 맨 끝 줄에 [맘찍:0] 또는 [맘찍:1]을 붙임(앱이 지워서 수아는 못 봄). 수아가 마지막에 보낸 쪽지가 진짜 웃기거나 좋아서 네가 하트를 누를 만하면 1. 대부분 0.',{cache:false,model:MODEL,effort:'medium'});raw=String(res&&res.text||'').trim();{const lv=lkStrip(raw);raw=lv.x;if(lv.v>=1){const M=S.dm[uid]||[];for(let i=M.length-1;i>=0;i--)if(M[i].f==='me'){M[i].hl=1;break}}}}catch(err){delete DMW[uid];paintChat(uid);const c=err&&err.code;if(!kick&&c!=='not_granted')toast(c==='rate_limited'?'답장이 밀렸어. 조금 뒤에 다시 남겨 봐':c==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'답장을 못 받았어');return}
-const{body,acts}=parseActs(raw),parts=body.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);delete DMW[uid];if(!parts.length){paintChat(uid);return}
+try{const res=await smp(dmPrompt(u,kick,bm)+(W?hintAt(uid,W.due,urg):'')+(urg?'\n- 수아가 급해 보임. 짧게 바로 답함.':'')+'\n\n[하트] 쪽지 맨 끝 줄에 [맘찍:0] 또는 [맘찍:1]을 붙임(앱이 지워서 수아는 못 봄). 수아가 마지막에 보낸 쪽지가 진짜 웃기거나 좋아서 네가 하트를 누를 만하면 1. 대부분 0.',{cache:false,model:MODEL,effort:'medium'});raw=String(res&&res.text||'').trim();{const lv=lkStrip(raw);raw=lv.x;if(lv.v>=1){const M=S.dm[uid]||[];for(let i=M.length-1;i>=0;i--)if(M[i].f==='me'){M[i].hl=1;break}}}}catch(err){delete DMW[uid];paintChat(uid);const c=err&&err.code;if(!kick&&c!=='not_granted')toast(c==='rate_limited'?'답장이 밀렸어. 조금 뒤에 다시 남겨 봐':c==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':c==='budget'?BUDT:'답장을 못 받았어');return}
+const{body,acts}=parseActs(raw),parts=body.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);delete DMW[uid];if(!parts.length){paintChat(uid);if(!kick)toast('답장이 비어서 왔어 · 한 번 더 보내 봐');return}
 const now=Date.now(),due=kick?now:Math.max(now+1500,W.due);S.dq=S.dq||{};S.dq[uid]={due,rd:kick?now:Math.max(now,Math.min(W.rd,due)),parts,acts,n:n0};store();if(kick)dmDeliver(uid);else if(due-now>6e4&&Math.random()<phOf(uid).g){const rd=S.dq[uid].rd;setTimeout(()=>dmGhost(uid),Math.min(rd-now+(due-rd)*(.2+Math.random()*.5),2147e6))}}
 let rpT=null,fresh=0;
 /* ---------- the book writes back ---------- */
@@ -1465,7 +1466,7 @@ S.slFlop=S.slFlop||{};for(const k in (S.sl||{})){const cid=k.split('.')[0],t=S.s
 async function sellFlop(c,sl){const smp=await smpGet();if(!smp)return;const u=UK[sl.u];try{const res=await smp(WHO(u)+'\n[규칙]\n'+RULES+`\n- 너는 며칠 전 『${c.name}』 영업 트윗을 올렸는데 아무도 안 넘어왔음. 그 트윗: ${sl.x}\n- 영업 실패한 걸로 셀프 디스하는 새 트윗 하나. 한두 줄. 수아나 다른 사람 언급 금지. 결말 스포 금지. 이모지·해시태그 금지.\n\n트윗 본문만 출력.`,{cache:false,model:MODEL,effort:'low'});const x=String(res&&res.text||'').trim();if(!x)return;const ts=Date.now();S.lp=S.lp||[];S.lp.push({id:'lp'+ts,u:u.id,x:x.slice(0,280),ts,sell:c.id});if(S.lp.length>60)S.lp.shift();store();rebuild();newArrivals(['l.lp'+ts],true)}catch(e){}}
 setInterval(()=>{if(!document.hidden)dueTick()},10000);
 /* ---------- the app updates itself like the books do: fetched, kept, swapped in on the next quiet moment ---------- */
-const APPV=30,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
+const APPV=31,APPU='https://raw.githubusercontent.com/suazinabi/chaektarae-books/main/app/';let UPD=0;
 setTimeout(()=>{try{localStorage.setItem('tarae.good',String(window.__appv||APPV));localStorage.removeItem('tarae.try')}catch(e){}},1500);
 async function appUpd(){try{const r=await fetch(APPU+'v.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=+((await r.json()).v)||0,have=Math.max(window.__appv||APPV,+localStorage.getItem('tarae.appv')||0);if(v<=have||String(v)===localStorage.getItem('tarae.bad'))return;const t=await fetch(APPU+'app.html?v='+v,{cache:'no-store'});if(!t.ok)return;const code=await t.text();if(!/^<!DOCTYPE html>/i.test(code)||!code.includes('const APPV='+v+','))return;const put=()=>{localStorage.setItem('tarae.app',code);localStorage.setItem('tarae.appv',String(v));UPD=v};
 try{put()}catch(e){try{localStorage.removeItem('tarae.app');localStorage.removeItem('tarae.appv');for(let k=0;k<12&&!UPD;k++){const m=(S.mine||[]).find(p=>p.img);if(m){delete m.img;try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}else if(S.lp&&S.lp.length>20){S.lp.splice(0,10);try{localStorage.setItem(K,JSON.stringify(S))}catch(e2){}}try{put()}catch(e3){if(!m&&!(S.lp&&S.lp.length>20))break}}}catch(e4){}}}catch(e){}}
@@ -1518,12 +1519,15 @@ return WHO(u)+'\n[규칙]\n'+RULES+`\n- 지금은 쪽지(DM)임. 메신저처럼
 +(mine.length?`\n\n[네가 올리는 책]${ctx}\n\n[할 수 있는 것] 수아가 원하거나 대화상 꼭 맞을 때만, 답장 맨 끝에 아래 명령 줄을 붙임. 명령 줄은 수아한테 안 보이고 앱에서 실제로 실행됨. 명령을 쓰면 답장에서 그걸 했다고 너답게 말함.\n@빼기 책id → 그 책을 수아 서재에서 뺌. 탐라에서도 빠짐(재미없다, 지겹다, 관심 없다 할 때)\n@담기 책id → 그 책을 수아 서재에 담아 줌. 탐라에 나오기 시작함(수아가 원할 때만)`+(hasO?`\n@글 책id 조각번호 | 형광펜 구절 | 글 → 원문의 그 조각을 가리키는 새 글을 수아 탐라에 올림(한 번에 최대 2개, 수아 서재에 있는 책만). 형광펜 구절은 그 조각에 글자 그대로 있는 짧은 구절. 글은 네 말버릇으로 쓰고, 답이나 결말을 말하지 말고 궁금하게 만듦. 수아가 지루해하거나 재밌는 데 알려 달라고 할 때 좋음.`:'')+`\n- 새 책을 구해 오는 건 못 함.`:`\n- 아직 올린 책이 없음. 책 얘기는 해도 되지만 줄거리 스포는 안 함.`)
 +coDM(u,12000)+yeopCtx(u,bm)+(hist?`\n\n[지금까지 쪽지]\n${hist}`:'')+(kick?`\n\n[상황] ${kick}`:`\n\n마지막 수아 쪽지에 답장함.`)+`\n\n쪽지 내용만 출력.`}
 /* outside Claude (the installed app) replies go straight to the API with her own key, kept only on this phone */
-const MODEL='claude-opus-5-5';
-async function apiSample(prompt,o){o=o||{};const model=o.model||MODEL;if(!spendOK(o.bg))throw{code:'budget'};const body={model,max_tokens:o.max||2000,stream:true,messages:[{role:'user',content:o.img?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:o.img.split(',')[1]}},{type:'text',text:prompt}]:prompt}]};if(/opus/.test(model))body.output_config={effort:o.effort||'medium'};if(o.tools)body.tools=o.tools;
-const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':S.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+const MODEL='claude-opus-5-5',BUDT='이번 달 API를 다 써서 답장은 다음 달에 와';
+/* thinking is always on for opus and on by default for sonnet, and it eats into max_tokens: every call names its effort, sonnet skips the up-front thinking, and the caps are roomy (a cap costs nothing) */
+let NOBT=0;
+async function apiSample(prompt,o){o=o||{};const model=o.model||MODEL,op=/opus/.test(model);if(!spendOK(o.bg))throw{code:'budget'};const body={model,max_tokens:o.max||4000,stream:true,messages:[{role:'user',content:o.img?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:o.img.split(',')[1]}},{type:'text',text:prompt}]:prompt}],output_config:{effort:o.effort||(op?'medium':'low')}};if(!op&&!NOBT)body.thinking={type:'between_tools'};if(o.sys)body.system=[{type:'text',text:o.sys,cache_control:{type:'ephemeral'}}];if(o.tools)body.tools=o.tools;
+const post=()=>fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':S.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+let r=await post();if(r.status===400&&body.thinking){delete body.thinking;const r2=await post();if(r2.ok)NOBT=1;r=r2}
 if(!r.ok)throw{code:r.status===429||r.status===529?'rate_limited':r.status===401||r.status===403?'bad_key':'http_'+r.status};
-const rd=r.body.getReader(),dec=new TextDecoder(),use={};let buf='',text='',ws=0;try{for(;;){const{value,done}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(!line.startsWith('data:'))continue;let ev=null;try{ev=JSON.parse(line.slice(5))}catch(e){continue}
-if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.type==='text_delta'){text+=ev.delta.text;if(o.onText)o.onText({text})}else if(ev.type==='content_block_start'&&ev.content_block&&ev.content_block.type==='text'&&text&&!/\n$/.test(text))text+='\n';else if(ev.type==='message_start'&&ev.message&&ev.message.usage)Object.assign(use,ev.message.usage);else if(ev.type==='message_delta'&&ev.usage){for(const k of['input_tokens','output_tokens','cache_creation_input_tokens','cache_read_input_tokens'])if(ev.usage[k]!=null)use[k]=ev.usage[k];const st=ev.usage.server_tool_use;if(st&&st.web_search_requests)ws=st.web_search_requests}else if(ev.type==='error')throw{code:ev.error&&ev.error.type==='overloaded_error'?'rate_limited':'api'}}}}finally{spendAdd(model,use,ws)}return{text}}
+const rd=r.body.getReader(),dec=new TextDecoder(),use={};let buf='',text='',ws=0,stop='';try{for(;;){const{value,done}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(!line.startsWith('data:'))continue;let ev=null;try{ev=JSON.parse(line.slice(5))}catch(e){continue}
+if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.type==='text_delta'){text+=ev.delta.text;if(o.onText)o.onText({text})}else if(ev.type==='message_start'&&ev.message&&ev.message.usage)Object.assign(use,ev.message.usage);else if(ev.type==='message_delta'&&ev.usage){if(ev.delta&&ev.delta.stop_reason)stop=ev.delta.stop_reason;for(const k of['input_tokens','output_tokens','cache_creation_input_tokens','cache_read_input_tokens'])if(ev.usage[k]!=null)use[k]=ev.usage[k];const st=ev.usage.server_tool_use;if(st&&st.web_search_requests)ws=st.web_search_requests}else if(ev.type==='error')throw{code:ev.error&&ev.error.type==='overloaded_error'?'rate_limited':'api'}}}}finally{spendAdd(model,use,ws)}return{text,stop}}
 const inClaude=()=>!!(window.claude&&window.claude.use);
 const smpGet=async()=>{let s=null;try{s=inClaude()?await window.claude.use('sample'):null}catch(e){}if(!s&&S.key)s=apiSample;return s};
 /* books come from GitHub: a new book shows up on the next pull-to-refresh, no reinstall */
@@ -1540,7 +1544,7 @@ async function translate(id,btn){const w=TW[id],b=w&&BK[w.b],box=btn.nextElement
 const put=t=>{box.innerHTML='<small>영어에서 번역함</small>';box.appendChild(document.createTextNode(t))};box.hidden=false;btn.textContent='원문만 보기';SND.tap();box.classList.remove('in');void box.offsetWidth;box.classList.add('in');
 const pre=(b.tr&&b.tr[w.i])||(S.trc||{})[id];if(pre){put(pre);return}box.innerHTML='<small>번역 중…</small>';
 let smp=null;try{smp=inClaude()?await window.claude.use('sample'):null}catch(e){}if(!smp&&S.key)smp=apiSample;if(!smp){box.innerHTML='<small>번역하려면 나 메뉴에 API 키를 넣어 줘</small>';return}
-try{const res=await smp(`다음은 영어 동화의 한 대목임. 원작 분위기를 살려 자연스러운 한국어로 옮겨. 번역문만 출력.\n\n${w.x}`,{cache:true,model:MODEL,effort:'low',onText:({text})=>put(text)});const t=String(res&&res.text||'').trim();if(t){S.trc=S.trc||{};S.trc[id]=t;save();put(t)}}catch(e){box.innerHTML='<small>번역을 못 했어</small>'}}
+try{const res=await smp(`다음은 영어 동화의 한 대목임. 원작 분위기를 살려 자연스러운 한국어로 옮겨. 번역문만 출력.\n\n${w.x}`,{model:SON,effort:'low',onText:({text})=>put(text)});const t=String(res&&res.text||'').trim();if(t){S.trc=S.trc||{};S.trc[id]=t;save();put(t)}}catch(e){box.innerHTML='<small>번역을 못 했어</small>'}}
 async function askBook(id,ts,pre){const QM=0;const w=TW[id];if(!w)return;const b=BK[w.b]||NB,key=nkey(id,ts),note=(S.notes[id]||[]).find(n=>n.ts===ts);if(!note)return;
 const smp=await smpGet();if(!smp){note.fail=1;store();if(!inClaude())toast('나 메뉴에 API 키를 넣으면 답장이 와');return}
 const u=usr(noteResp(id,note));if(!pre){PEND[key]={text:'',u:u.id};paintReply(key)}let ctx='';const hist=[];
@@ -1551,7 +1555,7 @@ ctx=`\n\n[책] 『${b.name}』 ${b.author||''}`+(w.u==='me'?'\n수아가 직접 
 hist.sort((p,q)=>p[1].ts-q[1].ts);const bm=bookIn(note.x),yp=bm&&bm.id!==w.b&&bm.id!==w.sell?yeopCtx(u,bm):'';const at=tw1?'이 트윗':(w.t==='r'?'조각 ':'카드 ')+(w.i+1);
 const prompt=WHO(u)+'\n[규칙]\n'+RULES+'\n- 지금은 트윗 답글임. '+LEN()+' 너답게 진짜로 반응함.'+ctx+(hist.length?'\n\n[여기서 전에 오간 답글]\n'+hist.slice(-6).map(([i,n])=>`수아${tw1?'':`(${w.t==='r'?'조각':'카드'} ${i+1})`}: ${n.x}`+(n.r?`\n@${usr(n.r.u||u.id).handle}: ${n.r.x}`:'')).join('\n'):'')+((()=>{const par=note.to!=null&&(S.notes[id]||[]).find(m=>m.ts===note.to);return par&&par.r?`\n\n[수아가 지금 답하는 건 네가 단 이 답글]\n${par.r.x}`:''})())+yp+(note.hint||'')+`\n\n[지금 수아가 ${at}에 단 답글]\n${note.x}\n\n답글 본문만 출력.`+LKP;
 try{const res=await smp(prompt,{cache:false,model:MODEL,effort:'medium',img:w.img,onText:({text})=>{if(PEND[key]){PEND[key].text=coStrip(lkStrip(text).x);paintReply(key)}}});const lv=lkStrip(String(res&&res.text||'')),tg=coTag(lv.x),t=tg.x;delete PEND[key];if(t&&pre){note.pre={x:t.slice(0,500),u:u.id,v:lv.v,q:QM?1:0,co:tg.tag};store();lnSync();return}if(t&&tg.tag)coSet(u.id,tg.tag[0],tg.tag[1]);if(t){note.r={x:t.slice(0,500),ts:Date.now(),u:u.id};{const L=[];if(lv.v>=1){L.push(u.id);if(lv.v>=2)L.push(...personas(1+rnd(2),u.id))}addLikes(key,L)}store();SND.reply();if(!(cur==='thread'&&curTh&&curTh.ids.includes(id)))toast('@'+u.handle+' 님이 답글 달았어')}paintReply(key)}
-catch(err){delete PEND[key];paintReply(key);const c=err&&err.code;if(c==='rate_limited')toast('답장이 밀렸어. 조금 뒤에 다시 남겨 봐');else if(c==='bad_key')toast('API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘');else if(c!=='not_granted')toast('답장을 못 받았어')}}
+catch(err){delete PEND[key];paintReply(key);const c=err&&err.code;if(c==='rate_limited')toast('답장이 밀렸어. 조금 뒤에 다시 남겨 봐');else if(c==='bad_key')toast('API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘');else if(c==='budget')toast(BUDT);else if(c!=='not_granted')toast('답장을 못 받았어')}}
 function rPost(a){document.body.classList.remove('replying');const w=TW[a.id],u=usr(w.u),d=new Date(w.ts||Date.now());rpT=a.id;
 const anc=[];{let p=w.r,g=0;while(p&&TW[p]&&g++<12&&!gated(p)){anc.unshift(p);p=TW[p].r}}
 const h=head('트윗',w.t==='l'?'':(BK[w.b]?BK[w.b].name:''))+(anc.length?`<div class="card anc">${anc.map(k=>row(k,{ln:1,chain:1})).join('')}</div>`:'')+(w.t==='h'?hookC(a.id,{focus:1}):w.t==='z'?zzalC(a.id,1):`<div class="card">${row(a.id,{open:false,cls:' focus',meta:`<div class="fmeta">${d.getHours()<12?'오전':'오후'} ${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,'0')} · ${d.getMonth()+1}월 ${d.getDate()}일</div>`})}</div>`)+`<div class="cmp pb"><div class="cmpt">${w.u==='me'?'<b>내 트윗</b>에 답글':`<b>@${esc(u.handle)}</b> 님에게 답글`}</div><div class="cmpr">${myAv()}<textarea id="rp-in" rows="1" placeholder="답글 게시하기"></textarea><button class="pill blue" id="rp-go" data-go="reply" disabled>답글</button></div></div><div id="notes"></div>`;
@@ -1633,9 +1637,9 @@ const spent=()=>S.spend&&S.spend.m===mkey()?S.spend.t:0;
 const spendOK=bg=>spent()<(bg?170:200);
 function jparse(t){t=String(t||'').replace(/```(?:json)?/g,'');const la=t.lastIndexOf(']'),lo=t.lastIndexOf('}');for(let i=0,k=0;i<t.length&&k<60;i++){const ch=t[i];if(ch!=='['&&ch!=='{')continue;k++;const z=ch==='['?la:lo;if(z<i)continue;try{return JSON.parse(t.slice(i,z+1))}catch(e){}}return null}
 const WSV=[{type:'web_search_20250305',name:'web_search',max_uses:3},{type:'web_search_20260318',name:'web_search',max_uses:3,allowed_callers:['direct']}];
-async function askJSON(prompt,o){o=Object.assign({cache:false,bg:1},o||{});if(inClaude()||!S.key)return null;
+async function askJSON(prompt,o){o=Object.assign({bg:1},o||{});if(inClaude()||!S.key)return null;
 const tries=o.search?[...WSV.map(w=>Object.assign({},w,{max_uses:o.search})),null]:[null];
-for(const tl of tries){try{const res=await apiSample(prompt,Object.assign({},o,tl?{tools:[tl]}:{}));const j=jparse(res&&res.text);if(j||!tl)return j}catch(e){if(e&&e.code==='http_400'&&tl)continue;throw e}}return null}
+for(const tl of tries){let res;try{res=await apiSample(prompt,Object.assign({},o,tl?{tools:[tl]}:{}))}catch(e){if(e&&e.code==='http_400'&&tl)continue;throw e}if(res.stop==='max_tokens')throw{code:'cut'};return jparse(res.text)}return null}
 
 /* ---------- everyone has a day. g: phone in hand · p: at work, sneaking looks · i: free · b: busy, phone away · o: out or elsewhere · s: asleep.
    the same person behaves the same way at the same hour, which is what makes it feel like a person ---------- */
@@ -1765,21 +1769,21 @@ ${news?GPN:''}
 ${GPR}
 
 [출력] JSON 배열만. 슬롯마다 {"k":"번호","x":"본문"}, 같이 읽기는 {"k":"E번호","x":"본문"}. 인용이면 "q":"트윗 id", 답글·이어쓰기면 "r":"트윗 id", 드립이면 "b":"책id","at":조각, 영업이면 "sell":"서점 책 id"를 더함. 쓸 게 정말 없으면 그 슬롯은 "x":""로 비움.`}
-async function gpTick(force){if(gpBusy||inClaude()||!S.key)return;if(!spendOK(1)){if(S.capM!==mkey()){S.capM=mkey();store();toast('이번 달 API를 170달러 넘게 써서 트윗이랑 책은 다음 달까지 쉬어')}return}const now=Date.now();coTick(now);const last=S.gpT||now-6*36e5;if(!force&&now-last<20*MN)return;
+async function gpTick(force){if(gpBusy||inClaude()||!S.key)return;if(!spendOK(1)){if(S.capM!==mkey()){S.capM=mkey();store();toast('이번 달 API를 170달러 넘게 써서 트윗이랑 책은 다음 달까지 쉬어')}return}const now=Date.now();coTick(now);const last=S.gpT||now-6*36e5;if(!force&&(now-last<20*MN||now<(S.gpW||0)))return;
 const from=Math.max(last,now-10*36e5),slots=[];for(const u of allUsers()){if(u.id==='me'||u.user)continue;const P=SCH[u.id];if(!P)continue;for(let t=from;t<now;t+=15*MN){if(Math.random()<TWR[stAt(u.id,t)]*(P.tw||1)*TWB)slots.push({u:u.id,ts:Math.min(now-MN,t+rnd(15*MN))})}}
 slots.sort((a,b)=>a.ts-b.ts);const take=slots.slice(-6),evs=(S.coq||[]).filter(e=>e.ts<=now&&UK[e.u]&&BK[e.b]).slice(0,6);
 if(!take.length&&!evs.length){S.gpT=now;save();return}
 const h=new Date().getHours(),news=take.length>=2&&h>=8&&now-(S.nwT||0)>3.5*36e5&&Math.random()<.8;
-gpBusy=1;let out=null;try{out=await askJSON(gpPrompt(take,evs,news),{model:SON,max:2200,search:news?2:0})}catch(e){}gpBusy=0;
-if(!Array.isArray(out)){S.gpT=now-12*MN;save();return}if(news)S.nwT=now;
-const made=gpSave(out,take,evs);S.coq=(S.coq||[]).filter(e=>!evs.includes(e));S.gpT=now;store();if(!made.length)return;rebuild();
+gpBusy=1;let out=null;try{out=await askJSON(gpPrompt(take,evs,news),{model:SON,effort:'medium',max:8000,search:news?2:0})}catch(e){}gpBusy=0;
+if(!Array.isArray(out)){S.gpF=(S.gpF||0)+1;S.gpW=now+Math.min(6*36e5,20*MN*Math.pow(2,S.gpF));save();return}S.gpF=0;S.gpW=0;if(news)S.nwT=now;
+const made=gpSave(out,take,evs),did=gpSave.done||new Set();S.coq=(S.coq||[]).filter(e=>{const i=evs.indexOf(e);if(i<0)return true;if(did.has(i))return false;e.n=(e.n||0)+1;return e.n<2});S.gpT=now;store();if(!made.length)return;rebuild();
 const fresh=made.filter(id=>TW[id]&&(vis(id)||coTeaser(id))).sort((a,b)=>TW[b].ts-TW[a].ts).slice(0,5);if(fresh.length)newArrivals(fresh,cur!=='home');if(cur==='profile'&&arg&&arg!=='me')rProfile(arg)}
 const clean=x=>String(x||'').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').replace(/(^|\s)#\S+/g,'$1').replace(/—/g,' ').replace(/[ \t]+\n/g,'\n').trim().slice(0,280);
-function gpSave(out,slots,evs){S.gp=S.gp||[];const made=[],have=new Set([...PST.map(p=>p.id),...S.gp.map(p=>p.id),...(S.lp||[]).map(p=>p.id)]),byK={};const sl=new Set(CAT.map(c=>c.id));
+function gpSave(out,slots,evs){S.gp=S.gp||[];gpSave.done=new Set();const made=[],have=new Set([...PST.map(p=>p.id),...S.gp.map(p=>p.id),...(S.lp||[]).map(p=>p.id)]),byK={};const sl=new Set(CAT.map(c=>c.id));
 const nid=(pre,ts,u)=>{const d=new Date(ts),b=pre+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'-'+u;let id=b,k=2;while(have.has(id))id=b+'-'+(k++);have.add(id);return id};
 const sold=new Set((gpSave.L||[]).map(c=>c.id)),items=out.filter(o=>o&&typeof o==='object').sort((a,b)=>String(a.k).startsWith('E')-String(b.k).startsWith('E'));
 for(const o of items){const k=String(o.k||''),x=clean(o.x);if(!x)continue;const e=/^E\d+$/.test(k)?evs[+k.slice(1)-1]:null,s=!e&&/^\d+$/.test(k)?slots[+k-1]:null;if(!e&&!s)continue;const u=(e||s).u;let ts=(e||s).ts;
-const p={u,x,ts};if(e){p.co=1;if(e.k==='start'||e.k==='back'||e.k==='drop')p.sell=e.b;else{p.b=e.b;p.at=e.at;if(e.k!=='fin')p.qb=1}p.id=nid('c',ts,u)}else{
+const p={u,x,ts};if(e){gpSave.done.add(+k.slice(1)-1);p.co=1;if(e.k==='start'||e.k==='back'||e.k==='drop')p.sell=e.b;else{p.b=e.b;p.at=e.at;if(e.k!=='fin')p.qb=1}p.id=nid('c',ts,u)}else{
 const tgt=id=>{if(typeof id!=='string')return null;const m=id.match(/^k:(\d+)$/);if(m)return byK[m[1]]||null;const r=id.replace(/^l\./,'');return TW['l.'+r]&&TW['l.'+r].u!=='me'?r:null};
 if(o.q){const q=tgt(o.q);if(q){p.q=q;const qt=(TW['l.'+q]||{}).ts||(S.gp.find(z=>z.id===q)||{}).ts||0;if(qt>=ts)ts=p.ts=Math.min(Date.now()-MN,qt+(2+rnd(25))*MN)}}
 if(!p.q&&o.r){const r=tgt(o.r);if(r){const rt=TW['l.'+r]||{},own=(rt.u||(S.gp.find(z=>z.id===r)||{}).u)===u;if(own||Math.random()<.5){p.r=r;const t0=rt.ts||(S.gp.find(z=>z.id===r)||{}).ts||0;if(t0>=ts)ts=p.ts=Math.min(Date.now()-MN,t0+(3+rnd(30))*MN)}}}
@@ -1791,7 +1795,7 @@ if(S.gp.length>500){const ref=new Set(S.gp.map(p=>p.q).concat(S.gp.map(p=>p.r)).
 return made}
 
 /* ---------- making a book on the phone: wikisource → paragraphs → chunks → one careful pass ---------- */
-async function wsApi(host,q){const u=`https://${host}/w/api.php?`+new URLSearchParams(Object.assign({format:'json',formatversion:'2',origin:'*'},q));for(let k=0;k<4;k++){let r;try{r=await fetch(u)}catch(e){await sleep(1500);continue}if(r.status===429){await sleep(2500*(k+1));continue}if(!r.ok)break;return r.json()}throw{code:'nosrc'}}
+async function wsApi(host,q){const u=`https://${host}/w/api.php?`+new URLSearchParams(Object.assign({format:'json',formatversion:'2',origin:'*'},q));for(let k=0;k<4;k++){let r;try{r=await fetch(u)}catch(e){await sleep(1500);continue}if(r.status===429||r.status>=500){await sleep(2500*(k+1));continue}if(!r.ok)break;try{return await r.json()}catch(e){await sleep(2500*(k+1))}}throw{code:'net'}}
 function ptext(html){const doc=new DOMParser().parseFromString(String(html||''),'text/html'),root=doc.querySelector('.mw-parser-output')||doc.body,out=[];const skip=el=>/^(STYLE|SCRIPT|SUP)$/.test(el.tagName)||/pagenum|ws-noexport/.test(typeof el.className==='string'?el.className:'');
 const txt=n=>{if(n.nodeType===3)return n.nodeValue;if(n.nodeType!==1||skip(n))return'';if(n.tagName==='BR')return' ';let s='';for(const c of n.childNodes)s+=txt(c);return s};
 for(const p of root.querySelectorAll('p')){let a=p.parentElement,bad=false;while(a&&a!==root){if(skip(a)){bad=true;break}a=a.parentElement}if(bad)continue;const y=txt(p).replace(/\s+/g,' ').trim();if(y)out.push(y)}return out}
@@ -1799,7 +1803,7 @@ const PDR=/퍼블릭\s*도메인|public domain|저작권|copyright|이 저작물
 async function wsGet(src){let u;try{u=new URL(src)}catch(e){throw{code:'nosrc'}}const host=u.host;if(!/^(ko|en)\.wikisource\.org$/.test(host))throw{code:'nosrc'};let title='';
 if(/\/wiki\//.test(u.pathname))title=decodeURIComponent(u.pathname.split('/wiki/')[1]).replace(/_/g,' ');else if(u.searchParams.get('title'))title=u.searchParams.get('title');
 else if(u.searchParams.get('search')){const j=await wsApi(host,{action:'query',list:'search',srsearch:u.searchParams.get('search'),srlimit:'1',srnamespace:'0'});title=j&&j.query&&j.query.search&&j.query.search[0]&&j.query.search[0].title}
-if(!title)throw{code:'nosrc'};const j=await wsApi(host,{action:'parse',page:title,prop:'text',redirects:'1'});if(!j||!j.parse)throw{code:'nosrc'};const html=j.parse.text,T=j.parse.title||title;let ps=ptext(html);
+if(!title)throw{code:'nosrc'};const j=await wsApi(host,{action:'parse',page:title,prop:'text',redirects:'1'});if(!j||!j.parse)throw{code:j&&j.error&&/missing|invalid|nosuch/.test(j.error.code||'')?'nosrc':'net'};const html=j.parse.text,T=j.parse.title||title;let ps=ptext(html);
 /* an index page: follow its chapters in the order they are listed */
 if(ps.join('').length<1500){const doc=new DOMParser().parseFromString(html,'text/html'),seen=new Set(),subs=[];for(const a of doc.querySelectorAll('a[href]')){const h=a.getAttribute('href')||'';const m=h.match(/\/wiki\/([^#?]+)/);if(!m)continue;const t=decodeURIComponent(m[1]).replace(/_/g,' ');if(t.startsWith(T+'/')&&!seen.has(t)){seen.add(t);subs.push(t)}}
 if(subs.length>=2){ps=[];for(const t of subs.slice(0,90)){const k=await wsApi(host,{action:'parse',page:t,prop:'text',redirects:'1'});if(k&&k.parse)ps.push(...ptext(k.parse.text));await sleep(250)}}}
@@ -1828,20 +1832,32 @@ const BKR=`[훅] 원문 한 대목을 가리키는 어그로 트윗. 담당 유�
 [금지] 이모지, 해시태그, 연도 같은 구체적 숫자, "충격", "모르면 손해", "썰 푼다", "ㄹㅇ 실화냐 ㄷㄷ", "꿀팁", "정리", "결국", 마케팅 문구, 정리 멘트·예고 멘트·교훈 마무리·재미 선언·같은 틀 반복·형용사 자랑. 돈 벌려고 AI 돌리는 계정 말투가 나면 실패.
 [사람] 가상의 사람을 예로 들면 기본은 여자. 성별 때문에 꾸밈이나 고정관념을 붙이지 않음.
 [수아] 수아는 한자를 못 읽음. 지루하거나 못 알아듣겠으면 덮음.`;
+/* a foreign classic carried in Korean: the next English chunks are translated first, in the voice of what is already there */
+async function koOf(C,b,src){const prev=b.orig.slice(-3).map(x=>x.replace(/\n/g,' ')).join('\n'),nm=src.names&&typeof src.names==='object'?Object.entries(src.names).map(([a,k])=>a+' → '+k).join(', '):'';let j=null;
+try{j=await askJSON(`영어 원작 『${b.name}』(${b.author||''})을 한국어로 옮겨 싣는 중임. 아래 영어 조각들을 앞부분에 이어지는 한국어 소설 문장으로 옮김. 번역투 금지, 원작의 말맛과 농담을 살림. 빼거나 보태지 않음. 조각 순서와 개수를 그대로 지키고, 조각 하나는 한국어 40~260자. 대사는 “ ”로, 조각 안에서 문단이 바뀌면 \\n.${src.note?'\n[옮기는 규칙] '+String(src.note).slice(0,600):''}${nm?'\n[이름 표기] '+nm.slice(0,1200):''}
+[바로 앞 한국어 조각] 말투와 호칭을 여기에 맞춤
+${prev}
+
+[옮길 조각]
+`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n')+`
+
+JSON 문자열 배열 하나만 출력.`,{model:MODEL,max:32000})}catch(e){}
+return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string'&&/[가-힣]/.test(x))?j.map(x=>x.trim()):null}
+const isEn=t=>/[A-Za-z]{4}/.test(t)&&!/[가-힣]/.test(t);
 const numd=(C,s0)=>C.map((x,i)=>`조각 ${s0+i}: ${x.replace(/\n/g,' ')}`).join('\n');
-function okBatch(o,C,s0){const R={hooks:[],zzal:[],side:[],drip:[]},inR=a=>Number.isInteger(+a)&&+a>=s0&&+a<s0+C.length,ch=a=>C[+a-s0],bad=x=>/충격|모르면 손해|썰 푼다|꿀팁|실화냐|ㄷㄷ|정리하면|결국|[0-9]{3,4}년/.test(x);
+function okBatch(o,C,s0){const R={hooks:[],zzal:[],side:[],drip:[]},inR=a=>Number.isInteger(+a)&&+a>=s0&&+a<s0+C.length,ch=a=>C[+a-s0],bad=x=>/모르면 손해|썰 푼다|꿀팁|실화냐|정리하면|[0-9]{3,4}년/.test(x);
 for(const h of(o&&o.hooks)||[])if(h&&inR(h.at)&&typeof h.x==='string'&&h.x.trim()&&!bad(h.x)){const hl=typeof h.hl==='string'&&ch(h.at).includes(h.hl)?h.hl:'';R.hooks.push({x:clean(h.x),at:+h.at,hl})}
 for(const z of(o&&o.zzal)||[])if(z&&inR(z.at)&&typeof z.x==='string'&&z.x.length>=10&&ch(z.at).includes(z.x))R.zzal.push({at:+z.at,x:z.x,c:clean(z.c||'')});
 const ss=new Set();for(const x of(o&&o.side)||[])if(x&&inR(x.at)&&!ss.has(+x.at)&&typeof x.x==='string'&&x.x.trim()&&!/[0-9]{3,4}년/.test(x.x)){ss.add(+x.at);R.side.push(Object.assign({at:+x.at,x:clean(x.x)},x.tmi?{tmi:1}:{}))}
 for(const d of(o&&o.drip)||[])if(d&&inR(d.at)&&typeof d.x==='string'&&d.x.trim())R.drip.push({at:+d.at,x:clean(d.x)});return R}
-async function trOf(C,name){const j=await askJSON(`다음은 영어 원작 『${name}』의 조각들임. 원작 분위기를 살려 자연스러운 한국어로 옮김(번역투 금지). 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{model:SON,max:9000});return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string')?j:null}
-async function modOf(C){const j=await askJSON(`다음은 옛 한글 표기(아래아 등)로 된 고전소설 조각들임. 낱말과 문장은 그대로 두고 표기만 지금 맞춤법으로 고침. 한자는 한글로, 꼭 필요한 뜻풀이만 괄호로. 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{max:9000});return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string'&&x.length>10)?j:null}
+async function trOf(C,name){let j=null;try{j=await askJSON(`다음은 영어 원작 『${name}』의 조각들임. 원작 분위기를 살려 자연스러운 한국어로 옮김(번역투 금지). 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{model:SON,effort:'low',max:32000})}catch(e){}return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string')?j:null}
+async function modOf(C){let j=null;try{j=await askJSON(`다음은 옛 한글 표기(아래아 등)로 된 고전소설 조각들임. 낱말과 문장은 그대로 두고 표기만 지금 맞춤법으로 고침. 한자는 한글로, 꼭 필요한 뜻풀이만 괄호로. 조각 순서와 개수를 그대로 지켜서 JSON 문자열 배열 하나만 출력.\n\n`+C.map((x,i)=>`${i+1}. ${x.replace(/\n/g,' ')}`).join('\n'),{max:32000})}catch(e){}return Array.isArray(j)&&j.length===C.length&&j.every(x=>typeof x==='string'&&x.length>10)?j:null}
 const drips=(bid,u,L)=>{S.gp=S.gp||[];const out=[];L.slice(0,2).forEach((d,k)=>{const ts=Date.now()-(5+rnd(90))*MN-k*7*MN,id='j'+ts+'-'+bid+'-'+d.at;S.gp.push({id,u,x:d.x,ts,b:bid,at:d.at});out.push('l.'+id)});return out};
-const MKB={};
+const MKB={},MODC=new Map();
 async function makeBook(cid,host,coU){const c=catOf(cid);if(!c||MKB[cid]||BK[cid])return;if(!makeable(c)){S.cno=S.cno||{};S.cno[cid]=c.no||'원문을 못 받아 와';store();toast('『'+c.name+'』은 못 만들어 · '+S.cno[cid]);if(cur==='books')rBooks();return}if(!S.key){toast('나 메뉴에 API 키를 넣어야 책을 만들 수 있어');return}if(!spendOK(1)){toast('이번 달 API를 거의 다 써서 책은 다음 달에 만들 수 있어');return}
-MKB[cid]=1;S.req=S.req||{};S.req[cid]=Object.assign({},S.req[cid]||{},{k:'new',at:Date.now(),mk:1,host:host||'',co:coU||''});store();if(cur==='books')rBooks();
+MKB[cid]=1;S.req=S.req||{};S.req[cid]=Object.assign({},S.req[cid]||{},{k:'new',at:Date.now(),mk:1,host:host||'',co:coU||''});delete S.req[cid].fail;store();if(cur==='books')rBooks();
 try{const lang=c.lang==='en'?'en':'ko',ps=await wsGet(c.src),all=chunkAll(ps,lang),whole=all.length<=42,first=whole?all:all.slice(0,30);srcSave(cid,{lang,chunks:all});
-let orig=first.slice();if(c.cat==='고전'){const m=await modOf(first);if(m)orig=m}
+let orig=first.slice();if(c.cat==='고전'){const m=MODC.get(cid)||await modOf(first);if(m){orig=m;MODC.set(cid,m)}}
 const us=allUsers().filter(u=>u.id!=='me'&&!u.user&&u.id!==coU),cnt=id=>allBooks().filter(b=>b._by===id).length,hostU=host&&UK[host]&&host!==coU?UK[host]:null;
 const cands=hostU?[hostU]:us,uc=cands.map(u=>`id ${u.id} @${u.handle} (${u.name}) · 지금 맡은 책 ${cnt(u.id)}권\n성격: ${u.soul}\n말버릇: ${u.voice}`+(u.taste?`\n책 취향: ${u.taste}`:'')).join('\n\n');
 const prompt=`'타래'는 수아 한 사람이 쓰는 트위터 같은 독서 앱이고, 책 한 권은 앱 속 유저 한 명이 맡아서 원문을 타래로 올림. 저작권 끝난 책 『${c.name}』(${c.author||''}, ${CATN[c.cat]||''})을 앱에 넣으려고 함.
@@ -1867,7 +1883,7 @@ ${numd(orig,0)}
 ${BKR}
 
 [출력] JSON 객체 하나만: {"by":"","handle":"","when":"","bio":"","hooks":[],"zzal":[],"side":[],"drip":[],"arrive":""${whole?',"threads":[]':''}}`;
-const o=await askJSON(prompt,{model:MODEL,max:6000,search:4,effort:'high'});if(!o||typeof o!=='object')throw{code:'gen'};
+const o=await askJSON(prompt,{model:MODEL,max:24000,search:4,effort:'high'});if(!o||typeof o!=='object'||Array.isArray(o))throw{code:'gen'};
 const R=okBatch(o,orig,0);if(R.hooks.length<2)throw{code:'gen'};let by=hostU?hostU.id:(UK[o.by]&&cands.some(u=>u.id===o.by)?o.by:cands.slice().sort((a,b)=>cnt(a.id)-cnt(b.id))[0].id);
 let bio=String(o.bio||'').split('\n').map(x=>x.trim()).filter(Boolean);if(bio.length!==3)bio=(c.blurb?[c.blurb]:[]).concat(bio).slice(0,3);
 const b={id:cid,name:c.name,handle:/^[a-z0-9_]{2,30}$/.test(o.handle||'')?o.handle:cid.replace(/-/g,'_'),author:c.author||'',when:typeof o.when==='string'?o.when.slice(0,12):'',color:c.color||'#7d8fa6',cvs:c.cvs,tone:c.tone,lang,by,bio:bio.join('\n'),orig,tr:[],hooks:R.hooks,zzal:R.zzal,side:R.side,threads:[],cover:c.cover,made:'app'};
@@ -1876,17 +1892,21 @@ if(whole){const th=Array.isArray(o.threads)&&o.threads.find(t=>t&&Array.isArray(
 if(S.req&&S.req[cid]&&S.req[cid].x){delete S.req[cid];store();return}
 S.mk=S.mk||{};S.mk[cid]=b;delete S.req[cid];S.gp=S.gp||[];const ts=Date.now()-rnd(4)*MN,fresh=drips(cid,by,R.drip);if(typeof o.arrive==='string'&&clean(o.arrive)){S.gp.push({id:'a'+ts+'-'+by,u:by,x:clean(o.arrive),ts,sell:cid});fresh.unshift('l.a'+ts+'-'+by)}
 store();rebuild();setPick(cid,true);SND.follow();toast('신청한 『'+c.name+'』 들어왔어 · 탐라에 떠');newArrivals(fresh.filter(id=>TW[id]&&vis(id)),cur!=='home');navBooksDot();if(cur==='books')rBooks()}
-catch(e){const cd=e&&e.code;if(cd==='nosrc'||cd==='chunk'){S.cno=S.cno||{};S.cno[cid]=cd==='nosrc'?'원문을 못 받아 왔어':'원문이 이상해';delete S.req[cid];store();toast('『'+c.name+'』은 못 만들었어 · '+S.cno[cid])}else{if(S.req[cid])S.req[cid].fail=Date.now();store();toast(cd==='budget'?'이번 달 API를 거의 다 써서 책은 다음 달에 만들 수 있어':'『'+c.name+'』 만들다가 막혔어 · 조금 뒤에 알아서 다시 해 볼게')}if(cur==='books')rBooks()}
+catch(e){const cd=e&&e.code,q=S.req&&S.req[cid];if(cd==='nosrc'||cd==='chunk'){S.cno=S.cno||{};S.cno[cid]=cd==='nosrc'?'원문을 못 찾았어':'원문이 이상해';delete S.req[cid];store();toast('『'+c.name+'』은 못 만들었어 · '+S.cno[cid])}
+else if(cd==='net'||cd==='budget'||cd==='rate_limited'){if(q)q.fail=Date.now();store();toast(cd==='budget'?'이번 달 API를 거의 다 써서 책은 다음 달에 만들 수 있어':cd==='net'?'인터넷이 불안해서 『'+c.name+'』 원문을 못 받았어 · 조금 뒤에 다시 해 볼게':'『'+c.name+'』 만들다가 밀렸어 · 조금 뒤에 다시 해 볼게')}
+else if(q&&(q.tries=(q.tries||0)+1)>=3){delete S.req[cid];store();toast('『'+c.name+'』 세 번 해 봤는데 안 만들어져 · 하트를 다시 누르면 또 해 볼게')}
+else{if(q)q.fail=Date.now();store();toast(cd==='bad_key'?'API 키가 안 맞아. 나 메뉴에서 다시 넣어 줘':'『'+c.name+'』 만들다가 막혔어 · 조금 뒤에 알아서 다시 해 볼게')}if(cur==='books')rBooks()}
 delete MKB[cid]}
 /* the next part, when she is about to run out */
 const GRW={};
 function extMerge(b,x){const o=Object.assign({},b),n0=b.orig.length,s0=x.s0;const add=(x.orig||[]).slice(Math.max(0,n0-s0));o.orig=b.orig.concat(add);if(b.lang==='en'||x.tr)o.tr=(b.tr||[]).slice(0,n0).concat((x.tr||[]).slice(Math.max(0,n0-s0)));const L=o.orig.length,f=a=>(a||[]).filter(h=>+h.at<L);
 o.hooks=(b.hooks||[]).concat(f(x.hooks));o.zzal=(b.zzal||[]).concat(f(x.zzal));o.side=(b.side||[]).concat(f(x.side).filter(s=>!(b.side||[]).some(t=>+t.at===+s.at)));if(x.threads&&x.threads.length&&x.done)o.threads=(b.threads||[]).filter(t=>!t.lock).concat(x.threads);
 if(x.done&&L>=(x.total||L)){delete o.more;delete o.total}else{o.more=true;o.total=x.total||b.total}return o}
-async function growBook(b){if(!b||!b.more||!inLib(b.id)||GRW[b.id]||!S.key||inClaude()||!spendOK(1))return;const left=b.orig.filter((x,i)=>!S.seen[b.id+'.r.'+i]).length;if(left>15)return;S.grF=S.grF||{};if(Date.now()-(S.grF[b.id]||0)<10*MN)return;
+async function growBook(b){if(!b||!b.more||!inLib(b.id)||GRW[b.id]||!S.key||inClaude()||!spendOK(1))return;const left=b.orig.filter((x,i)=>!S.seen[b.id+'.r.'+i]).length;if(left>15)return;S.grF=S.grF||{};S.grN=S.grN||{};if(Date.now()-(S.grF[b.id]||0)<Math.min(6*36e5,10*MN*Math.pow(2,S.grN[b.id]||0)))return;
 GRW[b.id]=1;if(cur==='thread')paintMore(b);try{const src=await srcOf(b);if(!src||!Array.isArray(src.chunks))throw{code:'src'};const all=src.chunks,s0=b.orig.length;
 if(s0>=all.length){S.ext=S.ext||{};const x=S.ext[b.id]||{s0,orig:[],tr:[],hooks:[],zzal:[],side:[]};x.done=1;x.total=all.length;x.v=(x.v||0)+1;S.ext[b.id]=x;store();rebuild();return}
 let e=Math.min(all.length,s0+30);if(all.length-e<=12)e=all.length;const raw=all.slice(s0,e),done=e>=all.length,cat=(catOf(b.id)||{}).cat;let C=raw;if(cat==='고전'&&b.made==='app'){const m=await modOf(raw);if(m)C=m}
+if(src.lang==='en'&&b.lang!=='en'){const k=await koOf(raw,b,src);if(!k)throw{code:'tr'};C=k}
 const u=usr(b._by),prev=(b.hooks||[]).map(h=>'- '+String(h.x).replace(/\n/g,' ')).slice(-12).join('\n');
 const o=await askJSON(`'타래'는 수아 한 사람이 쓰는 트위터 같은 독서 앱이고, 책 『${b.name}』(${b.author||''})은 유저 @${u.handle}(${u.name})이 원문을 타래로 올리는 중임. 수아가 읽다가 거의 따라와서 다음 부분을 이어 붙임.
 [담당 유저] 성격: ${u.soul||''}\n말버릇: ${u.voice||''}
@@ -1905,12 +1925,12 @@ ${numd(C,s0)}
 
 ${BKR}
 
-[출력] JSON 객체 하나만: {"hooks":[],"zzal":[],"side":[],"drip":[]${done?',"threads":[]':''}}`,{model:MODEL,max:4000,search:done?4:0});
+[출력] JSON 객체 하나만: {"hooks":[],"zzal":[],"side":[],"drip":[]${done?',"threads":[]':''}}`,{model:MODEL,max:16000,search:done?4:0});
 const R=okBatch(o||{},C,s0);let tr=[];if(b.lang==='en'){tr=Array.isArray(src.tr)&&src.tr.length>=e?src.tr.slice(s0,e):await trOf(C,b.name)||[]}
 S.ext=S.ext||{};const x=S.ext[b.id]&&S.ext[b.id].s0<=s0?S.ext[b.id]:{s0,orig:[],tr:[],hooks:[],zzal:[],side:[]},off=s0-x.s0;x.orig=x.orig.slice(0,off).concat(C);if(b.lang==='en'){x.tr=(x.tr||[]).slice(0,off);while(x.tr.length<off)x.tr.push('');x.tr=x.tr.concat(tr.length===C.length?tr:C.map(()=>''))}
 x.hooks=(x.hooks||[]).concat(R.hooks);x.zzal=(x.zzal||[]).concat(R.zzal);x.side=(x.side||[]).concat(R.side);x.total=all.length;if(done){x.done=1;const th=o&&Array.isArray(o.threads)&&o.threads.find(t=>t&&Array.isArray(t.tw)&&t.tw.length>=2);if(th)x.threads=[{title:'다 읽은 사람만',lock:true,tw:th.tw.filter(t=>typeof t==='string').slice(0,8).map(clean)}]}
-x.v=(x.v||0)+1;S.ext[b.id]=x;const fresh=drips(b.id,b._by,R.drip);store();rebuild();SND.follow();toast('『'+b.name+'』 다음 부분 들어왔어');if(cur==='thread'&&arg&&String(arg.id).startsWith(b.id+'.r.')){const y=scrollY;rThread({id:arg.id,keep:true});scrollTo(0,y)}newArrivals(fresh.filter(id=>TW[id]&&vis(id)),true)}
-catch(e){S.grF[b.id]=Date.now();store()}finally{delete GRW[b.id];if(cur==='thread')paintMore(BK[b.id])}}
+x.v=(x.v||0)+1;S.ext[b.id]=x;delete S.grN[b.id];const fresh=drips(b.id,b._by,R.drip);store();rebuild();SND.follow();toast('『'+b.name+'』 다음 부분 들어왔어');if(cur==='thread'&&arg&&String(arg.id).startsWith(b.id+'.r.')){const y=scrollY;rThread({id:arg.id,keep:true});scrollTo(0,y)}newArrivals(fresh.filter(id=>TW[id]&&vis(id)),true)}
+catch(e){S.grF[b.id]=Date.now();if(!e||(e.code!=='net'&&e.code!=='budget'))S.grN[b.id]=(S.grN[b.id]||0)+1;store()}finally{delete GRW[b.id];if(cur==='thread')paintMore(BK[b.id])}}
 function paintMore(b){const el=document.querySelector('#v-thread .nx.more');if(!el||!b)return;el.querySelector('b').textContent=GRW[b.id]?'다음 부분 붙이는 중':'여기까지 들어왔어';el.querySelector('span').textContent=(S.key?(GRW[b.id]?'조금만 기다려':'거의 다 읽으면 내가 알아서 붙여 둘게'):'나 메뉴에 API 키를 넣어야 다음 부분이 와')+' · '+b.orig.length+'/'+(b.total||'?')+'조각'}
 
 /* ---------- on the thread: where everyone reading along has got to ---------- */
