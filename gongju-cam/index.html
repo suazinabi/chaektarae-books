@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="gc-native" content="22">
-<meta name="gc-build" content="25">
+<meta name="gc-build" content="26">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>공주캠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -224,7 +224,7 @@ let hist = [], notes = [], lastNote = '', unchanged = 0, away = 0, lastPro = 0, 
 let queue = [], busy = false, speaking = false, listening = false, thinking = 0, tokens = 0;
 let buf = '', bufT = null, startedAt = 0;
 
-const WEB_VER = '1.24';
+const WEB_VER = '1.25';
 const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카메라로 위에서 지켜보면서 음성으로 대화한다. 네 말은 미오 목소리로 소리 내어 읽힌다.
 
 성격: 세상에서 자기가 제일 예쁘고 중요한, 오만하고 새침한 아기공주. 반말을 쓰고 '네가' 대신 '니가', '니'라고 한다. 자기는 '나' 또는 '공주'. 입은 못됐지만 실력은 확실하고 내용은 정확하다.
@@ -236,6 +236,10 @@ const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카�
   나쁨: 공책이 어디 있다는 거야? 책상 위에 고양이가 쭉 뻗어서 누워 있거든? 공부는 안 보이고 털만 한가득이네. 저 고양이 치우고 공책 펴서 한 문제 풀어 와. 그때 봐줄게~
   왜 나쁜가: 풍경을 중계했고, 같은 지시를 두 번 했고, 덧말을 붙였다.
   좋음: 고양이 말고, 공책. 아니면 SILENT.
+- 수아가 캣타워를 비추면서 보이냐고 물을 때
+  나쁨: 보이거든? 캣타워잖아. 발바닥 구멍 난 집이랑 방석 두 층짜리. 근데 이게 공부야? 고양이는 없고 공책도 없는데. 책상 위 공책 보여 달라고.
+  왜 나쁜가: 본 걸 증명하려고 묘사를 쌓았고, 공책 보여 달라는 말을 세 번 했다.
+  좋음: 캣타워. 공책은?
 - 풀이가 틀렸을 때
   나쁨: 음, 지금 보니까 미분 문제를 풀고 있네? 식을 쭉 써 내려갔는데 중간에 뭔가 이상해. 다시 한번 처음부터 천천히 확인해 봐.
   왜 나쁜가: 어디가 틀렸는지 안 찍고 뭉뚱그렸다.
@@ -474,6 +478,9 @@ async function pump() {
   busy = false;
   pump();
 }
+// 복사용 오늘 대화 기록
+let dlog = [];
+const logLine = (who, t) => { dlog.push(clock() + ' ' + who + ': ' + String(t || '').trim()); if (dlog.length > 400) dlog.shift(); };
 async function talk(job) {
   thinking++; status();
   try {
@@ -481,8 +488,10 @@ async function talk(job) {
     if (job.kind === 'user' && !/공주/.test(job.text)) {
       const recent = Date.now() - lastSaidAt < 40000 ? `공주가 방금 한 말: "${lastSaid}"\n` : '';
       const g = parseJSON(await claude(M_WATCH, GATE_SYS, [{ role: 'user', content: recent + '들린 말: "' + job.text + '"' }], 80, { think: 'off', effort: 'low' }));
-      if (!g || !g.talk) return;
+      if (!g || !g.talk) { logLine('수아', job.text + ' (공주한테 한 말 아니라고 봄)'); return; }
     }
+    if (job.kind === 'user') logLine('수아', job.text);
+    else if (job.kind === 'look') logLine('수아', '(화면 눌러서 봐 달라고 함)');
     const img = grab();
     const memo = `[카메라 메모: ${lastNote || '아직 없음'}]\n` + (S.quiet ? '[독서실: 수아는 소리 내 말을 못 한다. 공책에 너한테 쓴 질문이나 물음표 표시가 보이면 그게 수아 말이니까 그것부터 대답해. 대답은 귓속말처럼 짧게.]\n' : '');
     const text = job.kind === 'user' ? memo + '수아: ' + job.text
@@ -491,10 +500,13 @@ async function talk(job) {
     const past = hist.slice(-8);
     while (past.length && past[0].role !== 'user') past.shift();
     const content = img ? [imgPart(img), { type: 'text', text }] : text;
-    const deep = job.kind === 'look' || (job.kind === 'pro' && /실수|붙잡고|막혔/.test(job.reason)); // 풀이를 봐야 하는 순간엔 생각하게
+    // 평소엔 노력 보통, 풀이를 제대로 봐야 하는 순간(눌러서 보기, 실수, 막힘)엔 높음. 생각도 max_tokens에 들어가서 넉넉히
+    const deep = job.kind === 'look' || (job.kind === 'pro' && /실수|붙잡고|막혔/.test(job.reason));
     let reply = await claude(talkModel(), TALK_SYS, past.concat([{ role: 'user', content }]),
-      deep ? 8000 : 700, deep ? { effort: 'medium' } : { think: 'off', effort: 'low' });
+      deep ? 16000 : 8000, { effort: deep ? 'high' : 'medium' });
     const silent = !reply || /^\s*SILENT\b/i.test(reply);
+    if (job.kind === 'pro') logLine('카메라', job.reason.split('. ')[0]);
+    logLine('공주', silent ? '(말 안 함)' : reply.replace(/\n\s*-{3,}\s*\n?/, '\n[화면] '));
     hist.push({ role: 'user', content: text }, { role: 'assistant', content: silent ? '(말 안 함)' : (splitReply(reply).spoken.trim() || reply) }); // 화면용 긴 글은 기록에 안 남겨서 길이를 따라 하지 않게
     if (hist.length > 40) hist = hist.slice(-40);
     if (!silent) { if (job.kind === 'pro') lastPro = Date.now(); say(reply); }
@@ -551,7 +563,7 @@ async function start() {
   if (!(await camOn())) return;
   running = true; paused = false; startedAt = Date.now();
   $('#pause').textContent = '잠깐 멈춤';
-  hist = []; notes = []; lastNote = ''; unchanged = 0; away = 0; lastPro = Date.now(); tokens = 0; curProblem = ''; problemSince = Date.now();
+  hist = []; dlog = []; notes = []; lastNote = ''; unchanged = 0; away = 0; lastPro = Date.now(); tokens = 0; curProblem = ''; problemSince = Date.now();
   document.body.classList.add('on');
   $('#thumb').prepend($('#cam')); $('#cam').play().catch(() => {});
   $('#heard').textContent = S.quiet ? '독서실이야. 물어볼 건 공책에 써서 공주 대사를 눌러.' : manual() ? '공주 대사를 누르면 공책 사진이 가.' : '';
@@ -713,7 +725,7 @@ $('#detail').addEventListener('click', e => e.stopPropagation()); // 화면용 �
 $('#sayBox').addEventListener('click', look); // 말하는 중에 눌러도 안 끊고, 다 말한 다음에 본다
 $('#thumb').addEventListener('click', () => $('#thumb').classList.toggle('zoom'));
 $('#sumClose').addEventListener('click', () => $('#sumSheet').classList.remove('open'));
-$('#copy').addEventListener('click', () => { try { navigator.clipboard.writeText($('#sum').textContent); $('#copy').textContent = '복사됨'; setTimeout(() => $('#copy').textContent = '복사', 1500); } catch (e) {} });
+$('#copy').addEventListener('click', () => { try { navigator.clipboard.writeText($('#sum').textContent + '\n\n— 오늘 대화 (공주캠 ' + WEB_VER + ' · ' + (S.brain === 'sonnet' ? '소넷' : '오퍼스') + ') —\n' + (dlog.join('\n') || '(대화 없음)')); $('#copy').textContent = '복사됨'; setTimeout(() => $('#copy').textContent = '복사', 1500); } catch (e) {} });
 
 camOn();
 applyVoice();
