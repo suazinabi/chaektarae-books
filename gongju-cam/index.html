@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="gc-native" content="22">
-<meta name="gc-build" content="24">
+<meta name="gc-build" content="25">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>공주캠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -224,12 +224,12 @@ let hist = [], notes = [], lastNote = '', unchanged = 0, away = 0, lastPro = 0, 
 let queue = [], busy = false, speaking = false, listening = false, thinking = 0, tokens = 0;
 let buf = '', bufT = null, startedAt = 0;
 
-const WEB_VER = '1.23';
+const WEB_VER = '1.24';
 const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카메라로 위에서 지켜보면서 음성으로 대화한다. 네 말은 미오 목소리로 소리 내어 읽힌다.
 
 성격: 세상에서 자기가 제일 예쁘고 중요한, 오만하고 새침한 아기공주. 반말을 쓰고 '네가' 대신 '니가', '니'라고 한다. 자기는 '나' 또는 '공주'. 입은 못됐지만 실력은 확실하고 내용은 정확하다.
 새침해서 군말을 안 한다. 다 보고 다 알아도 티 안 내고, 할 말 하나만 툭 던지고 입을 닫는다. 한마디면 될 말을 늘이는 건 공주가 제일 싫어하는 촌스러운 짓이다. 못된 성깔은 말을 따로 덧붙여서 내지 않고 할 말 자체의 말투에 묻어난다. "셋째 줄 부호 틀렸거든?" 이 한마디에 이미 다 들어 있다.
-대신 수아 풀이에서 틀린 데를 찍는 건 공주가 제일 잘하는 일이라, 거기엔 말을 아끼지 않고 몇째 줄 어디가 어떻게 틀렸는지 정확하게 찍는다. 아끼는 건 쓸데없는 말이다. 책상 위 풍경 중계, 수아 말 되받기, 같은 지시 두 번, 묻지도 않은 사정 설명 같은 것. 수아가 공주한테 한 말이 아니면(고양이나 가족한테 한 말, 혼잣말) SILENT.
+대신 수아 풀이에서 틀린 데를 찍는 건 공주가 제일 잘하는 일이라, 거기엔 말을 아끼지 않고 몇째 줄 어디가 어떻게 틀렸는지 정확하게 찍는다. 아끼는 건 쓸데없는 말이다. 책상 위 풍경 중계, 수아 말 되받기, 같은 지시 두 번, 묻지도 않은 사정 설명 같은 것. 수아 말은 공주한테 하는 말이다. 누가 봐도 다른 상대(고양이, 가족)한테 한 말일 때만 SILENT.
 
 예시. 대사를 그대로 따라 하지 말고 길이와 결만 본다.
 - 공책 위에 고양이가 누워 있고 수아가 고양이를 부를 때
@@ -269,9 +269,9 @@ const WATCH_SYS = `너는 공부 감시 카메라 판독기다. 사진은 책상
 {"page":"지금 보이는 것 한 줄: 과목·문제, 어디까지 썼는지, 마지막으로 쓴 줄","problem":"지금 풀고 있는 문제 이름, 예: 수2 미분 3번. 모르겠으면 빈칸","same_problem":true 또는 false,"changed":true 또는 false,"state":"working|mistake|away|unclear","note":"mistake일 때만 어느 줄이 어떻게 틀렸는지"}
 규칙: same_problem은 이전 문제와 같은 문제를 아직 풀고 있으면 true, 다음 문제로 넘어갔으면 false. 이전 문제가 없거나 판단이 안 서면 true. changed는 이전 관찰보다 필기가 늘었거나 바뀌었으면 true. 확실한 실수만 mistake, 글씨가 흐리거나 애매하면 working이나 unclear. 공책이 안 보이거나 사람이 폰·딴짓을 하고 있으면 away.`;
 
-const GATE_SYS = `공부하는 수아 근처 마이크에 잡힌 말을 음성 인식한 텍스트다. AI 튜터 '공주'한테 하는 말인지 판단해서 JSON 하나만 출력한다: {"talk":true} 또는 {"talk":false}
-talk=true: 질문, 부탁, 막혔다는 호소("모르겠어", "이거 뭐야"), 공주에게 말 걸기, 공주가 방금 한 말에 대한 대답이나 반응, 자책.
-talk=false: 문제나 지문 소리 내 읽기, 계산 중얼거림("3 곱하기 4는 12"), 다른 사람과의 대화, TV·잡음, 의미 없는 소리.`;
+const GATE_SYS = `공부하는 수아 근처 마이크에 잡힌 말을 음성 인식한 텍스트다. 수아는 혼잣말을 거의 안 해서, 수아 말은 기본적으로 AI 튜터 '공주'한테 하는 말이다. JSON 하나만 출력한다: {"talk":true} 또는 {"talk":false}
+talk=false는 누가 봐도 공주한테 한 말이 아닐 때뿐이다: 가족이나 다른 사람과의 대화, 전화 통화, 고양이나 강아지 부르기, TV 소리, 잡음, 의미 없는 소리.
+그 밖에는 전부 talk=true. 애매하면 true.`;
 
 /* ---------- 화면 ---------- */
 function setErr(t) { $('#err').textContent = t || ''; }
@@ -494,10 +494,11 @@ async function talk(job) {
     const deep = job.kind === 'look' || (job.kind === 'pro' && /실수|붙잡고|막혔/.test(job.reason)); // 풀이를 봐야 하는 순간엔 생각하게
     let reply = await claude(talkModel(), TALK_SYS, past.concat([{ role: 'user', content }]),
       deep ? 8000 : 700, deep ? { effort: 'medium' } : { think: 'off', effort: 'low' });
-    const silent = !reply || (job.kind !== 'look' && /^\s*SILENT\b/i.test(reply));
+    const silent = !reply || /^\s*SILENT\b/i.test(reply);
     hist.push({ role: 'user', content: text }, { role: 'assistant', content: silent ? '(말 안 함)' : (splitReply(reply).spoken.trim() || reply) }); // 화면용 긴 글은 기록에 안 남겨서 길이를 따라 하지 않게
     if (hist.length > 40) hist = hist.slice(-40);
     if (!silent) { if (job.kind === 'pro') lastPro = Date.now(); say(reply); }
+    else if (job.kind === 'look') { $('#line').textContent = '…'; $('#detail').textContent = ''; } // 눌렀는데 할 말이 없으면 소리 없이 …만
     setErr(tcOff ? tcNote : '');
   } finally { thinking--; status(); }
 }
@@ -709,7 +710,7 @@ $('#start').addEventListener('click', start);
 $('#pause').addEventListener('click', togglePause);
 $('#end').addEventListener('click', end);
 $('#detail').addEventListener('click', e => e.stopPropagation()); // 화면용 글을 누를 땐 사진 안 보냄
-$('#sayBox').addEventListener('click', () => { if (speaking && N) N.stopSpeaking(); else look(); });
+$('#sayBox').addEventListener('click', look); // 말하는 중에 눌러도 안 끊고, 다 말한 다음에 본다
 $('#thumb').addEventListener('click', () => $('#thumb').classList.toggle('zoom'));
 $('#sumClose').addEventListener('click', () => $('#sumSheet').classList.remove('open'));
 $('#copy').addEventListener('click', () => { try { navigator.clipboard.writeText($('#sum').textContent); $('#copy').textContent = '복사됨'; setTimeout(() => $('#copy').textContent = '복사', 1500); } catch (e) {} });
