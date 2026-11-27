@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="gc-native" content="22">
-<meta name="gc-build" content="30">
+<meta name="gc-build" content="31">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>공주캠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -229,7 +229,7 @@ let hist = [], notes = [], lastNote = '', unchanged = 0, away = 0, lastPro = 0, 
 let queue = [], busy = false, speaking = false, listening = false, thinking = 0, tokens = 0;
 let buf = '', bufT = null, startedAt = 0;
 
-const WEB_VER = '1.29';
+const WEB_VER = '1.30';
 const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카메라로 위에서 지켜보면서 음성으로 대화한다. 네 말은 미오 목소리로 소리 내어 읽힌다.
 
 성격: 세상에서 자기가 제일 예쁘고 중요한, 오만하고 새침한 아기공주. 반말을 쓰고 '네가' 대신 '니가', '니'라고 한다. 자기는 '나' 또는 '공주'. 입은 못됐지만 실력은 확실하고 내용은 정확하다.
@@ -317,14 +317,14 @@ async function camOn() {
     return false;
   }
 }
-function grab(maxSide) {
+function grab(maxSide, q) {
   const v = $('#cam');
   if (!v.videoWidth) return null;
   const sc = Math.min(1, (maxSide || 1568) / Math.max(v.videoWidth, v.videoHeight));
   const c = document.createElement('canvas');
   c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
   c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
-  return c.toDataURL('image/jpeg', 0.82).split(',')[1];
+  return c.toDataURL('image/jpeg', q || 0.82).split(',')[1];
 }
 const imgPart = b64 => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } });
 
@@ -498,7 +498,18 @@ function b64utf8(t) {
   for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
   return btoa(bin);
 }
-async function ghPut(path, b64, msg) {
+// 깃허브는 파일 올리기를 동시에 하면 충돌한다. 줄 세워서 하나씩, 충돌하면 1초 뒤 한 번 더
+let ghQ = Promise.resolve();
+function ghPut(path, b64, msg) {
+  const run = ghQ.then(async () => {
+    let r = await ghPut1(path, b64, msg);
+    if (r === 'conflict') { await new Promise(z => setTimeout(z, 1000)); r = await ghPut1(path, b64, msg); }
+    return r === 'conflict' ? 'net' : r;
+  });
+  ghQ = run.catch(() => {});
+  return run;
+}
+async function ghPut1(path, b64, msg) {
   if (!S.ghKey) return 'nokey';
   try {
     const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path.split('/').map(encodeURIComponent).join('/'), {
@@ -507,17 +518,13 @@ async function ghPut(path, b64, msg) {
       body: JSON.stringify({ message: msg || path, content: b64 })
     });
     if (r.ok || r.status === 422) return 'ok'; // 422는 이미 있는 파일
+    if (r.status === 409) return 'conflict';
     return r.status === 401 || r.status === 403 || r.status === 404 ? 'key' : 'net';
   } catch (e) { return 'net'; }
 }
 // 공주가 뭔가 짚은 순간의 사진만, 작게 줄여서 바로 올린다 (한 번에 최대 30장)
-function keepShot() {
-  if (!S.ghKey || !sessId || shotN >= 30) return '';
-  const v = $('#cam'); if (!v.videoWidth) return '';
-  const sc = Math.min(1, 1000 / Math.max(v.videoWidth, v.videoHeight));
-  const c = document.createElement('canvas'); c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
-  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
-  const b64 = c.toDataURL('image/jpeg', 0.7).split(',')[1];
+function keepShot(b64) {
+  if (!S.ghKey || !sessId || shotN >= 30 || !b64) return '';
   const name = hhmm(new Date(), true) + '.jpg', path = 'logs/' + sessId + '/' + name;
   shotN++;
   ghPut(path, b64, '사진 ' + name).then(r => { if (r !== 'ok') shotFail.push({ path, b64 }); });
@@ -581,6 +588,7 @@ async function talk(job) {
     if (job.kind === 'pro') study = !/딴짓/.test(job.reason);
     const model = deep || study ? M_STUDY : M_CHAT;
     const img = grab(model === M_STUDY ? 1568 : 784);
+    const shotB64 = model === M_STUDY && S.ghKey ? grab(1000, 0.7) : null; // 기록용: 공주한테 보낸 그 순간의 화면
     const memo = `[카메라 메모: ${lastNote || '아직 없음'}]\n` + (S.quiet ? '[독서실: 수아는 소리 내 말을 못 한다. 공책에 너한테 쓴 질문이나 물음표 표시가 보이면 그게 수아 말이니까 그것부터 대답해. 대답은 귓속말처럼 짧게.]\n' : '');
     const text = job.kind === 'user' ? memo + '수아: ' + job.text
       : job.kind === 'look' ? memo + '[시스템: 수아가 화면을 눌러서 지금 공책을 봐 달라고 했다. 사진을 직접 보고 지금 제일 중요한 거 하나만 말해. 틀린 데가 있으면 그게 제일 중요하다. 이번엔 SILENT 금지.]'
@@ -592,7 +600,7 @@ async function talk(job) {
       deep ? 16000 : 8000, { effort: deep ? 'high' : model === M_STUDY ? 'medium' : 'low' });
     const silent = !reply || /^\s*SILENT\b/i.test(reply);
     if (job.kind === 'pro') logLine('카메라', job.reason.split('. ')[0]);
-    const shot = !silent && model === M_STUDY ? keepShot() : '';
+    const shot = !silent && shotB64 ? keepShot(shotB64) : '';
     logLine(model === M_STUDY ? '공주(오퍼스)' : '공주(소넷)', (silent ? '(말 안 함)' : reply.replace(/\n\s*-{3,}\s*\n?/, '\n[화면] ')) + (shot ? ' [사진 ' + shot + ']' : ''));
     hist.push({ role: 'user', content: text }, { role: 'assistant', content: silent ? '(말 안 함)' : (splitReply(reply).spoken.trim() || reply) }); // 화면용 긴 글은 기록에 안 남겨서 길이를 따라 하지 않게
     if (hist.length > 40) hist = hist.slice(-40);
@@ -651,7 +659,7 @@ async function start() {
   if (!(await camOn())) return;
   running = true; paused = false; startedAt = Date.now();
   $('#pause').textContent = '잠깐 멈춤';
-  const sd = new Date(); sessStart = sd.getTime(); sessId = stamp(sd) + '/' + hhmm(sd); shotN = 0;
+  const sd = new Date(); sessStart = sd.getTime(); sessId = stamp(sd) + '/' + hhmm(sd, true); // 초까지 넣어서 같은 분에 다시 시작해도 기록이 안 겹치게 shotN = 0;
   hist = []; dlog = []; notes = []; lastNote = ''; unchanged = 0; away = 0; lastPro = Date.now(); tokens = 0; curProblem = ''; problemSince = Date.now();
   document.body.classList.add('on');
   $('#thumb').prepend($('#cam')); $('#cam').play().catch(() => {});
@@ -700,7 +708,7 @@ async function end() {
     sessId = '';
     if (S.ghKey) {
       $('#saveNote').textContent = '기록 올리는 중…';
-      flushLogs().then(r => { $('#saveNote').textContent = r === 'ok' ? '오늘 기록 저장했어.' : r === 'key' ? '기록 못 올렸어. 설정에서 깃허브 토큰 확인해. 기록은 폰에 갖고 있을게.' : '인터넷이 안 돼서 기록은 다음에 켤 때 올릴게.'; });
+      flushLogs().then(r => { $('#saveNote').textContent = r === 'ok' ? '오늘 기록 저장했어.' : r === 'key' ? '기록 못 올렸어. 설정에서 깃허브 토큰 확인해. 기록은 폰에 갖고 있을게.' : '지금은 기록을 못 올렸어. 다음에 켤 때 다시 올릴게.'; });
     }
   }
   document.body.classList.remove('on'); $('#thumb').classList.remove('zoom');
