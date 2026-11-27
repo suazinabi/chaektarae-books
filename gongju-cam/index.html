@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="gc-native" content="22">
-<meta name="gc-build" content="27">
+<meta name="gc-build" content="28">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>공주캠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -178,6 +178,12 @@ body.on .sess{display:flex}
         <div class="small" id="credit"></div>
       </div>
     </div>
+    <div class="sec">
+      <label>공부 기록 저장
+        <input id="ghKey" type="password" autocomplete="off" placeholder="github_pat_로 시작하는 토큰">
+      </label>
+      <div class="small">넣어 두면 끝낼 때마다 기록이 깃허브 비공개 저장소 gongju-logs에 올라가.</div>
+    </div>
     <div class="row"><button id="setCancel">닫기</button><button class="ok" id="setSave">저장</button></div>
     <div class="small" id="ver" style="text-align:center;opacity:.45;margin-top:6px"></div>
   </div>
@@ -187,6 +193,7 @@ body.on .sess{display:flex}
   <div class="panel">
     <h2>오늘 공부</h2>
     <div class="sum" id="sum">정리하는 중…</div>
+    <div class="small" id="saveNote"></div>
     <div class="row"><button id="copy">복사</button><button class="ok" id="sumClose">확인</button></div>
   </div>
 </div>
@@ -222,7 +229,7 @@ let hist = [], notes = [], lastNote = '', unchanged = 0, away = 0, lastPro = 0, 
 let queue = [], busy = false, speaking = false, listening = false, thinking = 0, tokens = 0;
 let buf = '', bufT = null, startedAt = 0;
 
-const WEB_VER = '1.26';
+const WEB_VER = '1.27';
 const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카메라로 위에서 지켜보면서 음성으로 대화한다. 네 말은 미오 목소리로 소리 내어 읽힌다.
 
 성격: 세상에서 자기가 제일 예쁘고 중요한, 오만하고 새침한 아기공주. 반말을 쓰고 '네가' 대신 '니가', '니'라고 한다. 자기는 '나' 또는 '공주'. 입은 못됐지만 실력은 확실하고 내용은 정확하다.
@@ -476,9 +483,84 @@ async function pump() {
   busy = false;
   pump();
 }
-// 복사용 오늘 대화 기록
+// 오늘 대화 기록 (복사, 깃허브 저장용)
 let dlog = [];
-const logLine = (who, t) => { dlog.push(clock() + ' ' + who + ': ' + String(t || '').trim()); if (dlog.length > 400) dlog.shift(); };
+const logLine = (who, t) => { dlog.push(clock() + ' ' + who + ': ' + String(t || '').trim()); if (dlog.length > 400) dlog.shift(); saveDraft(); };
+
+/* ---------- 공부 기록 저장 (깃허브 비공개 저장소) ---------- */
+const GH_REPO = 'suazinabi/gongju-logs';
+let sessId = '', shotN = 0, shotFail = [];
+const pad = n => String(n).padStart(2, '0');
+function stamp(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function hhmm(d, sec) { return pad(d.getHours()) + pad(d.getMinutes()) + (sec ? '-' + pad(d.getSeconds()) : ''); }
+function b64utf8(t) {
+  const u = new TextEncoder().encode(t); let bin = '';
+  for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+async function ghPut(path, b64, msg) {
+  if (!S.ghKey) return 'nokey';
+  try {
+    const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path.split('/').map(encodeURIComponent).join('/'), {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + S.ghKey, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg || path, content: b64 })
+    });
+    if (r.ok || r.status === 422) return 'ok'; // 422는 이미 있는 파일
+    return r.status === 401 || r.status === 403 || r.status === 404 ? 'key' : 'net';
+  } catch (e) { return 'net'; }
+}
+// 공주가 뭔가 짚은 순간의 사진만, 작게 줄여서 바로 올린다 (한 번에 최대 30장)
+function keepShot() {
+  if (!S.ghKey || !sessId || shotN >= 30) return '';
+  const v = $('#cam'); if (!v.videoWidth) return '';
+  const sc = Math.min(1, 1000 / Math.max(v.videoWidth, v.videoHeight));
+  const c = document.createElement('canvas'); c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
+  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+  const b64 = c.toDataURL('image/jpeg', 0.7).split(',')[1];
+  const name = hhmm(new Date(), true) + '.jpg', path = 'logs/' + sessId + '/' + name;
+  shotN++;
+  ghPut(path, b64, '사진 ' + name).then(r => { if (r !== 'ok') shotFail.push({ path, b64 }); });
+  return name;
+}
+function buildLog(summary, ended) {
+  const st = sessStart ? new Date(sessStart) : new Date(), mins = Math.max(1, Math.round((Date.now() - st.getTime()) / 60000));
+  const shots = sessId.split('/')[1] || '';
+  const lines = dlog.map(l => '- ' + l.replace(/\n/g, ' ').replace(/\[사진 ([0-9-]+\.jpg)\]/g, '[사진](' + shots + '/$1)'));
+  const cam = notes.map(n => '- ' + n.t + ' ' + n.state + (n.problem ? ' [' + n.problem + ']' : '') + ' ' + n.page);
+  return '# ' + stamp(st) + ' ' + pad(st.getHours()) + ':' + pad(st.getMinutes()) + ' 공부 (' + mins + '분)' + (ended ? '' : ' — 끝내기 안 누르고 꺼짐') + '\n\n'
+    + '## 요약\n' + (summary || '(요약 없음)') + '\n\n## 대화\n' + (lines.join('\n') || '(대화 없음)') + '\n\n## 카메라 기록\n' + (cam.join('\n') || '(없음)') + '\n\n공주캠 ' + WEB_VER + '\n';
+}
+let sessStart = 0;
+// 앱이 그냥 꺼져도 다음에 켤 때 올릴 수 있게 글 기록은 폰에 계속 저장해 둔다
+function saveDraft() {
+  if (!sessId) return;
+  try { localStorage.setItem('gcDraft', JSON.stringify({ sessId, sessStart, dlog, notes: notes.slice(-240) })); } catch (e) {}
+}
+function queueLog(path, md) {
+  let q = []; try { q = JSON.parse(localStorage.getItem('gcPending') || '[]'); } catch (e) {}
+  q.push({ path, md }); try { localStorage.setItem('gcPending', JSON.stringify(q.slice(-20))); } catch (e) {}
+}
+async function flushLogs() {
+  if (!S.ghKey) return 'nokey';
+  let q = []; try { q = JSON.parse(localStorage.getItem('gcPending') || '[]'); } catch (e) {}
+  const left = []; let res = 'ok';
+  for (const it of q) { const r = await ghPut(it.path, b64utf8(it.md), '공부 기록 ' + it.path); if (r !== 'ok') { left.push(it); res = r; } }
+  try { localStorage.setItem('gcPending', JSON.stringify(left)); } catch (e) {}
+  const sf = shotFail; shotFail = [];
+  for (const it of sf) { if ((await ghPut(it.path, it.b64, '사진')) !== 'ok') shotFail.push(it); }
+  return res;
+}
+// 지난번에 끝내기 안 누르고 꺼졌으면 그 기록부터 올린다
+function recoverDraft() {
+  let d = null; try { d = JSON.parse(localStorage.getItem('gcDraft') || 'null'); } catch (e) {}
+  if (!d || !d.sessId) return;
+  const keep = { dlog, notes, sessId, sessStart };
+  dlog = d.dlog || []; notes = d.notes || []; sessId = d.sessId; sessStart = d.sessStart;
+  if (dlog.length) queueLog('logs/' + sessId + '.md', buildLog('', false));
+  dlog = keep.dlog; notes = keep.notes; sessId = keep.sessId; sessStart = keep.sessStart;
+  try { localStorage.removeItem('gcDraft'); } catch (e) {}
+}
 async function talk(job) {
   thinking++; status();
   try {
@@ -510,7 +592,8 @@ async function talk(job) {
       deep ? 16000 : 8000, { effort: deep ? 'high' : 'medium' });
     const silent = !reply || /^\s*SILENT\b/i.test(reply);
     if (job.kind === 'pro') logLine('카메라', job.reason.split('. ')[0]);
-    logLine(model === M_STUDY ? '공주(오퍼스)' : '공주(소넷)', silent ? '(말 안 함)' : reply.replace(/\n\s*-{3,}\s*\n?/, '\n[화면] '));
+    const shot = !silent && model === M_STUDY ? keepShot() : '';
+    logLine(model === M_STUDY ? '공주(오퍼스)' : '공주(소넷)', (silent ? '(말 안 함)' : reply.replace(/\n\s*-{3,}\s*\n?/, '\n[화면] ')) + (shot ? ' [사진 ' + shot + ']' : ''));
     hist.push({ role: 'user', content: text }, { role: 'assistant', content: silent ? '(말 안 함)' : (splitReply(reply).spoken.trim() || reply) }); // 화면용 긴 글은 기록에 안 남겨서 길이를 따라 하지 않게
     if (hist.length > 40) hist = hist.slice(-40);
     if (!silent) { if (job.kind === 'pro') lastPro = Date.now(); say(reply); }
@@ -543,6 +626,7 @@ async function watch() {
   else if (r.problem && r.same_problem !== false) curProblem = curProblem || r.problem;
   const onSame = curProblem && r.state !== 'away' ? (Date.now() - problemSince) / 60000 : 0;
   notes.push({ t: clock(), page: r.page || '', state: r.state || '', problem: curProblem });
+  saveDraft();
   if (notes.length > 240) notes.shift();
   unchanged = r.changed === false ? unchanged + 1 : 0;
   away = r.state === 'away' ? away + 1 : 0;
@@ -567,6 +651,7 @@ async function start() {
   if (!(await camOn())) return;
   running = true; paused = false; startedAt = Date.now();
   $('#pause').textContent = '잠깐 멈춤';
+  const sd = new Date(); sessStart = sd.getTime(); sessId = stamp(sd) + '/' + hhmm(sd); shotN = 0;
   hist = []; dlog = []; notes = []; lastNote = ''; unchanged = 0; away = 0; lastPro = Date.now(); tokens = 0; curProblem = ''; problemSince = Date.now();
   document.body.classList.add('on');
   $('#thumb').prepend($('#cam')); $('#cam').play().catch(() => {});
@@ -593,18 +678,31 @@ async function end() {
   $('#sumSheet').classList.add('open');
   const mins = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
   const log = notes.map(n => n.t + ' ' + n.state + ' [' + (n.problem || '') + '] ' + n.page).join('\n') || '(카메라 기록 없음)';
-  const talkLog = hist.map(m => (m.role === 'user' ? '' : '공주: ') + (typeof m.content === 'string' ? m.content : '')).join('\n') || '(대화 없음)';
+  const talkLog = dlog.join('\n') || '(대화 없음)';
+  let summary = '';
+  $('#saveNote').textContent = '';
   try {
     const t = await claude(M_STUDY, TALK_SYS.split('\n\n').slice(0, 2).join('\n\n') + '\n이번엔 화면에 글로 보여 주고 짧게 읽어 준다.',
       [{ role: 'user', content: `공부 ${mins}분 끝. 아래 기록으로 정리해.\n형식: 첫 줄에 오늘 한 거 한 줄. 그다음 "막힌 데"로 최대 3개, 각 한 줄. 마지막 줄에 "다음엔" 하나. 공주 말투, 기호·이모지 없이, 기록에 없는 건 지어내지 마.\n\n[카메라 기록]\n${log}\n\n[대화]\n${talkLog}` }], 1500, { think: 'off', effort: 'low' });
     $('#sum').textContent = clean(t.replace(/\n{3,}/g, '\n\n')) === '' ? '정리할 게 없네.' : t.replace(/[*#`]/g, '');
     try { localStorage.setItem('gcLast', t); } catch (e) {}
+    summary = t.replace(/[*#`]/g, '').trim();
     const first = clean(t.split('\n')[0]);
     if (first && N) {
       if (useTc()) speakTc(first, '');
       else if (N.ttsReady()) N.speak(ttsPolish(first));
     }
   } catch (e) { $('#sum').textContent = '정리 못 했어. ' + e.message; }
+  // 공부 기록을 깃허브에 올린다. 실패하면 폰에 쌓아 두고 다음에 다시
+  if (sessId && (dlog.length || notes.length)) {
+    queueLog('logs/' + sessId + '.md', buildLog(summary, true));
+    try { localStorage.removeItem('gcDraft'); } catch (e) {}
+    sessId = '';
+    if (S.ghKey) {
+      $('#saveNote').textContent = '기록 올리는 중…';
+      flushLogs().then(r => { $('#saveNote').textContent = r === 'ok' ? '오늘 기록 저장했어.' : r === 'key' ? '기록 못 올렸어. 설정에서 깃허브 토큰 확인해. 기록은 폰에 갖고 있을게.' : '인터넷이 안 돼서 기록은 다음에 켤 때 올릴게.'; });
+    }
+  }
   document.body.classList.remove('on'); $('#thumb').classList.remove('zoom');
   $('#frame').prepend($('#cam')); $('#cam').play().catch(() => {});
   status();
@@ -674,6 +772,7 @@ function openSettings() {
   placeUI(S.quiet ? 'quiet' : 'home');
   showCredit();
   $('#tcKey').value = S.tcKey;
+  $('#ghKey').value = S.ghKey || '';
   tcPickedText();
   if (S.tcKey) ensureMio(S.tcKey);
   $('#setSheet').classList.add('open');
@@ -710,6 +809,7 @@ $('#setSave').addEventListener('click', () => {
   if (N && N.setQuiet) N.setQuiet(!!S.quiet);
   if (running && !paused && N) { if (S.quiet) N.stopListening(); else N.startListening(); }
   S.tcKey = $('#tcKey').value.trim();
+  S.ghKey = $('#ghKey').value.trim();
   if (S.tcKey) ensureMio(S.tcKey);
   tcOff = false;
   Object.assign(S, uiVoice());
@@ -734,6 +834,7 @@ if (N && N.setQuiet) N.setQuiet(!!S.quiet);
 if (S.tcKey && !(S.tcVoice && S.tcVoice.name === VOICE_NAME)) ensureMio(S.tcKey);
 if (!S.key) openSettings();
 $('#ver').textContent = '공주캠 ' + WEB_VER + (N && N.webSource ? ' · ' + N.webSource() : '');
+recoverDraft(); flushLogs();
 if (N && N.ready) N.ready();
 status();
 }
