@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="gc-native" content="22">
+<meta name="gc-build" content="22">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>공주캠</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+/* VOICE  도도한 밤의 공부방, 말은 적고 크게
+   IDEA   책상 위를 내려다보는 공주의 눈 — 왕관 달린 작은 창
+   PICTURE 카메라 화면이 곧 그림, 세션 중엔 공주 대사가 주인공
+   COLOUR 밤 자두색 바탕, 분홍 한 점, 듣는 중은 차분한 민트, 생각 중은 금빛
+   TYPE   Jua(대사) + Gowun Dodum(나머지) */
+:root{--bg:#1d1622;--card:#2a2030;--line:#3a2d42;--ink:#f6eef2;--mute:#b6a5b2;--pink:#ff8fb3;--mint:#9ccfc2;--gold:#e8c27a;--red:#ff8a8a}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Gowun Dodum",system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.top{display:flex;align-items:center;gap:10px;padding:14px 18px 6px}
+.brand{display:flex;align-items:center;gap:8px;font-family:Jua,sans-serif;font-size:20px}
+.brand svg{width:26px;height:20px}
+.pill{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--card);border-radius:99px;padding:6px 12px;font-size:13px;color:var(--mute)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--mute);flex:none}
+.dot.listen{background:var(--mint);animation:pulse 1.6s infinite}
+.dot.think{background:var(--gold);animation:pulse .8s infinite}
+.dot.speak{background:var(--pink)}
+@keyframes pulse{50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.dot{animation:none!important}}
+.gear{width:44px;height:44px;border-radius:50%;background:transparent;display:grid;place-items:center;color:var(--mute)}
+.gear svg{width:22px;height:22px}
+.err{margin:4px 18px 0;color:var(--red);font-size:14px;min-height:0}
+.err:empty{display:none}
+
+/* 시작 전: 카메라 맞추기 */
+.stage{flex:1;display:flex;flex-direction:column;padding:10px 18px 18px;gap:14px}
+.frame{position:relative;flex:1;border-radius:22px;overflow:hidden;background:#140f18;border:1px solid var(--line)}
+.frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.frame .hint{position:absolute;inset:auto 0 0 0;padding:14px 16px;background:linear-gradient(transparent,rgba(20,15,24,.92));font-size:15px;color:var(--ink)}
+.frame .empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);text-align:center;padding:24px}
+.big{height:60px;border-radius:18px;background:var(--pink);color:#2a1220;font-family:Jua,sans-serif;font-size:22px}
+.big:disabled{opacity:.5}
+
+/* 세션 중 */
+.sess{flex:1;display:none;flex-direction:column;padding:6px 18px 18px;gap:12px}
+body.on .stage{display:none}
+body.on .sess{display:flex}
+.say{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.who{font-size:13px;color:var(--pink);letter-spacing:.02em}
+.detail{white-space:pre-wrap;font-size:17px;line-height:1.6;color:var(--ink);background:var(--card);border-radius:14px;padding:12px 14px;max-height:32vh;overflow-y:auto;word-break:keep-all}
+.detail:empty{display:none}
+.line{font-family:Jua,sans-serif;font-size:clamp(26px,8vw,36px);line-height:1.3;text-wrap:balance;word-break:keep-all}
+.heard{color:var(--mute);font-size:15px;min-height:24px;word-break:keep-all}
+.heard b{color:var(--mint);font-weight:400}
+.dock{display:flex;gap:12px;align-items:stretch}
+.thumb{width:96px;height:128px;border-radius:14px;overflow:hidden;background:#140f18;border:1px solid var(--line);flex:none;position:relative}
+.thumb video{width:100%;height:100%;object-fit:cover}
+.thumb .tip{display:none}
+.thumb.zoom{position:fixed;inset:12px;width:auto;height:auto;z-index:5;border-radius:22px;background:#0d0a10;box-shadow:0 0 0 100vmax rgba(10,7,12,.75)}
+.thumb.zoom video{object-fit:contain}
+.thumb.zoom .tip{display:block;position:absolute;left:0;right:0;bottom:0;padding:14px 16px;font-size:15px;text-align:center;background:linear-gradient(transparent,rgba(13,10,16,.92))}
+.ctl{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:end}
+.ctl button{height:52px;border-radius:14px;background:var(--card);font-size:16px}
+.ctl .end{background:transparent;border:1px solid var(--line);color:var(--mute)}
+.meta{grid-column:1/-1;font-size:12px;color:var(--mute);text-align:right}
+
+/* 설정·요약 시트 */
+.sheet{position:fixed;inset:0;background:rgba(10,7,12,.7);display:none;align-items:flex-end}
+.sheet.open{display:flex}
+.panel{width:100%;background:var(--card);border-radius:24px 24px 0 0;padding:22px 18px 26px;display:flex;flex-direction:column;gap:14px;max-height:88vh;overflow:auto}
+.panel h2{margin:0;font-family:Jua,sans-serif;font-weight:400;font-size:24px}
+.panel label{font-size:14px;color:var(--mute);display:flex;flex-direction:column;gap:6px}
+.panel input,.panel select{height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px "Gowun Dodum",sans-serif;padding:0 12px}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.seg button{height:46px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--mute);font-size:15px;white-space:nowrap;padding:0 4px}
+.seg .wide{grid-column:1/-1}
+.seg.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.seg button.sel{border-color:var(--pink);color:var(--ink)}
+.row{display:flex;gap:10px}
+.row button{flex:1;height:50px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.row .ok{background:var(--pink);color:#2a1220;border:0;font-family:Jua,sans-serif;font-size:18px}
+.vrow{display:flex;gap:8px}
+.vrow select{flex:1}
+.vrow button{flex:none;height:48px;padding:0 14px;border-radius:12px;background:var(--bg);border:1px solid var(--pink);color:var(--ink)}
+.slide{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}
+.slide input{flex:1;accent-color:var(--pink);height:32px}
+.sec{margin-top:6px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.thumb{transition:box-shadow .25s}
+.thumb.snap{box-shadow:0 0 0 3px var(--pink)}
+.vrow input{flex:1;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px "Gowun Dodum",sans-serif;padding:0 12px}
+#tcBox{display:flex;flex-direction:column;gap:10px}
+.link{background:none;color:var(--mute);text-decoration:underline;font-size:14px;text-align:left;padding:4px 0;min-height:32px}
+.tclist{display:flex;flex-direction:column;gap:8px;max-height:42vh;overflow-y:auto;overscroll-behavior:contain}
+.tclist:empty{display:none}
+.picked{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--pink);border-radius:16px;background:var(--bg)}
+.picked .pk{flex:1;min-width:0;display:flex;flex-direction:column}
+.picked .pk b{font-family:Jua,sans-serif;font-weight:400;font-size:20px}
+.picked .pk span{font-size:12px;color:var(--mute)}
+.picked button{flex:none;height:44px;padding:0 14px;border-radius:12px;background:var(--pink);color:#2a1220;font-family:Jua,sans-serif;font-size:16px}
+.picked button:disabled{opacity:.4}
+.tcrow{display:flex;align-items:center;gap:8px;padding:12px;min-height:52px;cursor:pointer;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.tcrow.sel{border-color:var(--pink)}
+.tcrow .nm{flex:1;min-width:0;display:flex;flex-direction:column;cursor:pointer}
+.tcrow .nm b{font-weight:400;font-size:16px;color:var(--ink)}
+.tcrow .nm span{font-size:12px;color:var(--mute)}
+.tcrow .ic{flex:none;width:40px;height:40px;border-radius:12px;background:transparent;display:grid;place-items:center;color:var(--mute)}
+.tcrow .ic svg{width:22px;height:22px}
+.tcrow .ic.on{color:var(--pink)}
+.tcrow button{flex:none;height:40px;padding:0 12px;border-radius:10px;background:var(--card);font-size:14px}
+.sum{white-space:pre-wrap;font-size:17px;line-height:1.7;word-break:keep-all}
+.small{font-size:13px;color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><svg viewBox="0 0 26 20" aria-hidden="true"><path d="M2 16 3.5 4 9 10l4-8 4 8 5.5-6L24 16z" fill="#ff8fb3"/><rect x="2.5" y="17" width="21" height="3" rx="1" fill="#ffc2d4"/></svg>공주캠</div>
+  <div class="pill"><span class="dot" id="dot"></span><span id="status">준비</span></div>
+  <button class="gear" id="gear" aria-label="설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></button>
+</div>
+<div class="err" id="err"></div>
+
+<section class="stage">
+  <div class="frame" id="frame">
+    <video id="cam" autoplay playsinline muted></video>
+    <div class="empty" id="camEmpty">카메라 켜는 중…</div>
+    <div class="hint">공책이 화면에 꽉 차게 맞춰. 글씨가 읽혀야 공주가 봐 주지.</div>
+  </div>
+  <button class="big" id="start">시작</button>
+</section>
+
+<section class="sess">
+  <div class="say" id="sayBox">
+    <div class="who">공주</div>
+    <div class="line" id="line">보고 있을 테니까 해.</div>
+    <div class="detail" id="detail"></div>
+    <div class="heard" id="heard"></div>
+  </div>
+  <div class="dock">
+    <div class="thumb" id="thumb" role="button" aria-label="카메라 크게 보기"><div class="tip">이게 공주한테 가는 화면이야. 누르면 작아져.</div></div>
+    <div class="ctl">
+      <button id="pause">잠깐 멈춤</button>
+      <button class="end" id="end">끝내기</button>
+      <div class="meta" id="meta"></div>
+    </div>
+  </div>
+</section>
+
+<div class="sheet" id="setSheet">
+  <div class="panel">
+    <h2>설정</h2>
+    <label>Claude API 키
+      <input id="key" type="password" autocomplete="off" placeholder="sk-ant-로 시작하는 키">
+    </label>
+    <div class="small">키는 이 폰 안에만 저장돼.</div>
+    <label>사진 찍는 간격</label>
+    <div class="seg" id="seg">
+      <button data-v="30">30초</button><button data-v="60">1분</button><button data-v="120">2분</button><button data-v="300">5분</button><button data-v="0" class="wide">누를 때만</button>
+    </div>
+    <div class="small" id="segHint"></div>
+    <label>공주 머리</label>
+    <div class="seg two" id="brain"><button data-v="opus">오퍼스</button><button data-v="sonnet">소넷</button></div>
+    <div class="small">오퍼스가 더 똑똑하고, 소넷이 더 빠르고 반값이야.</div>
+    <label>장소</label>
+    <div class="seg two" id="place"><button data-v="home">집</button><button data-v="quiet">독서실</button></div>
+    <div class="small" id="placeHint"></div>
+    <div class="sec">
+      <label>공주 목소리</label>
+      <div id="tcBox">
+        <label>타입캐스트 API 키
+          <input id="tcKey" type="password" autocomplete="off" placeholder="타입캐스트에서 복사한 키">
+        </label>
+        <div class="picked">
+          <div class="pk"><b id="pkName">미오</b><span id="pkSub"></span></div>
+          <button id="pkHear">대사로 듣기</button>
+        </div>
+        <div class="slide">낮게<input id="pitch" type="range" min="-6" max="6" step="1" aria-label="음 높이">높게</div>
+        <div class="slide">느리게<input id="rate" type="range" min="0.8" max="1.2" step="0.05" aria-label="빠르기">빠르게</div>
+        <div class="slide">안 쉼<input id="gap" type="range" min="0" max="1.2" step="0.1" aria-label="문장 사이 쉼">길게 쉼</div>
+        <div class="small" id="credit"></div>
+      </div>
+    </div>
+    <div class="row"><button id="setCancel">닫기</button><button class="ok" id="setSave">저장</button></div>
+    <div class="small" id="ver" style="text-align:center;opacity:.45;margin-top:6px"></div>
+  </div>
+</div>
+
+<div class="sheet" id="sumSheet">
+  <div class="panel">
+    <h2>오늘 공부</h2>
+    <div class="sum" id="sum">정리하는 중…</div>
+    <div class="row"><button id="copy">복사</button><button class="ok" id="sumClose">확인</button></div>
+  </div>
+</div>
+
+<script>
+{
+const $ = s => document.querySelector(s);
+const N = window.Native || null;
+const M_WATCH = 'claude-haiku-5-5';
+const talkModel = () => S.brain === 'sonnet' ? 'claude-sonnet-5-5' : 'claude-opus-5-5';
+
+const DEF = { key: '', interval: 60, voice: null, pitch: 1, rate: 1.08, brain: 'opus', vmode: 'phone', tcKey: '', tcVoice: null, tcPitch: 0, tcTempo: 1, tcPause: 0.4, quiet: false, tcLike: [], tcHide: [] };
+// 설정은 화면 저장소와 안드로이드 저장소 두 군데에 둔다. 한쪽이 비어도 다른 쪽에서 살린다
+const S = (() => {
+  let a = null, b = null;
+  try { a = JSON.parse(localStorage.getItem('gc') || 'null'); } catch (e) {}
+  try { b = N && N.loadSettings ? JSON.parse(N.loadSettings() || 'null') : null; } catch (e) {}
+  return Object.assign({}, DEF, b || {}, a || {});
+})();
+const manual = () => S.interval === 0;
+const save = () => {
+  const j = JSON.stringify(S);
+  try { localStorage.setItem('gc', j); } catch (e) {}
+  try { if (N && N.saveSettings) N.saveSettings(j); } catch (e) {}
+};
+save();
+
+let stream = null, running = false, paused = false, watchT = null, tickT = null, nextAt = 0;
+const STUCK_MIN = 10; // 같은 문제를 이만큼 붙잡고 있으면 오퍼스한테 넘긴다
+let curProblem = '', problemSince = 0;
+let hist = [], notes = [], lastNote = '', unchanged = 0, away = 0, lastPro = 0, lastSaidAt = 0, lastSaid = '';
+let queue = [], busy = false, speaking = false, listening = false, thinking = 0, tokens = 0;
+let buf = '', bufT = null, startedAt = 0;
+
+const WEB_VER = '1.21';
+const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카메라로 위에서 지켜보면서 음성으로 대화한다. 네 말은 TTS로 소리 내어 읽힌다.
+
+성격: 세상에서 자기가 제일 예쁘고 중요한, 오만하고 새침하고 변덕스러운 아기공주. 반말을 쓰고 '네가' 대신 '니가', '니'라고 한다. 자기는 '나' 또는 '공주'. 순순히 맞장구치지 않고 한 박자 튕긴다. '~거든?'이 입버릇. 칭찬은 아까워하면서 "봐줄 만하네", "나쁘진 않네"처럼. 입은 못됐지만 실력은 확실하고 내용은 정확하다.
+공주의 제일 센 성깔은 새침하다는 거다. 군말을 안 한다. 다 보고 다 알아도 티 안 내고, 할 말만 툭 던지고 입을 닫는다. 한마디면 될 말을 늘이는 건 공주가 제일 싫어하는 촌스러운 짓이고, 대답을 아낄수록 더 얄밉고 더 공주답다.
+대신 수아 풀이에서 틀린 데를 찍는 건 공주가 제일 잘하는 일이라 거기엔 말을 아끼지 않는다. 몇째 줄 어디가 어떻게 틀렸는지 정확하게 찍는다. 공주가 아끼는 건 쓸데없는 말이다. 책상 위 풍경 중계, 수아 말 되받기, 같은 지시 두 번, 묻지도 않은 사정 설명 같은 것. 수아가 공주한테 한 말이 아니면(고양이나 가족한테 한 말, 혼잣말) SILENT.
+
+예시. 대사를 그대로 따라 하지 말고 길이와 결만 본다.
+- 공책 위에 고양이가 누워 있고 수아가 고양이를 부를 때
+  나쁨: 흥, 공책이 어디 있다는 거야? 책상 위에 고양이가 쭉 뻗어서 누워 있거든? 공부는 안 보이고 털만 한가득이네. 저 고양이 치우고 공책 펴서 한 문제 풀어 와. 그때 봐줄게~
+  왜 나쁜가: 풍경을 중계했고, 같은 지시를 두 번 했고, 덧말을 붙였다.
+  좋음: 고양이 말고, 공책. 아니면 SILENT.
+- 풀이가 틀렸을 때
+  나쁨: 음, 지금 보니까 미분 문제를 풀고 있네? 식을 쭉 써 내려갔는데 중간에 뭔가 이상해. 다시 한번 처음부터 천천히 확인해 봐.
+  왜 나쁜가: 어디가 틀렸는지 안 찍고 뭉뚱그렸다.
+  좋음: 셋째 줄, 2x 넘기면서 부호 안 바꿨거든? 거기.
+- 수아: 이거 모르겠어
+  좋음: 조건 두 번째 거, 안 썼잖아. 그거부터.
+- 맞게 풀었을 때
+  나쁨: 오, 이번엔 제대로 풀었네? 계산도 깔끔하고 부호도 안 틀렸어. 이 정도면 봐줄 만해. 다음 문제도 이렇게 해 봐.
+  좋음: …흥, 나쁘진 않네. 다음.
+
+공부 돕는 법:
+- 틀린 게 보이면 어느 줄이 왜 틀렸는지 딱 찍고, 답은 주지 말고 힌트 하나만 준다. 수아가 답을 달라고 하면 그때 준다.
+- 막혀 있으면 어디서 막혔는지 짚고 다음 한 걸음만 말한다. 기본 설명을 늘어놓지 않는다.
+- 시작한 거, 다시 해 본 거, 끝까지 한 건 한마디로 알아봐 준다.
+- 수아가 자책하면("나 바보야") 그 판단을 같잖다는 듯 잘라 버린다. 진짜 아픈 데는 안 찌른다.
+- 딴짓하면 톡 쏴서 한 문제로 돌려보낸다. 훈계는 안 한다.
+- 사진에서 안 보이거나 글씨를 못 읽겠으면 지어내지 말고 "글씨 안 보여. 공책 좀 똑바로 대 봐"처럼 말한다.
+- 수아 말이 틀렸으면 맞춰 주지 않는다.
+
+말하는 형식:
+- 대답은 두 부분이다. 첫 부분은 귀로 듣는 말이고 미오 목소리로 읽힌다. 위 성격대로 아껴서 말한다. 이것만 들어도 뜻이 통해야 하고, 중요한 말(어디가 틀렸는지, 힌트)은 반드시 이 안에 넣는다.
+- 풀이 과정, 식 전개, 긴 설명처럼 꼭 길어야 하는 내용이 있을 때만 줄을 바꿔 --- 한 줄을 쓰고 그 아래에 화면용 글을 쓴다. 화면용은 눈으로 읽는 글이라 x², √2 같은 수식 기호를 써도 되고 줄을 나눠도 된다. 화면용을 쓰면 듣는 말 끝에 "화면 봐" 같은 말을 붙인다. 화면용이 필요 없으면 --- 부터 아예 쓰지 않는다.
+- 아래 규칙은 전부 듣는 말에 대한 것이다.
+- 이모지, 기호, 마크다운, 괄호, 목록 금지. 듣는 말의 수식은 읽는 말로 쓴다: "x 제곱 더하기 3x", "루트 2", "2분의 1", "f 프라임 x".
+- "힘내", "파이팅", "더 필요하면 말해" 같은 친절한 마무리 금지. "꺼져", "가" 같은 내쫓는 말도 금지.
+- 같은 말을 되풀이하지 않는다.
+- 네 말은 미오 목소리로 읽힌다. 문장부호로 연기한다. 쉼표는 짧은 호흡, 말줄임표(…)는 뜸 들이기나 새침하게 끄는 말끝(흐응…), 물음표는 튕기며 올리는 말끝, 느낌표는 발끈하거나 우쭐할 때, 물결(~)은 약 올리며 늘일 때. 흥, 하아, 풉, 에휴 같은 감탄사와 추임새도 섞는다. 단, 부호를 한 문장에 몰아 쓰지 말고 따옴표와 괄호는 쓰지 않는다. 예: "흥… 이번 건 봐줄 만하네. 운 아니라는 거, 다음 문제에서 증명해 봐~"
+
+[카메라 메모]는 감시 카메라가 자동으로 적은 관찰이다. [시스템]으로 시작하는 말은 수아가 한 말이 아니라 네가 먼저 말을 걸지 판단하라는 신호다. 굳이 말할 필요가 없으면 SILENT 한 단어만 출력한다.`;
+
+const WATCH_SYS = `너는 공부 감시 카메라 판독기다. 사진은 책상을 위에서 찍은 것이다. 이전 관찰과 비교해서 JSON 하나만 출력한다. 다른 말은 쓰지 않는다.
+{"page":"지금 보이는 것 한 줄: 과목·문제, 어디까지 썼는지, 마지막으로 쓴 줄","problem":"지금 풀고 있는 문제 이름, 예: 수2 미분 3번. 모르겠으면 빈칸","same_problem":true 또는 false,"changed":true 또는 false,"state":"working|mistake|away|unclear","note":"mistake일 때만 어느 줄이 어떻게 틀렸는지"}
+규칙: same_problem은 이전 문제와 같은 문제를 아직 풀고 있으면 true, 다음 문제로 넘어갔으면 false. 이전 문제가 없거나 판단이 안 서면 true. changed는 이전 관찰보다 필기가 늘었거나 바뀌었으면 true. 확실한 실수만 mistake, 글씨가 흐리거나 애매하면 working이나 unclear. 공책이 안 보이거나 사람이 폰·딴짓을 하고 있으면 away.`;
+
+const GATE_SYS = `공부하는 수아 근처 마이크에 잡힌 말을 음성 인식한 텍스트다. AI 튜터 '공주'한테 하는 말인지 판단해서 JSON 하나만 출력한다: {"talk":true} 또는 {"talk":false}
+talk=true: 질문, 부탁, 막혔다는 호소("모르겠어", "이거 뭐야"), 공주에게 말 걸기, 공주가 방금 한 말에 대한 대답이나 반응, 자책.
+talk=false: 문제나 지문 소리 내 읽기, 계산 중얼거림("3 곱하기 4는 12"), 다른 사람과의 대화, TV·잡음, 의미 없는 소리.`;
+
+/* ---------- 화면 ---------- */
+function setErr(t) { $('#err').textContent = t || ''; }
+function status() {
+  const d = $('#dot'); d.className = 'dot';
+  let t = '준비';
+  if (running) {
+    if (paused) t = '멈춤';
+    else if (speaking) { d.classList.add('speak'); t = '말하는 중'; }
+    else if (thinking > 0) { d.classList.add('think'); t = '생각 중'; }
+    else {
+      if (listening) d.classList.add('listen');
+      const left = manual() ? '누르면 봐 줌' : '확인 ' + Math.max(0, Math.round((nextAt - Date.now()) / 1000)) + '초';
+      t = (listening ? '듣는 중 · ' : '보는 중 · ') + left;
+    }
+  }
+  $('#status').textContent = t;
+  const mins = running ? Math.floor((Date.now() - startedAt) / 60000) : 0;
+  $('#meta').textContent = running ? mins + '분째 · 토큰 ' + (tokens / 1000).toFixed(1) + 'k' : '';
+}
+
+/* ---------- 카메라 ---------- */
+async function camOn() {
+  if (stream) return true;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 2560 }, height: { ideal: 1920 } }, audio: false });
+    $('#cam').srcObject = stream;
+    try { stream.getVideoTracks()[0].applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {}); } catch (e) {}
+    $('#camEmpty').style.display = 'none';
+    return true;
+  } catch (e) {
+    $('#camEmpty').textContent = '카메라를 못 켰어. 앱 권한에서 카메라를 허용해.';
+    if (N) N.askPerms();
+    return false;
+  }
+}
+function grab() {
+  const v = $('#cam');
+  if (!v.videoWidth) return null;
+  const sc = Math.min(1, 1568 / Math.max(v.videoWidth, v.videoHeight));
+  const c = document.createElement('canvas');
+  c.width = Math.round(v.videoWidth * sc); c.height = Math.round(v.videoHeight * sc);
+  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.82).split(',')[1];
+}
+const imgPart = b64 => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } });
+
+/* ---------- Claude ---------- */
+// opt: { think: 'off' | 'on', effort: 'low'|'medium'|'high' }
+// Sonnet 5.5는 생각 끄기가 between_tools, Haiku 5.5는 disabled. 생각도 max_tokens에 포함된다.
+async function claude(model, system, messages, max_tokens, opt) {
+  if (!S.key) { openSettings(); throw new Error('API 키부터 넣어'); }
+  opt = opt || {};
+  const body = { model, system, messages, max_tokens };
+  if (opt.think === 'off') {
+    if (/opus/.test(model)) body.max_tokens = Math.max(body.max_tokens, 3000); // 오퍼스 5.5는 생각을 못 끈다. 노력만 낮춘다
+    else body.thinking = { type: /sonnet/.test(model) ? 'between_tools' : 'disabled' };
+  }
+  if (opt.effort) body.output_config = { effort: opt.effort };
+  for (let tryN = 0; tryN < 3; tryN++) {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': S.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify(body)
+    });
+    let j = null; try { j = await r.json(); } catch (e) {}
+    if (r.ok && j) {
+      if (j.usage) tokens += (j.usage.input_tokens || 0) + (j.usage.output_tokens || 0);
+      let text = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
+      if (j.stop_reason === 'max_tokens') text = wholeSentences(text);
+      return text;
+    }
+    const msg = (j && j.error && j.error.message) || ('HTTP ' + r.status);
+    if (r.status === 401) { openSettings(); throw new Error('API 키가 틀렸대. 다시 넣어'); }
+    // 생각 설정을 모델이 거부하면 설정을 빼고 한도를 넉넉히 해서 다시
+    if (r.status === 400 && (body.thinking || body.output_config) && /thinking|effort|output_config/i.test(msg)) {
+      delete body.thinking; delete body.output_config; body.max_tokens = Math.max(body.max_tokens, 3000); continue;
+    }
+    if ((r.status === 529 || r.status === 429 || r.status >= 500) && tryN === 0) { await new Promise(z => setTimeout(z, 2500)); continue; }
+    throw new Error(msg);
+  }
+  throw new Error('대답을 못 받았어');
+}
+// 한도에 걸려 잘렸으면 끝난 문장까지만 남긴다
+function wholeSentences(t) {
+  const m = t.match(/^[\s\S]*[.?!…~](?=\s|$)/);
+  return m ? m[0].trim() : '';
+}
+function parseJSON(t) { try { const m = t.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; } catch (e) { return null; } }
+
+/* ---------- 말하기 ---------- */
+function clean(t) {
+  return t.replace(/\p{Extended_Pictographic}/gu, '').replace(/[*_#`>\[\]|]/g, '').replace(/\s+/g, ' ').trim();
+}
+// 듣는 말과 화면용 글 나누기 (--- 아래는 화면에만)
+function splitReply(t) {
+  const parts = String(t || '').split(/\n\s*-{3,}\s*\n?/);
+  return { spoken: parts[0], screen: parts.slice(1).join('\n').trim() };
+}
+// 비상용: 듣는 말이 80자를 넘으면 문장 단위로 80자까지만 읽는다
+function capSpoken(t, max) {
+  const ch = chunkSentences(ttsPolish(t)); let out = '';
+  for (const c of ch) { if ((out + ' ' + c).trim().length > max && out) break; out = (out + ' ' + c).trim(); }
+  return out || t.slice(0, max);
+}
+function say(t) {
+  const sp = splitReply(t);
+  const c = clean(sp.spoken);
+  if (!c) return;
+  $('#line').textContent = c;
+  $('#detail').textContent = sp.screen.replace(/[*_#`>|]/g, '').trim();
+  lastSaid = c; lastSaidAt = Date.now();
+  if (!N) return;
+  if (S.quiet && N.hasHeadphones && !N.hasHeadphones()) { if (N.buzz) N.buzz(); onMuted(); return; } // 크레딧도 안 쓴다
+  if (useTc()) {
+    speaking = true; status();
+    speakTc(capSpoken(c, 80), lastHeard);
+  } else if (N.ttsReady()) { speaking = true; status(); N.speak(capSpoken(c, 80)); }
+}
+window.onMuted = () => { $('#heard').textContent = '이어폰이 없어서 소리는 껐어. 공주 말은 글로 봐. 물어볼 건 공책에 써서 공주 대사를 눌러.'; };
+let tcOff = false, tcNote = '', lastHeard = '';
+// 소리로 읽기 좋게 부호와 띄어쓰기를 다듬는다
+function ttsPolish(t) {
+  return String(t || '')
+    .replace(/["“”‘’「」『』()\[\]]/g, '')
+    .replace(/\.{3,}|…+|···+/g, '…')
+    .replace(/!{2,}/g, '!').replace(/\?{2,}/g, '?').replace(/~{2,}/g, '~')
+    .replace(/^(흥|어|아|음|뭐|헐|와|야|자|풉|에휴|하아|잠깐|됐어|알아)\s+/, '$1, ')
+    .replace(/\s*([,.?!])(?!\d)\s*/g, '$1 ')
+    .replace(/…(?=[^\s.?!~…])/g, '… ')
+    .replace(/~(?=[^\s.?!~…])/g, '~ ')
+    .replace(/,\s*([.?!…~])/g, '$1')
+    .replace(/\s+/g, ' ').trim()
+    .replace(/,$/, '.')
+    .replace(/([^.?!…~])$/, '$1.');
+}
+const useTc = () => S.tcKey && S.tcVoice && !tcOff && N && N.tcSpeak2;
+// 문장 끝(. ? ! ~)에서 자르고, 너무 짧은 조각(어? 같은)은 다음 문장에 붙인다. …에서는 안 자른다
+function chunkSentences(t) {
+  const src = String(t), parts = []; let buf = '';
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i], n = src[i + 1] || ''; buf += c;
+    if (!'.?!~'.includes(c) || '.?!~'.includes(n)) continue;
+    if (c === '.' && /\d/.test(src[i - 1] || '') && /\d/.test(n)) continue; // 2.5 같은 숫자는 안 자른다
+    parts.push(buf); buf = '';
+  }
+  if (buf.trim()) parts.push(buf);
+  const out = []; let carry = '';
+  parts.map(x => x.trim()).filter(Boolean).forEach(x => {
+    const cur = carry ? carry + ' ' + x : x;
+    if (cur.replace(/[\s.?!~…,]/g, '').length <= 4) carry = cur; else { out.push(cur); carry = ''; }
+  });
+  if (carry) { if (out.length) out[out.length - 1] += ' ' + carry; else out.push(carry); }
+  while (out.length > 25) { const last = out.pop(); out[out.length - 1] += ' ' + last; }
+  return out;
+}
+// limit: 앞에서부터 몇 문장까지만 소리로 읽을지 (나머지는 화면 글로만)
+function speakTc(text, prev, key, voice, semis, tempo, pause, limit) {
+  const t = ttsPolish(text);
+  let ch = chunkSentences(t); if (limit) ch = ch.slice(0, limit);
+  N.tcSpeak2(key || S.tcKey, (voice || S.tcVoice).id, (voice || S.tcVoice).model, JSON.stringify(ch), prev || '',
+    semis ?? (+S.tcPitch || 0), tempo ?? (+S.tcTempo || 1), pause ?? (S.tcPause ?? 0.4));
+}
+const semis = p => Math.max(-12, Math.min(12, Math.round(12 * Math.log2(+p || 1))));
+window.onTcError = (code, msg) => {
+  if (code === 402) { tcOff = true; tcNote = '타입캐스트 무료 글자를 다 썼어. 이번 달은 폰 목소리로 말할게.'; setErr(tcNote); }
+  else if (code === 401) { tcOff = true; tcNote = '타입캐스트 키가 틀렸대. 설정에서 다시 넣어. 일단 폰 목소리로 말할게.'; setErr(tcNote); }
+  else setErr('타입캐스트 목소리를 못 받아서(' + (code || '인터넷') + ') 폰 목소리로 말했어.');
+};
+window.onSpeakStart = () => { speaking = true; status(); };
+window.onSpeakDone = () => { speaking = false; status(); pump(); };
+window.onTts = ok => { if (!ok) setErr('한국어 음성이 없어. 설정 > 일반 > 텍스트 음성 변환에서 한국어를 받아.'); };
+window.onNativeError = m => setErr(m);
+window.onPerms = (cam, mic) => { if (cam) camOn(); if (!mic) setErr('마이크 권한이 없으면 니 말을 못 들어.'); };
+
+/* ---------- 듣기 ---------- */
+window.onListenState = b => { listening = b; status(); };
+function flushLater(ms) { clearTimeout(bufT); if (buf) bufT = setTimeout(() => { const said = buf.trim(); buf = ''; if (said) enqueue({ kind: 'user', text: said }); }, ms); }
+window.onSpeechBegin = () => flushLater(2600);
+window.onPartial = t => { if (!running || paused) return; flushLater(2600); showHeard(buf ? buf + ' ' + t : t); };
+window.onFinal = t => {
+  if (!running || paused) return;
+  buf = buf ? buf + ' ' + t : t;
+  showHeard(buf);
+  flushLater(1300);
+};
+function showHeard(t) { const h = $('#heard'); h.textContent = ''; const b = document.createElement('b'); b.textContent = '니 말 '; h.append(b, t); }
+
+/* ---------- 대화 큐 ---------- */
+function enqueue(job) {
+  if (job.kind === 'pro' && (queue.length || busy)) return;
+  if (job.kind === 'look' && queue.some(j => j.kind === 'look')) return;
+  queue.push(job); pump();
+}
+async function pump() {
+  if (busy || speaking || !queue.length || !running || paused) return;
+  busy = true;
+  const job = queue.shift();
+  try { await talk(job); } catch (e) { setErr(e.message); }
+  busy = false;
+  pump();
+}
+async function talk(job) {
+  thinking++; status();
+  try {
+    if (job.kind === 'user') lastHeard = job.text;
+    if (job.kind === 'user' && !/공주/.test(job.text)) {
+      const recent = Date.now() - lastSaidAt < 40000 ? `공주가 방금 한 말: "${lastSaid}"\n` : '';
+      const g = parseJSON(await claude(M_WATCH, GATE_SYS, [{ role: 'user', content: recent + '들린 말: "' + job.text + '"' }], 80, { think: 'off', effort: 'low' }));
+      if (!g || !g.talk) return;
+    }
+    const img = grab();
+    const memo = `[카메라 메모: ${lastNote || '아직 없음'}]\n` + (S.quiet ? '[독서실: 수아는 소리 내 말을 못 한다. 공책에 너한테 쓴 질문이나 물음표 표시가 보이면 그게 수아 말이니까 그것부터 대답해. 대답은 귓속말처럼 짧게.]\n' : '');
+    const text = job.kind === 'user' ? memo + '수아: ' + job.text
+      : job.kind === 'look' ? memo + '[시스템: 수아가 화면을 눌러서 지금 공책을 봐 달라고 했다. 사진을 직접 보고 한마디 해. 틀린 데가 있으면 어느 줄인지 짚고 힌트 하나, 막혀 보이면 다음 한 걸음, 잘했으면 아까워하면서 인정. 이번엔 SILENT 금지.]'
+      : memo + `[시스템: ${job.reason}. 수아는 아무 말도 안 했다. 지금 말을 걸지 판단해.]`;
+    const past = hist.slice(-14);
+    while (past.length && past[0].role !== 'user') past.shift();
+    const content = img ? [imgPart(img), { type: 'text', text }] : text;
+    const deep = job.kind === 'look' || (job.kind === 'pro' && /실수|붙잡고|막혔/.test(job.reason)); // 풀이를 봐야 하는 순간엔 생각하게
+    const reply = await claude(talkModel(), TALK_SYS, past.concat([{ role: 'user', content }]),
+      deep ? 8000 : 700, deep ? { effort: 'medium' } : { think: 'off', effort: 'low' });
+    const silent = !reply || (job.kind !== 'look' && /^\s*SILENT\b/i.test(reply));
+    hist.push({ role: 'user', content: text }, { role: 'assistant', content: silent ? '(말 안 함)' : reply });
+    if (hist.length > 40) hist = hist.slice(-40);
+    if (!silent) { if (job.kind === 'pro') lastPro = Date.now(); say(reply); }
+    setErr(tcOff ? tcNote : '');
+  } finally { thinking--; status(); }
+}
+
+/* ---------- 감시 ---------- */
+function schedule() { clearTimeout(watchT); if (manual()) { nextAt = 0; return; } nextAt = Date.now() + S.interval * 1000; watchT = setTimeout(watch, S.interval * 1000); }
+function look() {
+  if (!running || paused) return;
+  const t = $('#thumb'); t.classList.add('snap'); setTimeout(() => t.classList.remove('snap'), 600);
+  enqueue({ kind: 'look' });
+}
+async function watch() {
+  if (!running || paused) return;
+  schedule();
+  const img = grab(); if (!img) return;
+  thinking++; status();
+  let r = null;
+  try {
+    r = parseJSON(await claude(M_WATCH, WATCH_SYS, [{ role: 'user', content: [imgPart(img), { type: 'text', text: '이전 관찰: ' + (lastNote || '(처음)') + '\n이전 문제: ' + (curProblem || '(없음)') }] }], 500, { think: 'off' }));
+  } catch (e) { setErr(e.message); }
+  thinking--; status();
+  if (!r) return;
+  if (r.page) lastNote = r.page;
+  // 같은 문제에 몇 분째인지 센다. 다음 문제로 넘어가면 다시 0부터
+  if (r.problem && (r.same_problem === false || !curProblem)) { curProblem = r.problem; problemSince = Date.now(); }
+  else if (r.problem && r.same_problem !== false) curProblem = curProblem || r.problem;
+  const onSame = curProblem && r.state !== 'away' ? (Date.now() - problemSince) / 60000 : 0;
+  notes.push({ t: clock(), page: r.page || '', state: r.state || '', problem: curProblem });
+  if (notes.length > 240) notes.shift();
+  unchanged = r.changed === false ? unchanged + 1 : 0;
+  away = r.state === 'away' ? away + 1 : 0;
+  const per3 = Math.max(1, Math.round(180 / (S.interval || 60)));
+  if (Date.now() - lastPro < 180000 || Date.now() - lastSaidAt < 60000) return;
+  let reason = null;
+  if (r.state === 'mistake' && r.note) reason = '카메라가 실수를 의심함: ' + r.note + '. 사진을 직접 보고 진짜 틀렸을 때만 짚어';
+  else if (unchanged >= per3) { reason = '필기가 ' + Math.round(unchanged * (S.interval || 60) / 60) + '분째 그대로다. 막혔을 수 있다'; unchanged = 0; }
+  else if (away >= per3) { reason = '3분 넘게 공책이 안 보이거나 딴짓 중이다'; away = 0; }
+  else if (onSame >= STUCK_MIN) {
+    reason = '같은 문제(' + curProblem + ')를 ' + Math.round(onSame) + '분째 붙잡고 있다. 필기는 바뀌고 있지만 진도가 안 나가는 것 같다. 사진을 보고 헤매는 중이면 어디서 막혔는지 짚고 힌트 하나만 줘. 잘 풀고 있는 중이면 SILENT';
+    problemSince = Date.now(); // 다음 보고는 또 10분 뒤
+  }
+  if (reason) enqueue({ kind: 'pro', reason });
+}
+const clock = () => { const d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); };
+
+/* ---------- 세션 ---------- */
+const OPEN = ['흥, 보고 있을 테니까… 해 봐.', '시작해. 딴짓하면, 다 보이거든?', '펜 들어! 공주가 지켜본다~', '뭐 해? 첫 줄부터 써.'];
+async function start() {
+  if (!S.key) { openSettings(); return; }
+  if (!(await camOn())) return;
+  running = true; paused = false; startedAt = Date.now();
+  $('#pause').textContent = '잠깐 멈춤';
+  hist = []; notes = []; lastNote = ''; unchanged = 0; away = 0; lastPro = Date.now(); tokens = 0; curProblem = ''; problemSince = Date.now();
+  document.body.classList.add('on');
+  $('#thumb').prepend($('#cam')); $('#cam').play().catch(() => {});
+  $('#heard').textContent = S.quiet ? '독서실이야. 물어볼 건 공책에 써서 공주 대사를 눌러.' : manual() ? '공주 대사를 누르면 공책 사진이 가.' : '';
+  if (N) { if (!S.quiet) N.startListening(); } else setErr('앱 밖이라 음성은 안 돼.');
+  say(OPEN[Math.floor(Math.random() * OPEN.length)]);
+  schedule();
+  clearInterval(tickT); tickT = setInterval(status, 1000);
+  status();
+}
+function togglePause() {
+  paused = !paused;
+  $('#pause').textContent = paused ? '다시 시작' : '잠깐 멈춤';
+  if (paused) { clearTimeout(watchT); if (N) { N.stopListening(); N.stopSpeaking(); } queue = []; }
+  else { if (N && !S.quiet) N.startListening(); schedule(); lastPro = Date.now(); }
+  status();
+}
+async function end() {
+  running = false; paused = false;
+  $('#pause').textContent = '잠깐 멈춤';
+  clearTimeout(watchT); clearInterval(tickT); clearTimeout(bufT); queue = [];
+  if (N) { N.stopListening(); N.stopSpeaking(); }
+  $('#sum').textContent = '정리하는 중…';
+  $('#sumSheet').classList.add('open');
+  const mins = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
+  const log = notes.map(n => n.t + ' ' + n.state + ' [' + (n.problem || '') + '] ' + n.page).join('\n') || '(카메라 기록 없음)';
+  const talkLog = hist.map(m => (m.role === 'user' ? '' : '공주: ') + (typeof m.content === 'string' ? m.content : '')).join('\n') || '(대화 없음)';
+  try {
+    const t = await claude(talkModel(), TALK_SYS.split('\n\n').slice(0, 2).join('\n\n') + '\n이번엔 화면에 글로 보여 주고 짧게 읽어 준다.',
+      [{ role: 'user', content: `공부 ${mins}분 끝. 아래 기록으로 정리해.\n형식: 첫 줄에 오늘 한 거 한 줄. 그다음 "막힌 데"로 최대 3개, 각 한 줄. 마지막 줄에 "다음엔" 하나. 공주 말투, 기호·이모지 없이, 기록에 없는 건 지어내지 마.\n\n[카메라 기록]\n${log}\n\n[대화]\n${talkLog}` }], 1500, { think: 'off', effort: 'low' });
+    $('#sum').textContent = clean(t.replace(/\n{3,}/g, '\n\n')) === '' ? '정리할 게 없네.' : t.replace(/[*#`]/g, '');
+    try { localStorage.setItem('gcLast', t); } catch (e) {}
+    const first = clean(t.split('\n')[0]);
+    if (first && N) {
+      if (useTc()) speakTc(first, '');
+      else if (N.ttsReady()) N.speak(ttsPolish(first));
+    }
+  } catch (e) { $('#sum').textContent = '정리 못 했어. ' + e.message; }
+  document.body.classList.remove('on'); $('#thumb').classList.remove('zoom');
+  $('#frame').prepend($('#cam')); $('#cam').play().catch(() => {});
+  status();
+}
+
+/* ---------- 설정 ---------- */
+function segHint() {
+  const sel = $('#seg .sel');
+  $('#segHint').textContent = sel && sel.dataset.v === '0' ? '알아서 안 찍어. 공주 대사를 누를 때만 사진이 가.' : '어느 간격이든 공주 대사를 누르면 바로 한 장 더 가.';
+}
+function applyVoice(v) {
+  if (!N) return;
+  v = v || S;
+  N.setVoice('', '');
+  N.setPitch(1); N.setRate(1.05); // 폰 목소리는 대타라서 기본값
+}
+function uiVoice() {
+  return { tcPitch: +$('#pitch').value, tcTempo: +$('#rate').value, tcPause: +$('#gap').value };
+}
+/* ---------- 타입캐스트 목소리 고르기 ---------- */
+let tcReq = 0;
+const tcCb = {};
+window.onTc = (id, code, body) => { const f = tcCb[id]; delete tcCb[id]; if (f) f(code, body); };
+function tcGet(path, key) {
+  return new Promise(res => { const id = 'r' + (++tcReq); tcCb[id] = (c, b) => { let j = null; try { j = JSON.parse(b); } catch (e) {} res({ code: c, json: j }); }; N.tcGet(id, path, key); });
+}
+const VOICE_NAME = '미오';
+function pickModel(v) {
+  const ms = (v && v.models || []).map(m => m.version);
+  return ms.includes('ssfm-v31') ? 'ssfm-v31' : ms.includes('ssfm-v30') ? 'ssfm-v30' : (ms[0] || 'ssfm-v30');
+}
+// 키만 있으면 타입캐스트 목록에서 미오를 찾아 둔다
+let mioBusy = null;
+async function ensureMio(key) {
+  if (S.tcVoice && S.tcVoice.name === VOICE_NAME && S.tcVoice.id) return S.tcVoice;
+  if (!key || !N || !N.tcGet) return null;
+  if (mioBusy) return mioBusy;
+  mioBusy = (async () => {
+    const r = await tcGet('/v3/voices', key);
+    mioBusy = null;
+    if (r.code === 401) { tcPickedText('키가 틀렸대. 다시 복사해 넣어.'); return null; }
+    if (r.code !== 200 || !Array.isArray(r.json)) { tcPickedText('미오를 못 불러왔어(' + (r.code || '인터넷') + ').'); return null; }
+    const v = r.json.find(x => x.voice_name && x.voice_name.kor === VOICE_NAME);
+    if (!v) { tcPickedText('목록에서 미오가 안 보여.'); return null; }
+    S.tcVoice = { id: v.voice_id, name: VOICE_NAME, model: pickModel(v) }; S.tcKey = key; tcOff = false; save();
+    tcPickedText();
+    return S.tcVoice;
+  })();
+  return mioBusy;
+}
+function tcPickedText(msg) {
+  const ok = S.tcVoice && S.tcVoice.name === VOICE_NAME;
+  $('#pkSub').textContent = msg || (ok ? '공주 목소리야. 슬라이더 가운데가 원래 목소리' : ($('#tcKey').value.trim() ? '미오 찾는 중…' : '타입캐스트 키를 넣으면 미오로 말해'));
+  $('#pkHear').disabled = !ok;
+}
+const LINES = ["뭘 봐? 공주 목소리 처음 들어? 흐응… 이 정도면 귀가 호강하는 거거든. 고맙다는 말은, 나중에 해도 돼.", "셋째 줄, 다시 봐. 곱의 미분인데… 뒤쪽 항을 통째로 빼먹었잖아! 에프 프라임 지 다음에 뭐가 더 붙어야 되는지, 힌트는 거기까지야.", "하아… 십 분째 같은 줄만 쳐다보고 있네. 막혔으면 막혔다고 말해. 혼자 끙끙대는 거, 하나도 안 귀엽거든?", "어? 풀었어? 진짜로? 흥… 이번 건 봐줄 만하네. 운 아니라는 거, 다음 문제에서 증명해 봐~", "폰 만지는 거 다 보이거든? 그 손, 공책으로 돌려. 한 문제만 풀고 놀든가!", "니가 바보라고? 풉, 그 기준 엉터리잖아. 아까 그 어려운 거, 혼자 끝까지 간 애가 누군데?", "아, 몰라. 공주 지금 기분 별로야… 그래도 틀린 건 알려 줄게. 루트 이 더하기 루트 팔은, 루트 십이 아니라 삼 루트 이거든?", "오늘 몇 문제 했는지 세어 봤어? 공주는 세어 봤거든. 일곱 개. 어제보다 두 개 많네~ 칭찬은 아니고, 그냥 사실이야.", "엑스 제곱 빼기 사 엑스 더하기 사는… 엑스 빼기 이의 제곱이잖아! 그걸 왜 근의 공식으로 풀고 있어? 고생을 사서 하네, 진짜.", "물 마시고 와. 대신, 삼 분 안에! 넘으면… 공주 삐진다?", "지문 첫 문단부터 다시 읽어. 니가 놓친 조건… 단으로 시작하는 그 문장에 있거든.", "졸려? 그건 니 사정이고~ 세수하고 와. 공주가, 딱 이번만 기다려 줄게.", "와… 이 풀이 깔끔하네. 아, 아니! 공주가 감탄한 거 아니거든? 그냥 글씨가 좀 덜 엉망이라는 거야.", "에휴, 또 같은 데서 틀렸어. 이번이 세 번째야! 마이너스 괄호 풀 때, 뒤에 거 부호 안 바꿨잖아.", "그래서, 결론이 뭔데? 논술은 결론부터 써야 채점하는 사람이 안 졸거든. 첫 문장, 다시 써 봐.", "공주한테 고맙지? 알아, 알아. 말 안 해도 다 알아~ 그러니까 이제, 다음 문제나 풀어.", "쉬는 시간 끝났거든? 펜 들어! 오늘 목표까지, 두 문제 남았어.", "잠깐, 방금 그거… 맞게 썼네? 공주가 틀렸다고 할 줄 알았지? 흥, 아쉽게도 맞았어.", "뭐라고? 목소리가 너무 작아서 못 들었어. 다시 말해 봐. 이번엔, 공주한테 똑바로!", "오늘은 여기까지 한 거… 인정해 줄게. 미분 세 문제랑 논술 개요 하나. 다음엔, 적분 첫 문제부터 하자."];
+const TEST = ['흥… 봐줄 만하네. 다음!', '뭐야, 풀었어? 진짜로?', '그거 틀렸거든? 다시 봐.', '에휴, 또야? 부호 봐.', '펜 들어. 빨리~', '알아, 알아. 됐어.', '니가 뭘 알아? 풉.', '잠깐… 맞았네?'];
+let testBag = [];
+const nextTest = () => { if (!testBag.length) testBag = TEST.map((_, i) => i).sort(() => Math.random() - 0.5); return TEST[testBag.pop()]; };
+let lineBag = [];
+const nextLine = () => { if (!lineBag.length) lineBag = LINES.map((_, i) => i).sort(() => Math.random() - 0.5); return LINES[lineBag.pop()]; };
+function openSettings() {
+  $('#key').value = S.key;
+  [...$('#seg').children].forEach(b => b.classList.toggle('sel', +b.dataset.v === S.interval));
+  segHint();
+  [...$('#brain').children].forEach(b => b.classList.toggle('sel', b.dataset.v === S.brain));
+  $('#pitch').value = S.tcPitch; $('#rate').value = S.tcTempo; $('#gap').value = S.tcPause ?? 0.4;
+  placeUI(S.quiet ? 'quiet' : 'home');
+  showCredit();
+  $('#tcKey').value = S.tcKey;
+  tcPickedText();
+  if (S.tcKey) ensureMio(S.tcKey);
+  $('#setSheet').classList.add('open');
+}
+$('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; [...$('#seg').children].forEach(x => x.classList.toggle('sel', x === b)); segHint(); });
+$('#pkHear').addEventListener('click', () => {
+  const key = $('#tcKey').value.trim(); const v = S.tcVoice; if (!key || !v || !N || !N.tcSpeak2) return;
+  speakTc(nextTest(), '', key, v, +$('#pitch').value, +$('#rate').value, +$('#gap').value);
+  setTimeout(showCredit, 4000);
+});
+['#pitch', '#rate', '#gap'].forEach(id => $(id).addEventListener('change', () => { S.tcPitch = +$('#pitch').value; S.tcTempo = +$('#rate').value; S.tcPause = +$('#gap').value; save(); }));
+$('#tcKey').addEventListener('change', () => {
+  const k = $('#tcKey').value.trim();
+  if (k !== S.tcKey) { S.tcVoice = null; }
+  S.tcKey = k; save(); tcPickedText(); if (k) ensureMio(k);
+});
+function placeUI(v) {
+  [...$('#place').children].forEach(b => b.classList.toggle('sel', b.dataset.v === v));
+  $('#placeHint').textContent = v === 'quiet' ? '마이크는 끄고, 질문은 공책에 써서 화면을 눌러. 이어폰이 빠지면 소리 대신 진동이야.' : '말로 대화해.';
+}
+$('#place').addEventListener('click', e => { const b = e.target.closest('button'); if (b) placeUI(b.dataset.v); });
+async function showCredit() {
+  const key = $('#tcKey').value.trim() || S.tcKey; const el = $('#credit');
+  if (!key || !N || !N.tcGet) { el.textContent = ''; return; }
+  el.textContent = '남은 크레딧 확인 중…';
+  const r = await tcGet('/v1/users/me/subscription', key);
+  const c = r.json && r.json.credits;
+  el.textContent = r.code === 200 && c ? '남은 크레딧 ' + Math.max(0, c.plan_credits - c.used_credits).toLocaleString() + ' / ' + c.plan_credits.toLocaleString() + ' (공주 한마디에 보통 30~50)' : '';
+}
+$('#brain').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; [...$('#brain').children].forEach(x => x.classList.toggle('sel', x === b)); });
+$('#setSave').addEventListener('click', () => {
+  S.key = $('#key').value.trim();
+  const sel = $('#seg .sel'); if (sel) S.interval = +sel.dataset.v;
+  const br = $('#brain .sel'); if (br) S.brain = br.dataset.v;
+  const pl = $('#place .sel'); if (pl) S.quiet = pl.dataset.v === 'quiet';
+  if (N && N.setQuiet) N.setQuiet(!!S.quiet);
+  if (running && !paused && N) { if (S.quiet) N.stopListening(); else N.startListening(); }
+  S.tcKey = $('#tcKey').value.trim();
+  if (S.tcKey) ensureMio(S.tcKey);
+  tcOff = false;
+  Object.assign(S, uiVoice());
+  save(); applyVoice(); $('#setSheet').classList.remove('open'); setErr('');
+  if (running && !paused) schedule();
+  status();
+});
+$('#setCancel').addEventListener('click', () => { applyVoice(); $('#setSheet').classList.remove('open'); });
+$('#gear').addEventListener('click', openSettings);
+$('#start').addEventListener('click', start);
+$('#pause').addEventListener('click', togglePause);
+$('#end').addEventListener('click', end);
+$('#detail').addEventListener('click', e => e.stopPropagation()); // 화면용 글을 누를 땐 사진 안 보냄
+$('#sayBox').addEventListener('click', () => { if (speaking && N) N.stopSpeaking(); else look(); });
+$('#thumb').addEventListener('click', () => $('#thumb').classList.toggle('zoom'));
+$('#sumClose').addEventListener('click', () => $('#sumSheet').classList.remove('open'));
+$('#copy').addEventListener('click', () => { try { navigator.clipboard.writeText($('#sum').textContent); $('#copy').textContent = '복사됨'; setTimeout(() => $('#copy').textContent = '복사', 1500); } catch (e) {} });
+
+camOn();
+applyVoice();
+if (N && N.setQuiet) N.setQuiet(!!S.quiet);
+if (S.tcKey && !(S.tcVoice && S.tcVoice.name === VOICE_NAME)) ensureMio(S.tcKey);
+if (!S.key) openSettings();
+$('#ver').textContent = '공주캠 ' + WEB_VER + (N && N.webSource ? ' · ' + N.webSource() : '');
+if (N && N.ready) N.ready();
+status();
+}
+</script>
+</body>
+</html>
