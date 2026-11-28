@@ -1,0 +1,1507 @@
+{
+"books": [
+{
+"id": "bombom",
+"name": "봄봄",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "점순이 키가 덜 컸다며 장인이 혼례를 자꾸 미룬다. 데릴사위는 몇 해째 일만 한다.",
+"src": "https://ko.wikisource.org/wiki/봄봄",
+"color": "#8c5a3c",
+"cvs": 0,
+"sell": [
+{
+"u": "kongddeok_",
+"x": "아니 동백꽃 점순이 좋았던 사람 이거 봐 여기도 점순이 있음ㅋㅋㅋㅋㅋ 다른 점순이임\n장인이랑 싸우는 거 보다가 혼자 방에서 소리 내서 웃음",
+"if": "dongbaek"
+},
+{
+"u": "mytaste_only",
+"x": "장인 핑계가 딸 키 작아서임. 키.\n그걸로 몇 년을 버팀ㅋ"
+}
+],
+"tone": "light",
+"cover": "covers/bombom.jpg"
+},
+{
+"id": "sonakbi",
+"name": "소낙비",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "노름 밑천이 급한 춘호가 아내를 몰아세운다. 밖에는 소낙비가 쏟아진다.",
+"src": "https://ko.wikisource.org/wiki/소낙비",
+"color": "#b07a2a",
+"cvs": 1,
+"tone": "heavy",
+"cover": "covers/sonakbi.jpg"
+},
+{
+"id": "manmubang",
+"name": "만무방",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "누가 응오네 논에서 벼를 몰래 베어 간다. 떠돌이 형 응칠이가 숨어서 도둑을 기다린다.",
+"src": "https://ko.wikisource.org/wiki/만무방",
+"color": "#3d5a40",
+"cvs": 2,
+"sell": [
+{
+"u": "lights_on_reader",
+"x": "범인 찾기 좋아하는 사람..?\n밤에 벼 도둑 잡으려고 숨어 있는 얘긴데 나 끝까지 못 맞힘\n답 말하지 마 아무도"
+}
+],
+"tone": "heavy",
+"cover": "covers/manmubang.jpg"
+},
+{
+"id": "geumkong",
+"name": "금 따는 콩밭",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "금이 나온다는 말 한마디에 영식이가 다 자란 콩밭을 갈아엎는다.",
+"src": "https://ko.wikisource.org/wiki/금_따는_콩밭",
+"color": "#8a3b48",
+"cvs": 3,
+"sell": [
+{
+"u": "kongddeok_",
+"x": "콩밭을 왜 파냐고 콩밭을ㅋㅋㅋㅋ 다 자란 콩밭을\n금 나온대서 아니ㅣ 영식아 정신 차려",
+"if": "dongbaek"
+}
+],
+"tone": "light",
+"cover": "covers/geumkong.jpg"
+},
+{
+"id": "ttaengbyeot",
+"name": "땡볕",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "배가 불러 오는 아내를 지게에 지고, 덕순이가 땡볕 속에 대학병원을 찾아간다.",
+"src": "https://ko.wikisource.org/wiki/땡볕",
+"color": "#4b4a7a",
+"cvs": 0,
+"sell": [
+{
+"u": "tissue_box",
+"x": "땡볕 읽지 마\n아니 읽어\n아픈 아내 지게에 지고 병원 가는 얘긴데 제목이 땡볕인 이유를 알게 됨"
+}
+],
+"tone": "heavy",
+"cover": "covers/ttaengbyeot.jpg"
+},
+{
+"id": "sangol",
+"name": "산골 나그네",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "산골 주막에 젊은 여자 나그네가 하룻밤 묵어 가겠다며 들어온다.",
+"src": "https://ko.wikisource.org/wiki/산골_나그네",
+"color": "#9a5b2e",
+"cvs": 1,
+"sell": [
+{
+"u": "just_reading",
+"x": "산골 나그네. 읽어.\n여자 정체 끝까지 궁금함."
+}
+],
+"tone": "light",
+"cover": "covers/sangol.jpg"
+},
+{
+"id": "nodaji",
+"name": "노다지",
+"author": "김유정",
+"cat": "근대",
+"lang": "ko",
+"blurb": "꽁보와 더펄이가 한밤중에 남의 금점 굴로 몰래 기어든다.",
+"src": "https://ko.wikisource.org/wiki/노다지",
+"color": "#7d6a3a",
+"cvs": 2,
+"sell": [
+{
+"u": "read_first",
+"x": "노다지 다 읽음 ㅋ 한 시간도 안 걸림\n너넨 아직 시작도 안 했지"
+}
+],
+"tone": "heavy",
+"cover": "covers/nodaji.jpg"
+},
+{
+"id": "bincheo",
+"name": "빈처",
+"author": "현진건",
+"cat": "근대",
+"lang": "ko",
+"blurb": "돈 한 푼 못 버는 무명 작가 남편, 그 곁에서 살림을 버티는 아내.",
+"src": "https://ko.wikisource.org/wiki/빈처",
+"color": "#a8463f",
+"cvs": 3,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "운수 좋은 날 작가 거 하나 더 읽을 사람??\n가난한 부부 얘긴데 아내가 남편 편 들어 주는 장면 개찢어짐ㅠㅠ",
+"if": "unsu"
+}
+],
+"tone": "heavy",
+"cover": "covers/bincheo.jpg"
+},
+{
+"id": "sulgwon",
+"name": "술 권하는 사회",
+"author": "현진건",
+"cat": "근대",
+"lang": "ko",
+"blurb": "유학까지 다녀온 남편이 밤마다 취해 들어온다. 아내가 왜 마시냐고 묻는다.",
+"src": "https://ko.wikisource.org/wiki/술_권하는_사회",
+"color": "#5c6b7a",
+"cvs": 0,
+"sell": [
+{
+"u": "kongddeok_",
+"x": "아니 남편이 맨날 사회가 술을 권한대ㅋㅋㅋㅋ 사회가 누군데\n아내 입장에서 읽으면 웃긴데 슬프고 미친ㄴ",
+"if": "unsu"
+}
+],
+"tone": "heavy",
+"cover": "covers/sulgwon.jpg"
+},
+{
+"id": "bsagam",
+"name": "B사감과 러브레터",
+"author": "현진건",
+"cat": "근대",
+"lang": "ko",
+"blurb": "연애편지라면 질색하는 기숙사 사감 B 여사. 한밤중 그 방에서 이상한 소리가 난다.",
+"src": "https://ko.wikisource.org/wiki/B사감과_러브레터",
+"color": "#2c5e7d",
+"cvs": 1,
+"sell": [
+{
+"u": "two_stars",
+"x": "별 네 개. 나 원래 네 개 잘 안 줌\n사감이 밤에 혼자 뭐 하는지 나옴. 짧으니까 그냥 읽어",
+"if": "unsu"
+}
+],
+"tone": "light",
+"cover": "covers/bsagam.jpg"
+},
+{
+"id": "gohyang",
+"name": "고향",
+"author": "현진건",
+"cat": "근대",
+"lang": "ko",
+"blurb": "기차 맞은편에 앉은 낯선 사내가 떠나온 고향 얘기를 꺼낸다.",
+"src": "https://ko.wikisource.org/wiki/고향_(현진건)",
+"color": "#6b8f4e",
+"cvs": 2,
+"sell": [
+{
+"u": "tissue_box",
+"x": "운수 좋은 날로 운 사람 손\n같은 작가가 쓴 거 하나 더 있음\n기차에서 만난 아저씨 고향 얘기인데 짧아서 앉은자리에서 끝남",
+"if": "unsu"
+}
+],
+"tone": "heavy",
+"cover": "covers/gohyang.jpg"
+},
+{
+"id": "halmeoni",
+"name": "할머니의 죽음",
+"author": "현진건",
+"cat": "근대",
+"lang": "ko",
+"blurb": "할머니가 위독하다는 전보에 자손들이 모여든다. 다들 슬픈 얼굴이긴 하다.",
+"src": "https://ko.wikisource.org/wiki/할머니의_죽음",
+"color": "#7a3f63",
+"cvs": 3,
+"sell": [
+{
+"u": "two_stars",
+"x": "할머니 위독하다고 다 모였는데 다들 효도하는 척 경쟁함\n별 세 개. 표정 관리 못 하는 사람 찾는 맛"
+}
+],
+"tone": "light",
+"cover": "covers/halmeoni.jpg"
+},
+{
+"id": "bongbyeol",
+"name": "봉별기",
+"author": "이상",
+"cat": "근대",
+"lang": "ko",
+"blurb": "요양 간 온천에서 '나'가 기생 금홍이를 만난다.",
+"src": "https://ko.wikisource.org/wiki/봉별기",
+"color": "#a0602f",
+"cvs": 0,
+"sell": [
+{
+"u": "deep_night",
+"x": "날개를 지나온 사람이라면 봉별기도…\n만남과 이별을 이토록 가볍게 쓰는 문장이라니\n(짧아서 졸기 전에 끝남)",
+"if": "nalgae"
+}
+],
+"tone": "heavy",
+"cover": "covers/bongbyeol.jpg"
+},
+{
+"id": "jongsaeng",
+"name": "종생기",
+"author": "이상",
+"cat": "근대",
+"lang": "ko",
+"blurb": "이상이 자기 죽음을 미리 꾸며 쓰는 듯한, 장난과 허세가 뒤섞인 글.",
+"src": "https://ko.wikisource.org/wiki/종생기",
+"color": "#3f6e8c",
+"cvs": 1,
+"sell": [
+{
+"u": "deep_night",
+"x": "자기 생의 끝을 미리 써 보는 소설…\n작가가 웃는 건지 우는 건지 끝까지 모르겠어\n(반은 이해 못 함ㅋ)",
+"if": "nalgae"
+}
+],
+"tone": "heavy",
+"cover": "covers/jongsaeng.jpg"
+},
+{
+"id": "jijuhoesi",
+"name": "지주회시",
+"author": "이상",
+"cat": "근대",
+"lang": "ko",
+"blurb": "서로를 갉아먹으며 사는 부부를 거미에 빗댔다.",
+"src": "https://ko.wikisource.org/wiki/지주회시",
+"color": "#2f7a74",
+"cvs": 2,
+"sell": [
+{
+"u": "basement_reader",
+"x": "부부를 거미에 빗대는 소설…\n서로 조금씩 빨아먹고 사는…\n제목 뜻 찾아보고 한참 멍했어…",
+"if": "nalgae"
+}
+],
+"tone": "heavy",
+"cover": "covers/jijuhoesi.jpg"
+},
+{
+"id": "samnyong",
+"name": "벙어리 삼룡이",
+"author": "나도향",
+"cat": "근대",
+"lang": "ko",
+"blurb": "말 못 하는 머슴 삼룡이가 주인집 새색시를 남몰래 아낀다.",
+"src": "https://ko.wikisource.org/wiki/벙어리_삼룡이",
+"color": "#6e4b8a",
+"cvs": 3,
+"sell": [
+{
+"u": "tissue_box",
+"x": "벙어리 삼룡이\n제목부터 마음 준비해ㅠㅠㅠㅠ\n말을 못 하니까 다 행동으로만 보여 주는데 그게 더 아픔"
+}
+],
+"tone": "heavy",
+"cover": "covers/samnyong.jpg"
+},
+{
+"id": "mullebanga",
+"name": "물레방아",
+"author": "나도향",
+"cat": "근대",
+"lang": "ko",
+"blurb": "주인 신치규가 머슴 이방원의 아내를 탐낸다. 물레방앗간이 자꾸 나온다.",
+"src": "https://ko.wikisource.org/wiki/물레방아",
+"color": "#8c5a3c",
+"cvs": 0,
+"tone": "heavy",
+"cover": "covers/mullebanga.jpg"
+},
+{
+"id": "ppong",
+"name": "뽕",
+"author": "나도향",
+"cat": "근대",
+"lang": "ko",
+"blurb": "노름꾼 남편을 둔 안협집, 머슴 삼돌이, 그리고 남의 뽕밭.",
+"src": "https://ko.wikisource.org/wiki/뽕",
+"color": "#b07a2a",
+"cvs": 1,
+"tone": "heavy",
+"cover": "covers/ppong.jpg"
+},
+{
+"id": "gamja",
+"name": "감자",
+"author": "김동인",
+"cat": "근대",
+"lang": "ko",
+"blurb": "가난한 집에 팔리듯 시집간 복녀가 빈민굴로 흘러든다.",
+"src": "https://ko.wikisource.org/wiki/감자",
+"color": "#3d5a40",
+"cvs": 2,
+"sell": [
+{
+"u": "two_stars",
+"x": "기분 좋은 얘기 아님. 별 두 개\n근데 손에서 못 놓음 이게 문제임"
+}
+],
+"tone": "heavy",
+"cover": "covers/gamja.jpg"
+},
+{
+"id": "baettaragi",
+"name": "배따라기",
+"author": "김동인",
+"cat": "근대",
+"lang": "ko",
+"blurb": "대동강 가에서 배따라기를 부르던 뱃사람이 자기 사연을 털어놓는다.",
+"src": "https://ko.wikisource.org/wiki/배따라기",
+"color": "#8a3b48",
+"cvs": 3,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "형이 아내랑 동생 사이 의심하는 얘긴데 쥐 한 마리 때문에 그렇게 돼??? 진짜로???\n물 한 잔 떠 놓고 읽어 목 탐"
+}
+],
+"tone": "heavy",
+"cover": "covers/baettaragi.jpg"
+},
+{
+"id": "gwangyeom",
+"name": "광염 소나타",
+"author": "김동인",
+"cat": "근대",
+"lang": "ko",
+"blurb": "광기에 휩싸여야만 곡이 나오는 천재 음악가 백성수.",
+"src": "https://ko.wikisource.org/wiki/광염_소나타",
+"color": "#4b4a7a",
+"cvs": 0,
+"sell": [
+{
+"u": "basement_reader",
+"x": "불이 나야 곡이 나오는 작곡가 얘기…\n예술 때문이면 어디까지 괜찮을까…\n너는…?"
+}
+],
+"tone": "heavy",
+"cover": "covers/gwangyeom.jpg"
+},
+{
+"id": "balgarak",
+"name": "발가락이 닮았다",
+"author": "김동인",
+"cat": "근대",
+"lang": "ko",
+"blurb": "늦장가 간 친구 M이 갓난아기 발가락을 자꾸 들여다본다. 의사인 '나'는 말을 아낀다.",
+"src": "https://ko.wikisource.org/wiki/발가락이_닮았다",
+"color": "#9a5b2e",
+"cvs": 1,
+"sell": [
+{
+"u": "mytaste_only",
+"x": "제목 보고 개그인 줄 알았으면 틀렸거든?\n의사 친구 시점이라 더 숨 막힘."
+}
+],
+"tone": "light",
+"cover": "covers/balgarak.jpg"
+},
+{
+"id": "bulgeunsan",
+"name": "붉은 산",
+"author": "김동인",
+"cat": "근대",
+"lang": "ko",
+"blurb": "만주 조선인 마을에서 다들 피해 다니는 사내, '삵'.",
+"src": "https://ko.wikisource.org/wiki/붉은_산",
+"color": "#7d6a3a",
+"cvs": 2,
+"sell": [
+{
+"u": "tissue_box",
+"x": "붉은 산 제목 뜻 나오는 데서 무너짐\n짧은데 마지막 두 페이지가 다 함"
+}
+],
+"tone": "heavy",
+"cover": "covers/bulgeunsan.jpg"
+},
+{
+"id": "yakhanja",
+"name": "약한 자의 슬픔",
+"author": "김동인",
+"cat": "근대",
+"lang": "ko",
+"blurb": "남작 집 가정교사로 들어간 강엘리자베트가 남작 앞에서 자꾸 약해진다.",
+"src": "https://ko.wikisource.org/wiki/약한_자의_슬픔",
+"color": "#a8463f",
+"cvs": 3,
+"tone": "heavy",
+"cover": "covers/yakhanja.jpg"
+},
+{
+"id": "readymade",
+"name": "레디메이드 인생",
+"author": "채만식",
+"cat": "근대",
+"lang": "ko",
+"blurb": "공부는 할 만큼 했는데 일자리가 없다. 지식인 P의 서울 버티기.",
+"src": "https://ko.wikisource.org/wiki/레디메이드_인생",
+"color": "#5c6b7a",
+"cvs": 0,
+"sell": [
+{
+"u": "two_stars",
+"x": "공부는 할 만큼 했는데 취직이 안 되는 얘기임\n남 얘기 같지 않아서 별 하나 깎음ㅋ"
+}
+],
+"tone": "heavy",
+"cover": "covers/readymade.jpg"
+},
+{
+"id": "chisuk",
+"name": "치숙",
+"author": "채만식",
+"cat": "근대",
+"lang": "ko",
+"blurb": "감옥 다녀온 아저씨를 조카가 대놓고 흉본다. 근데 조카 말이 좀 이상하다.",
+"src": "https://ko.wikisource.org/wiki/치숙",
+"color": "#2c5e7d",
+"cvs": 1,
+"sell": [
+{
+"u": "mytaste_only",
+"x": "화자 말 믿고 읽으면 안 되는 책.\n조카가 아저씨 흉을 보는데 읽다 보면 이상한 게 누군지 보이거든?"
+}
+],
+"tone": "light",
+"cover": "covers/chisuk.jpg"
+},
+{
+"id": "memil",
+"name": "메밀꽃 필 무렵",
+"author": "이효석",
+"cat": "근대",
+"lang": "ko",
+"blurb": "달밤, 메밀꽃 핀 산길. 장돌뱅이 허생원이 몇 번이나 한 옛날 얘기를 또 꺼낸다.",
+"src": "https://ko.wikisource.org/wiki/메밀꽃_필_무렵",
+"color": "#6b8f4e",
+"cvs": 2,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "메밀꽃 필 무렵 밤에 읽어 꼭 밤에\n허생원이 맨날 하는 첫사랑 얘기 귀여워 죽겠어ㅠㅠ 그 얘기 또 해 줘??"
+},
+{
+"u": "just_reading",
+"x": "\"피기 시작한 꽃이 소금을 뿌린 듯이 흐붓한 달빛에 숨이 막힐 지경이다.\"\n읽어."
+}
+],
+"tone": "light",
+"cover": "covers/memil.jpg"
+},
+{
+"id": "talchulgi",
+"name": "탈출기",
+"author": "최서해",
+"cat": "근대",
+"lang": "ko",
+"blurb": "가족을 두고 집을 나온 박군이 친구에게 편지로 까닭을 털어놓는다.",
+"src": "https://ko.wikisource.org/wiki/탈출기",
+"color": "#7a3f63",
+"cvs": 3,
+"sell": [
+{
+"u": "tissue_box",
+"x": "편지 한 통이 전부인데ㅠㅠㅠ\n왜 집을 나왔는지 털어놓는 편지\n읽다가 숨 참음"
+}
+],
+"tone": "heavy",
+"cover": "covers/talchulgi.jpg"
+},
+{
+"id": "hongyeom",
+"name": "홍염",
+"author": "최서해",
+"cat": "근대",
+"lang": "ko",
+"blurb": "서간도로 건너간 문 서방이 빚 때문에 중국인 지주 인가에게 시달린다.",
+"src": "https://ko.wikisource.org/wiki/홍염",
+"color": "#a0602f",
+"cvs": 0,
+"tone": "heavy",
+"cover": "covers/hongyeom.jpg"
+},
+{
+"id": "adada",
+"name": "백치 아다다",
+"author": "계용묵",
+"cat": "근대",
+"lang": "ko",
+"blurb": "말을 더듬어 '아다다'라 불리는 여자가 시집에서 쫓겨난다.",
+"src": "https://ko.wikisource.org/wiki/백치_아다다",
+"color": "#3f6e8c",
+"cvs": 1,
+"tone": "heavy",
+"cover": "covers/adada.jpg"
+},
+{
+"id": "jihachon",
+"name": "지하촌",
+"author": "강경애",
+"cat": "근대",
+"lang": "ko",
+"blurb": "몸이 불편한 칠성이네 식구가 사는 가난한 마을의 하루하루.",
+"src": "https://ko.wikisource.org/wiki/지하촌",
+"color": "#2f7a74",
+"cvs": 2,
+"tone": "heavy",
+"cover": "covers/jihachon.jpg"
+},
+{
+"id": "kkeoraei",
+"name": "꺼래이",
+"author": "백신애",
+"cat": "근대",
+"lang": "ko",
+"blurb": "러시아 땅으로 건너간 순이가 '꺼래이'라 불리며 고생한다.",
+"src": "https://ko.wikisource.org/wiki/꺼래이",
+"color": "#6e4b8a",
+"cvs": 3,
+"tone": "heavy",
+"cover": "covers/kkeoraei.jpg"
+},
+{
+"id": "mujeong",
+"name": "무정",
+"author": "이광수",
+"cat": "근대",
+"lang": "ko",
+"blurb": "영어 교사 이형식이 옛 은사의 딸과 부잣집 딸 사이에서 흔들린다. 장편이다.",
+"src": "https://ko.wikisource.org/wiki/무정",
+"color": "#8c5a3c",
+"cvs": 0,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "무정 길긴 긴데 삼각관계임???\n아니 형식아 하나만 정해??"
+}
+],
+"tone": "light",
+"cover": "covers/mujeong.jpg"
+},
+{
+"id": "taepyeong",
+"name": "태평천하",
+"author": "채만식",
+"cat": "근대",
+"lang": "ko",
+"blurb": "일제 강점기를 태평천하라고 믿는 윤 직원 영감네 집안. 장편이다.",
+"src": "https://ko.wikisource.org/wiki/태평천하",
+"color": "#b07a2a",
+"cvs": 1,
+"sell": [
+{
+"u": "kongddeok_",
+"x": "아니 서술이 판소리임 진짜 판소리 듣는 거 같음\n윤직원 영감 입 열 때마다ㅋㅋㅋㅋㅋㅋ 이 영감 진짜"
+}
+],
+"tone": "light",
+"cover": "covers/taepyeong.jpg"
+},
+{
+"id": "bakssi",
+"name": "박씨전",
+"author": "작자 미상",
+"cat": "고전",
+"lang": "ko",
+"blurb": "얼굴이 흉하다고 남편에게 외면당하던 박씨 부인, 알고 보니 능력자다.",
+"src": "https://ko.wikisource.org/wiki/박씨전",
+"color": "#3d5a40",
+"cvs": 2,
+"note": "옛 표기를 지금 맞춤법으로 고쳐 넣음",
+"sell": [
+{
+"u": "mytaste_only",
+"x": "남편이 얼굴 보고 부인 무시하는 데서 시작함.\n부인 능력 나오고부터는 남편 꼴 보는 맛으로 읽음ㅋ"
+}
+],
+"tone": "light",
+"cover": "covers/bakssi.jpg"
+},
+{
+"id": "simcheong",
+"name": "심청전",
+"author": "작자 미상",
+"cat": "고전",
+"lang": "ko",
+"blurb": "눈먼 아버지 눈을 뜨게 하려고 공양미 삼백 석에 몸을 판 심청.",
+"src": "https://ko.wikisource.org/wiki/심청전",
+"color": "#8a3b48",
+"cvs": 3,
+"note": "옛 표기를 지금 맞춤법으로 고쳐 넣음",
+"sell": [
+{
+"u": "two_stars",
+"x": "심청전 다 안다는 사람 원문 읽어 봐\n심봉사 생각보다 사고 많이 침. 별 두 개는 심봉사 몫"
+}
+],
+"tone": "heavy",
+"cover": "covers/simcheong.jpg"
+},
+{
+"id": "heungbu",
+"no": "판본을 바꾸는 중",
+"name": "흥부전",
+"author": "작자 미상",
+"cat": "고전",
+"lang": "ko",
+"blurb": "욕심쟁이 형 놀부, 가난한 아우 흥부, 다리 다친 제비 한 마리.",
+"src": "https://ko.wikisource.org/wiki/흥부전_(경판_25장본)",
+"color": "#4b4a7a",
+"cvs": 0,
+"note": "옛 표기를 지금 맞춤법으로 고쳐 넣음",
+"sell": [
+{
+"u": "read_first",
+"x": "흥부전 박 다 탐 ㅋ\n박 하나 탈 때마다 뭐 나올지 몰라서 못 멈췄음\n너넨 첫 박도 안 탔지"
+}
+],
+"tone": "light",
+"cover": "covers/heungbu.jpg"
+},
+{
+"id": "sugungga",
+"name": "수궁가",
+"author": "작자 미상",
+"cat": "고전",
+"lang": "ko",
+"blurb": "병든 용왕 약으로 토끼 간이 필요하다. 자라가 뭍으로 올라온다. 판소리다.",
+"src": "https://ko.wikisource.org/wiki/수궁가",
+"color": "#9a5b2e",
+"cvs": 1,
+"note": "옛 표기를 지금 맞춤법으로 고쳐 넣음",
+"sell": [
+{
+"u": "deep_night",
+"x": "토끼 말빨 레전드…\n용왕 앞에서 간 두고 왔다고 우기는 데서 소리 내서 웃음"
+}
+],
+"tone": "light",
+"cover": "covers/sugungga.jpg"
+},
+{
+"id": "guunmong",
+"name": "구운몽",
+"author": "김만중",
+"cat": "고전",
+"lang": "ko",
+"blurb": "스님 성진이 꿈속에서 여덟 여인과 한평생을 산다. 장편이다.",
+"src": "https://ko.wikisource.org/wiki/구운몽",
+"color": "#7d6a3a",
+"cvs": 2,
+"note": "옛 표기를 지금 맞춤법으로 고쳐 넣음",
+"sell": [
+{
+"u": "deep_night",
+"x": "한평생이 하룻밤 꿈이라면…\n구운몽은 그 덧없음에 대한 오래된 대답이야\n(길어서 아직 반 읽음ㅋ)"
+}
+],
+"tone": "light",
+"cover": "covers/guunmong.jpg"
+},
+{
+"id": "rapunzel",
+"name": "라푼첼",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "탑에 갇혀 자란 머리 긴 소녀. 아래에서 누가 이름을 부른다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/Rapunzel",
+"color": "#a8463f",
+"cvs": 3,
+"sell": [
+{
+"u": "grimm_victim",
+"x": "라푼첼 원작 왕자님 탑에서 무슨 일 당하는지 아세요???\n이거 알고 나서 애니 다시 보는데 표정 관리 안 됐어요ㅠㅠ",
+"if": "hansel"
+}
+],
+"tone": "light",
+"cover": "covers/rapunzel.jpg"
+},
+{
+"id": "snowwhite",
+"name": "백설공주",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "왕비가 거울에게 누가 제일 예쁘냐고 묻는다. 어느 날 거울이 대답을 바꾼다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/Snow-white",
+"color": "#5c6b7a",
+"cvs": 0,
+"sell": [
+{
+"u": "grimm_victim",
+"x": "백설공주 왕비 사과 하나로 끝내는 줄 아셨죠\n몇 번을 찾아오는지 세다가 소름 돋았어요",
+"if": "hansel"
+}
+],
+"tone": "light",
+"cover": "covers/snowwhite.jpg"
+},
+{
+"id": "rumpel",
+"name": "룸펠슈틸츠헨",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "짚으로 금실을 자아야 하는 방앗간 집 딸 앞에 이상한 난쟁이가 나타난다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/Rumpelstiltskin",
+"color": "#2c5e7d",
+"cvs": 1,
+"sell": [
+{
+"u": "lights_on_reader",
+"x": "헉 룸펠슈틸츠헨 이름 맞히기 게임인 거 알았어..?\n못맞히면아기데려간대 무서워ㅠ"
+}
+],
+"tone": "light",
+"cover": "covers/rumpel.jpg"
+},
+{
+"id": "frogprince",
+"name": "개구리 왕자",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "샘에 금공을 빠뜨린 공주에게 개구리가 거래를 건다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Frog_Prince",
+"color": "#6b8f4e",
+"cvs": 2,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "개구리 왕자 키스로 풀리는 거 아니었어??\n어떻게 풀리는지 보고 소리 지름ㅋㅋㅋ 공주 성격 무슨 일이야"
+}
+],
+"tone": "light",
+"cover": "covers/frogprince.jpg"
+},
+{
+"id": "redcap",
+"name": "빨간 모자",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "할머니 댁에 심부름 가던 빨간 모자가 숲에서 늑대를 만난다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/Little_Red-cap",
+"color": "#7a3f63",
+"cvs": 3,
+"sell": [
+{
+"u": "basement_reader",
+"x": "늑대가 꽃 보라고 해서 길을 벗어나잖아…\n나였어도 봤을 거야… 꽃이 예쁘면…",
+"if": "hansel"
+}
+],
+"tone": "light",
+"cover": "covers/redcap.jpg"
+},
+{
+"id": "aschen",
+"name": "신데렐라",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "재투성이라 구박받던 딸이 어머니 무덤가 나무에 소원을 빈다. 원작엔 요정 대신 비둘기가 나온다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/Aschenputtel",
+"color": "#a0602f",
+"cvs": 0,
+"sell": [
+{
+"u": "grimm_victim",
+"x": "그림 형제 신데렐라엔 요정 할머니 없어요!!!\n엄마 무덤가에 심은 나무랑 새들이 다 해 줘요ㅠ 원제 Aschenputtel 소리 내서 읽어 보세요 귀여워요",
+"if": "hansel"
+}
+],
+"tone": "light",
+"cover": "covers/aschen.jpg"
+},
+{
+"id": "bremen",
+"name": "브레멘 음악대",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "쓸모없다고 버려질 처지의 당나귀, 개, 고양이, 수탉이 브레멘으로 떠난다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Bremen_Town_Musicians",
+"color": "#3f6e8c",
+"cvs": 1,
+"sell": [
+{
+"u": "read_first",
+"x": "브레멘 음악대 오 분 컷 ㅋ\n제목에 속지 마 끝까지 읽은 사람만 앎"
+}
+],
+"tone": "light",
+"cover": "covers/bremen.jpg"
+},
+{
+"id": "elves",
+"name": "요정과 구두장이",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "가난한 구두장이 가게에 밤마다 누가 몰래 구두를 지어 놓는다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Elves",
+"color": "#2f7a74",
+"cvs": 2,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "밤에 읽기 좋은 거 찾는 사람\n밤마다 누가 몰래 구두 지어 놓는 얘기임 귀엽지?? 따뜻한 거 마시면서 읽어"
+}
+],
+"tone": "light",
+"cover": "covers/elves.jpg"
+},
+{
+"id": "fisherman",
+"name": "어부와 그의 아내",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "말하는 넙치를 놓아줬더니 어부의 아내가 자꾸 소원을 빌러 보낸다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Fisherman_and_His_Wife",
+"color": "#6e4b8a",
+"cvs": 3,
+"sell": [
+{
+"u": "two_stars",
+"x": "소원 스케일 커지는 속도 미쳤음\n바다 색 변하는 거 하나는 인정. 별 세 개"
+}
+],
+"tone": "light",
+"cover": "covers/fisherman.jpg"
+},
+{
+"id": "briarrose",
+"name": "잠자는 숲속의 공주",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "물레 바늘에 찔려 잠드는 저주를 받은 공주. 성 둘레로 가시덤불이 자란다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Sleeping_Beauty",
+"color": "#8c5a3c",
+"cvs": 0,
+"sell": [
+{
+"u": "grimm_victim",
+"x": "잠자는 숲속의 공주 저주 이유가 접시 부족이었어요\n금 접시가 열두 개밖에 없어서 한 명을 못 불렀대요 접시 하나만 더 사지ㅠ",
+"if": "hansel"
+}
+],
+"tone": "light",
+"cover": "covers/briarrose.jpg"
+},
+{
+"id": "sixswans",
+"name": "여섯 마리 백조",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "백조가 된 오빠들을 구하려고 여동생이 몇 년이나 말 한마디를 안 한다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Six_Swans",
+"color": "#b07a2a",
+"cvs": 1,
+"sell": [
+{
+"u": "tissue_box",
+"x": "동생이 오빠들 살리려고 몇 년을 말도 안 하고 웃지도 않아\n억울한 일 당해도 입을 안 열어ㅠㅠㅠㅠ"
+}
+],
+"tone": "heavy",
+"cover": "covers/sixswans.jpg"
+},
+{
+"id": "goosegirl",
+"name": "거위 치는 소녀",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "시녀에게 자리를 빼앗긴 공주가 거위를 치게 된다. 벽에 걸린 말 머리가 말을 한다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Goose_Girl",
+"color": "#3d5a40",
+"cvs": 2,
+"sell": [
+{
+"u": "basement_reader",
+"x": "성문에 말 머리가 걸려 있는데… 말을 해…\n이름이 팔라다래…\n왜 걸렸는지는… 읽어 봐…"
+}
+],
+"tone": "light",
+"cover": "covers/goosegirl.jpg"
+},
+{
+"id": "almond",
+"name": "아몬드 나무",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "새엄마, 의붓아들, 노래하는 새. 그림 형제 중에서도 무서운 쪽이다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Almond_Tree",
+"color": "#8a3b48",
+"cvs": 3,
+"sell": [
+{
+"u": "lights_on_reader",
+"x": "고자질하는 심장 버틴 사람만..\n새가부르는노래가사보고 나 불 다 켬",
+"if": "telltale"
+}
+],
+"tone": "heavy",
+"cover": "covers/almond.jpg"
+},
+{
+"id": "robber",
+"name": "강도 신랑",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "약혼자의 숲속 집을 찾아간 아가씨에게 새장 속 새가 돌아가라고 외친다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Robber_Bridegroom",
+"color": "#4b4a7a",
+"cvs": 0,
+"sell": [
+{
+"u": "lights_on_reader",
+"x": "새장 속 새가 돌아가라고 했잖아\n돌아가라고했잖아!!!!\n불켜고읽어 꼭..",
+"if": "telltale"
+}
+],
+"tone": "heavy",
+"cover": "covers/robber.jpg"
+},
+{
+"id": "sevengoats",
+"name": "늑대와 일곱 마리 아기 염소",
+"author": "그림 형제",
+"cat": "영어",
+"lang": "en",
+"blurb": "엄마 염소가 집을 비운 사이 늑대가 목소리를 바꿔 문을 두드린다.",
+"src": "https://en.wikisource.org/wiki/Household_stories_from_the_collection_of_the_Bros_Grimm_(L_%26_W_Crane)/The_Wolf_and_the_Seven_Little_Goats",
+"color": "#9a5b2e",
+"cvs": 1,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "엄마 염소 외출하는 장면부터 내가 불안함ㅠㅠ\n늑대가 목소리 바꾸려고 뭐 먹는지 알아?? 애들아 문 열지 마"
+}
+],
+"tone": "light",
+"cover": "covers/sevengoats.jpg"
+},
+{
+"id": "mermaid",
+"name": "인어 공주",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "사람 세상을 동경하는 막내 인어 공주. 다리를 얻는 값은 목소리다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Little_Mermaid",
+"color": "#7d6a3a",
+"cvs": 2,
+"sell": [
+{
+"u": "tissue_box",
+"x": "애니 인어공주만 아는 사람 마음 단단히 먹어\n걸을 때마다… 아니 말 안 할래"
+}
+],
+"tone": "heavy",
+"cover": "covers/mermaid.jpg"
+},
+{
+"id": "duckling",
+"name": "미운 오리 새끼",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "못생겼다고 어디서나 쫓겨나는 새끼 오리가 겨울을 떠돈다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Ugly_Duckling",
+"color": "#a8463f",
+"cvs": 3,
+"sell": [
+{
+"u": "two_stars",
+"x": "구박하는 놈들 다 기억해 둠\n결말 알아도 원문 묘사는 다름. 별 두 개 반"
+}
+],
+"tone": "light",
+"cover": "covers/duckling.jpg"
+},
+{
+"id": "matchgirl",
+"name": "성냥팔이 소녀",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "섣달그믐 밤, 맨발로 성냥을 파는 소녀가 성냥 하나를 그어 본다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Little_Match-seller",
+"color": "#5c6b7a",
+"cvs": 0,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "성냥팔이 소녀 읽고 보일러 올렸어ㅠㅠ\n너네도 따뜻하게 입고 읽어"
+}
+],
+"tone": "heavy",
+"cover": "covers/matchgirl.jpg"
+},
+{
+"id": "redshoes",
+"name": "빨간 구두",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "빨간 구두에 마음을 빼앗긴 소녀 카렌. 구두를 신으면 발이 멈추지 않는다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Red_Shoes",
+"color": "#2c5e7d",
+"cvs": 1,
+"sell": [
+{
+"u": "basement_reader",
+"x": "한 번 신으면 춤이 안 멈추는 구두…\n멈추고 싶은데 발이 말을 안 들으면 어떡하지…"
+}
+],
+"tone": "heavy",
+"cover": "covers/redshoes.jpg"
+},
+{
+"id": "emperor",
+"name": "벌거벗은 임금님",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "어리석은 사람 눈엔 안 보인다는 옷감을 임금님이 산다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Emperor%27s_New_Clothes",
+"color": "#6b8f4e",
+"cvs": 2,
+"sell": [
+{
+"u": "kongddeok_",
+"x": "다 아는 얘기라고 넘기지 마 원문 신하들 연기 미쳤음ㅋㅋㅋㅋ\n안 보이는데 보이는 척 경쟁하는 거 개웃겨"
+}
+],
+"tone": "light",
+"cover": "covers/emperor.jpg"
+},
+{
+"id": "snowqueen",
+"name": "눈의 여왕",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "눈에 거울 조각이 박혀 변해 버린 카이를 찾아 게르다가 길을 떠난다. 길다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Snow_Queen",
+"color": "#7a3f63",
+"cvs": 3,
+"sell": [
+{
+"u": "kongddeok_",
+"x": "아니 눈의 여왕 산적 딸 얘기 왜 아무도 안 해 줬어\n게르다랑 산적 딸 관계성 미친ㄴ 나 이거 때문에 앓는 중"
+}
+],
+"tone": "light",
+"cover": "covers/snowqueen.jpg"
+},
+{
+"id": "nightingale",
+"name": "나이팅게일",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "황제의 궁전에 불려 간 작은 나이팅게일, 그리고 보석 박힌 태엽 새.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Nightingale",
+"color": "#a0602f",
+"cvs": 0,
+"sell": [
+{
+"u": "deep_night",
+"x": "살아 있는 새와 보석 박힌 태엽 새…\n아름다움의 본질은 어느 쪽일까\n(솔직히 태엽 새 갖고 싶음ㅋ)"
+}
+],
+"tone": "light",
+"cover": "covers/nightingale.jpg"
+},
+{
+"id": "wildswans",
+"name": "백조 왕자",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "백조가 된 열한 오빠를 구하려고 엘리사가 쐐기풀로 옷을 짠다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/The_Wild_Swans",
+"color": "#3f6e8c",
+"cvs": 1,
+"sell": [
+{
+"u": "grimm_victim",
+"x": "백조 왕자 읽기 전에 여섯 마리 백조 먼저 읽어 보세요\n같은 얘기 그림 형제 버전이랑 안데르센 버전인데 오빠 수부터 달라요",
+"if": "hansel"
+}
+],
+"tone": "light",
+"cover": "covers/wildswans.jpg"
+},
+{
+"id": "thumbelina",
+"name": "엄지 공주",
+"author": "안데르센",
+"cat": "영어",
+"lang": "en",
+"blurb": "꽃 속에서 태어난 엄지만 한 소녀를 두꺼비가 훔쳐 간다.",
+"src": "https://en.wikisource.org/wiki/Hans_Andersen%27s_Fairy_Tales/Little_Tiny",
+"color": "#2f7a74",
+"cvs": 2,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "엄지 공주 청혼 상대들 좀 봐 두꺼비 아들에 두더지???\n나 이 결혼 반대야 반대"
+}
+],
+"tone": "light",
+"cover": "covers/thumbelina.jpg"
+},
+{
+"id": "happyprince",
+"name": "행복한 왕자",
+"author": "오스카 와일드",
+"cat": "영어",
+"lang": "en",
+"blurb": "보석으로 덮인 왕자 동상이 제비 한 마리에게 부탁을 한다.",
+"src": "https://en.wikisource.org/wiki/The_Happy_Prince_and_Other_Tales/The_Happy_Prince",
+"color": "#6e4b8a",
+"cvs": 3,
+"sell": [
+{
+"u": "tissue_box",
+"x": "아는 얘기라고 생각했지\n제비가 왜 안 떠나는지 보다가 무너짐ㅠㅠ"
+}
+],
+"tone": "heavy",
+"cover": "covers/happyprince.jpg"
+},
+{
+"id": "selfishgiant",
+"name": "이기적인 거인",
+"author": "오스카 와일드",
+"cat": "영어",
+"lang": "en",
+"blurb": "거인이 정원에 담을 쌓아 아이들을 막자 그 집에만 봄이 안 온다.",
+"src": "https://en.wikisource.org/wiki/The_Happy_Prince_and_Other_Tales/The_Selfish_Giant",
+"color": "#8c5a3c",
+"cvs": 0,
+"sell": [
+{
+"u": "two_stars",
+"x": "짧은데 마지막 장면은 인정함\n별 네 개. 기분 좋아서 준 거 아님"
+}
+],
+"tone": "light",
+"cover": "covers/selfishgiant.jpg"
+},
+{
+"id": "nightrose",
+"name": "나이팅게일과 장미",
+"author": "오스카 와일드",
+"cat": "영어",
+"lang": "en",
+"blurb": "빨간 장미 한 송이가 필요한 학생을 위해 나이팅게일이 나선다.",
+"src": "https://en.wikisource.org/wiki/The_Happy_Prince_and_Other_Tales/The_Nightingale_and_the_Rose",
+"color": "#b07a2a",
+"cvs": 1,
+"sell": [
+{
+"u": "eat_then_read",
+"x": "사랑 얘기라길래 설레서 들어갔는데??\n다 읽고 나랑 얘기 좀 해 진짜로ㅠㅠ"
+}
+],
+"tone": "heavy",
+"cover": "covers/nightrose.jpg"
+},
+{
+"id": "jindallae",
+"name": "진달래꽃",
+"author": "김소월",
+"cat": "시",
+"lang": "ko",
+"blurb": "나 보기가 역겨워 가실 때에는 말없이 고이 보내 드리오리다. 그 다음 줄이 진짜다.",
+"src": "https://ko.wikisource.org/w/index.php?search=%EC%A7%84%EB%8B%AC%EB%9E%98%EA%BD%83%20%EA%B9%80%EC%86%8C%EC%9B%94",
+"color": "#b4507a",
+"cvs": 0,
+"sell": [],
+"tone": "light",
+"cover": "covers/jindallae.jpg"
+},
+{
+"id": "haneul",
+"name": "하늘과 바람과 별과 시",
+"author": "윤동주",
+"cat": "시",
+"lang": "ko",
+"blurb": "부끄럼이 많은 사람이 밤마다 별을 하나씩 세다가 자기 이름을 흙으로 덮는다.",
+"src": "https://ko.wikisource.org/w/index.php?search=%EC%9C%A4%EB%8F%99%EC%A3%BC",
+"color": "#2f4a6d",
+"cvs": 1,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/haneul.jpg"
+},
+{
+"id": "nimui",
+"name": "님의 침묵",
+"author": "한용운",
+"cat": "시",
+"lang": "ko",
+"blurb": "님은 갔다. 그런데 이 사람은 보내지 않았다고 우긴다. 끝까지 우긴다.",
+"src": "https://ko.wikisource.org/w/index.php?search=%EB%8B%98%EC%9D%98%20%EC%B9%A8%EB%AC%B5",
+"color": "#6b5a3a",
+"cvs": 2,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/nimui.jpg"
+},
+{
+"id": "hyangsu",
+"name": "향수",
+"author": "정지용",
+"cat": "시",
+"lang": "ko",
+"blurb": "얼룩백이 황소가 해설피 금빛 게으른 울음을 우는 곳, 그곳이 참하 꿈엔들 잊힐리야.",
+"src": "https://ko.wikisource.org/w/index.php?search=%EC%A0%95%EC%A7%80%EC%9A%A9%20%ED%96%A5%EC%88%98",
+"color": "#7a8a4a",
+"cvs": 3,
+"sell": [],
+"tone": "light",
+"cover": "covers/hyangsu.jpg"
+},
+{
+"id": "gwangya",
+"name": "광야",
+"author": "이육사",
+"cat": "시",
+"lang": "ko",
+"blurb": "까마득한 날 하늘이 처음 열리던 광야에서, 한 사람이 눈 내리는 땅에 씨를 뿌린다.",
+"src": "https://ko.wikisource.org/w/index.php?search=%EC%9D%B4%EC%9C%A1%EC%82%AC%20%EA%B4%91%EC%95%BC",
+"color": "#5a3d30",
+"cvs": 0,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/gwangya.jpg"
+},
+{
+"id": "moran",
+"name": "모란이 피기까지는",
+"author": "김영랑",
+"cat": "시",
+"lang": "ko",
+"blurb": "모란이 지는 날 한 해가 다 간 것처럼 우는 사람. 그래도 또 기다린다.",
+"src": "https://ko.wikisource.org/w/index.php?search=%EA%B9%80%EC%98%81%EB%9E%91%20%EB%AA%A8%EB%9E%80%EC%9D%B4%20%ED%94%BC%EA%B8%B0%EA%B9%8C%EC%A7%80%EB%8A%94",
+"color": "#a33d4b",
+"cvs": 1,
+"sell": [],
+"tone": "light",
+"cover": "covers/moran.jpg"
+},
+{
+"id": "blackcat",
+"name": "검은 고양이",
+"author": "에드거 앨런 포",
+"cat": "영어",
+"lang": "en",
+"blurb": "동물을 사랑하던 남자가 술에 빠지고, 집에는 검은 고양이 플루토가 있다.",
+"src": "https://en.wikisource.org/wiki/Tales_(Poe)/The_Black_Cat",
+"color": "#1f1f24",
+"cvs": 2,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/blackcat.jpg"
+},
+{
+"id": "usher",
+"name": "어셔가의 몰락",
+"author": "에드거 앨런 포",
+"cat": "영어",
+"lang": "en",
+"blurb": "옛 친구의 편지를 받고 찾아간 저택. 친구는 소리와 빛을 견디지 못한다.",
+"src": "https://en.wikisource.org/wiki/Tales_(Poe)/The_Fall_of_the_House_of_Usher",
+"color": "#3a3a4a",
+"cvs": 3,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/usher.jpg"
+},
+{
+"id": "redheaded",
+"name": "빨간 머리 연맹",
+"author": "아서 코난 도일",
+"cat": "영어",
+"lang": "en",
+"blurb": "빨간 머리라는 이유만으로 백과사전 베끼는 일에 고액 주급을 준다는 광고. 셜록 홈스가 웃는다.",
+"src": "https://en.wikisource.org/wiki/The_Strand_Magazine/Volume_2/The_Red-Headed_League",
+"color": "#b0462c",
+"cvs": 0,
+"sell": [],
+"tone": "light",
+"cover": "covers/redheaded.jpg"
+},
+{
+"id": "speckled",
+"name": "얼룩 끈",
+"author": "아서 코난 도일",
+"cat": "영어",
+"lang": "en",
+"blurb": "죽기 직전 언니가 남긴 말은 얼룩 끈. 동생은 새벽 휘파람 소리에 떨며 베이커 가를 찾는다.",
+"src": "https://en.wikisource.org/wiki/The_Strand_Magazine/Volume_3/Issue_14/The_Adventure_of_the_Speckled_Band",
+"color": "#4a5d3a",
+"cvs": 1,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/speckled.jpg"
+},
+{
+"id": "jekyll",
+"name": "지킬 박사와 하이드 씨",
+"author": "로버트 루이스 스티븐슨",
+"cat": "영어",
+"lang": "en",
+"blurb": "존경받는 박사의 유언장에 낯선 이름이 하나 적혀 있다. 변호사는 그 이름의 주인을 쫓는다.",
+"src": "https://en.wikisource.org/wiki/Strange_Case_of_Dr_Jekyll_and_Mr_Hyde",
+"color": "#2d3b3f",
+"cvs": 2,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/jekyll.jpg"
+},
+{
+"id": "pride",
+"name": "오만과 편견",
+"author": "제인 오스틴",
+"cat": "로맨스",
+"lang": "ko",
+"blurb": "무도회에서 처음 본 남자가 엘리자베스를 두고 참을 만은 하지만 춤출 정도는 아니라고 말한다.",
+"src": "https://www.gutenberg.org/ebooks/search/?query=Pride%20and%20Prejudice",
+"color": "#9c6b7a",
+"cvs": 0,
+"sell": [],
+"tone": "light",
+"cover": "covers/pride.jpg"
+},
+{
+"id": "janeeyre",
+"name": "제인 에어",
+"author": "샬럿 브론테",
+"cat": "영어",
+"lang": "en",
+"blurb": "고아 제인은 가정교사로 손필드 저택에 간다. 밤마다 3층에서 이상한 웃음소리가 난다.",
+"src": "https://en.wikisource.org/wiki/Jane_Eyre_(1st_edition)",
+"color": "#4b3a52",
+"cvs": 1,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/janeeyre.jpg"
+},
+{
+"id": "wuthering",
+"name": "폭풍의 언덕",
+"author": "에밀리 브론테",
+"cat": "영어",
+"lang": "en",
+"blurb": "황야의 저택에 주워 온 아이 히스클리프. 캐서린과 그는 서로를 자기 자신이라 부른다.",
+"src": "https://en.wikisource.org/wiki/Wuthering_Heights_(1st_edition)",
+"color": "#3e4a5a",
+"cvs": 2,
+"sell": [],
+"tone": "heavy",
+"cover": "covers/wuthering.jpg"
+},
+{
+"id": "gift",
+"name": "현자의 선물",
+"author": "오 헨리",
+"cat": "영어",
+"lang": "en",
+"blurb": "크리스마스 전날, 가진 돈은 1달러 87센트. 델라는 거울 앞에서 머리를 푼다.",
+"src": "https://en.wikisource.org/wiki/The_Four_Million/The_Gift_of_the_Magi",
+"color": "#8a3a3a",
+"cvs": 3,
+"sell": [],
+"tone": "light",
+"cover": "covers/gift.jpg"
+},
+{
+"id": "selfreliance",
+"name": "자기 신뢰",
+"author": "랠프 월도 에머슨",
+"cat": "영어",
+"lang": "en",
+"blurb": "남들이 뭐라든 네 생각을 믿으라는 글. 아주 옛날에 쓴 건데 오늘 쓴 것처럼 시비를 건다.",
+"src": "https://en.wikisource.org/wiki/Essays%3A_First_Series/Self-Reliance",
+"color": "#8a6a3a",
+"cvs": 2,
+"sell": [],
+"tone": "light",
+"cover": "covers/selfreliance.jpg"
+},
+{
+"id": "timemachine",
+"name": "타임머신",
+"author": "허버트 조지 웰스",
+"cat": "영어",
+"lang": "en",
+"blurb": "시간 여행자가 저녁 손님들 앞에서 작은 기계를 사라지게 한다. 다음 주, 그는 넋이 나간 얼굴로 늦게 나타난다.",
+"src": "https://en.wikisource.org/wiki/The_Time_Machine_(Heinemann_text)",
+"color": "#3a5a6a",
+"cvs": 0,
+"sell": [],
+"tone": "light",
+"cover": "covers/timemachine.jpg"
+},
+{
+"id": "treasure",
+"name": "보물섬",
+"author": "로버트 루이스 스티븐슨",
+"cat": "영어",
+"lang": "en",
+"blurb": "바닷가 여관에 칼자국 난 늙은 선원이 묵는다. 그가 남긴 궤짝 바닥에서 지도 한 장이 나온다.",
+"src": "https://en.wikisource.org/wiki/Treasure_Island_(1883)",
+"color": "#8a6a2a",
+"cvs": 2,
+"sell": [],
+"tone": "light",
+"cover": "covers/treasure.jpg"
+},
+{
+"id": "alice",
+"name": "이상한 나라의 앨리스",
+"author": "루이스 캐럴",
+"cat": "영어",
+"lang": "en",
+"blurb": "회중시계를 꺼내 보는 흰 토끼를 따라 굴에 뛰어든 앨리스. 한참을 떨어지면서 고양이 걱정을 한다.",
+"src": "https://en.wikisource.org/wiki/Alice's_Adventures_in_Wonderland_(1866)",
+"color": "#5a7aa0",
+"cvs": 3,
+"sell": [],
+"tone": "light",
+"cover": "covers/alice.jpg"
+}
+]
+}
