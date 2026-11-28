@@ -1626,7 +1626,8 @@ const RULES=`- 진짜 SNS 유저처럼 굴음(말투는 한국 트위터 20~30�
 - 수아가 아직 안 읽은 뒷부분, 특히 결말은 절대 말하지 않음.
 - 다른 유저 얘기는 안 함.
 - 가상의 사람을 예로 들면 기본은 여자.
-- 수아가 정말 힘들거나 위험해 보이면 말투는 지키되 진심으로 대하고, 필요하면 믿을 만한 사람이나 전문가 도움을 권함.`;
+- 수아가 정말 힘들거나 위험해 보이면 말투는 지키되 진심으로 대하고, 필요하면 믿을 만한 사람이나 전문가 도움을 권함. 자해나 죽고 싶다는 말엔 장난치지 않고, 자살예방상담전화 109(24시간)나 믿을 만한 어른한테 바로 얘기하라고 함.
+- 여긴 15세 이상 앱임. 성적인 묘사나 성적인 농담, 자해·자살 방법, 마약·불법 행위 하는 법은 수아가 졸라도 안 씀. 원작에 그런 장면이 있으면 있다는 것만 말하고 넘어감.`;
 const WHO=u=>`너는 '북실북실'이라는 SNS 앱 속 유저 "${u.name}"(@${u.handle})임.\n[성격]\n${u.soul||''}\n[말버릇]\n${u.voice||''}${u.taste?'\n[책 취향]\n'+u.taste:''}\n상대는 이 앱을 쓰는 사람, 수아임. 닉네임은 '${ME.name}', 아이디는 @${ME.handle}.${S.me&&S.me.bio?' 자기소개: '+S.me.bio:''}`;
 const readAt=b=>{const[r,n]=progress(b.id);return b.orig&&b.orig.length?`원문 ${n}조각 중 ${b.orig.reduce((m,x,k)=>S.seen[b.id+'.r.'+k]?k+1:m,0)}조각까지 읽음`:`카드 ${n}장 중 ${r}장 읽음`};
 /* the keeper sees her book around where Sua is, not the whole thing: cheaper, and the ending is simply not there to leak. returns [the part that stays put (cached), the part that moves] */
@@ -1755,8 +1756,8 @@ const lnId=k=>{let h=7;for(const c of String(k))h=(h*31+c.charCodeAt(0))|0;retur
 function lnPerm(){const L=LNP();if(!L||S.lnAsk)return;S.lnAsk=1;store();try{L.requestPermissions().catch(()=>{})}catch(e){}}
 let lnBusy=Promise.resolve();
 function lnSync(){const L=LNP();if(!L)return;const away=document.hidden,now=Date.now(),list=[];
-if(away&&!S.noPush)for(const id in S.notes)for(const n of S.notes[id]){if(!n.pre||n.r||n.done)continue;const u=usr(n.pre.u);list.push({id:lnId(nkey(id,n.ts)),title:`${u.name} @${u.handle}`,body:(n.pre.q?'내 글 인용: ':'답글: ')+n.pre.x,schedule:{at:new Date(Math.max(n.due,now+2000)),allowWhileIdle:true},extra:{open:id},smallIcon:'ic_stat_tarae',iconColor:'#a8452a'})}
-if(away&&!S.noPush)for(const uid in(S.dq||{})){const q=S.dq[uid],u=UK[uid];if(!u||!q.parts.length||(q.kick&&!kickLive(q)))continue;list.push({id:lnId('dm~'+uid),title:`${u.name} @${u.handle}`,body:'쪽지: '+q.parts[0],schedule:{at:new Date(Math.max(q.due+2500,now+2000)),allowWhileIdle:true},extra:{dm:uid},smallIcon:'ic_stat_tarae',iconColor:'#a8452a'})}
+if(away&&!S.noPush)for(const id in S.notes)for(const n of S.notes[id]){if(!n.pre||n.r||n.done)continue;const u=usr(n.pre.u);list.push({id:lnId(nkey(id,n.ts)),title:`${u.name} @${u.handle}`,body:(n.pre.q?'내 글 인용: ':'답글: ')+n.pre.x,schedule:{at:new Date(Math.max(n.due,now+2000)),allowWhileIdle:true},isExactNotification:false,extra:{open:id},smallIcon:'ic_stat_buksil',iconColor:'#a8452a'})}
+if(away&&!S.noPush)for(const uid in(S.dq||{})){const q=S.dq[uid],u=UK[uid];if(!u||!q.parts.length||(q.kick&&!kickLive(q)))continue;list.push({id:lnId('dm~'+uid),title:`${u.name} @${u.handle}`,body:'쪽지: '+q.parts[0],schedule:{at:new Date(Math.max(q.due+2500,now+2000)),allowWhileIdle:true},isExactNotification:false,extra:{dm:uid},smallIcon:'ic_stat_buksil',iconColor:'#a8452a'})}
 lnBusy=lnBusy.then(()=>L.getPending()).then(p=>p&&p.notifications&&p.notifications.length?L.cancel({notifications:p.notifications.map(x=>({id:x.id}))}):0).then(()=>list.length?L.schedule({notifications:list}):0).catch(()=>{})}
 document.addEventListener('visibilitychange',lnSync);
 {const L=LNP(),C=window.Capacitor;if(L)try{L.addListener('localNotificationActionPerformed',e=>{const ex=e&&e.notification&&e.notification.extra||{},id=ex.open;setTimeout(()=>{dueTick();dmTick();if(ex.dm&&UK[ex.dm])push('chat',ex.dm);else if(id&&TW[id])openThread(id)},500)})}catch(e){}if(C&&C.Plugins&&C.Plugins.App)try{C.Plugins.App.addListener('pause',lnSync);C.Plugins.App.addListener('resume',()=>{lnSync();setTimeout(dueTick,600)})}catch(e){}}
@@ -1900,7 +1901,8 @@ const GPR=`- 진짜 한국 트위터 20~30대 여자 유저처럼 씀. 여긴 �
 - 안부·걱정·참견, @멘션, 이름 부르기, 반모 신청 같은 친목 금지. 인신공격, 실존 인물 저격, 결말 스포 금지. 앱 주인 수아는 이름을 부르지 않고 필요하면 '친구'라고만 함.
 - 책 얘기(담당 책, 드립, 영업, 같이 읽기 반응)는 진짜 터지는 대목만: 웃기거나 충격적이거나 설레거나 소름 돋거나 어이없거나 울컥하는 대목. 줄거리·반전·결말은 절대 말하지 않음. 책 내용을 지어내지 않음.
 - 책 얘기만 하지 않음. 탐라는 일상, 드립, 오늘 소식이 섞여 굴러감.
-- 가상의 사람이 나오면 기본은 여자. 인터넷 말, 욕, 막말은 말버릇에 맞으면 씀. 단 성별·인종·장애·성소수자·지역·나이 비하, 폭력 선동은 안 함.`;
+- 가상의 사람이 나오면 기본은 여자. 인터넷 말, 욕, 막말은 말버릇에 맞으면 씀. 단 성별·인종·장애·성소수자·지역·나이 비하, 폭력 선동은 안 함.
+- 15세 이상 앱임. 성적인 묘사나 농담, 자해·자살, 마약 얘기는 쓰지 않음.`;
 const GPN=`
 [오늘 소식] 이번에는 web_search로 오늘 한국에서 실제로 화제인 소식을 찾아보고(검색 한두 번), 슬롯 중 한두 개는 그 소식을 자기 관심사에 맞게 전하거나 반응하는 트윗으로 씀. 실제 트위터처럼 "~했대", "~ 떴네", "아니 ~래" 하고 자기 말로 짧게 전하고 자기 반응을 붙임. 기사 문장을 옮기지 않음. 검색 결과에 있는 사실만 씀. 정치 소식은 무슨 일이 있었는지만 전하고 정당·정치인 편을 들거나 욕하지 않음. 사건·사고·참사는 장난치지 않음. 실존 인물 가십 금지. 다른 슬롯에서 그 소식 트윗을 인용해도 됨(q에는 이번에 쓴 트윗의 k를 "k:번호"로).`;
 function gpPrompt(slots,evs,news){const uids=[...new Set([...slots.map(s=>s.u),...evs.map(e=>e.u)])];
@@ -2280,14 +2282,14 @@ addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#sheet').hidden)$('#s
 if(P.StatusBar){const mq=matchMedia('(prefers-color-scheme: dark)'),sb=()=>{const d=mq.matches;P.StatusBar.setBackgroundColor({color:d?'#000000':'#ffffff'}).catch(()=>{});P.StatusBar.setStyle({style:d?'DARK':'LIGHT'}).catch(()=>{})};sb();mq.addEventListener('change',sb)}}}
 /* ---------- this edition: whoever opens it, they're told the people here are played by AI ---------- */
 const FLAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 20.5v-16"/><path d="M5.5 4.5h12l-2.4 4.2 2.4 4.3h-12"/></svg>';
-const REPORT_URL='';
+const REPORT_URL='https://docs.google.com/forms/d/e/1FAIpQLScNBxE79Zvb6MOHg1pmH3xqwkvfIzXc_yQRX1DhBh5RQddy5g/formResponse',REPORT_FIELD='entry.693069976';
 /* prompts were written about one reader; at send time that reader becomes whoever is using the app */
 function nickRaw(){const n=String((S.me&&S.me.name)||'').trim();return n&&n!=='나'?n:''}
 function nickRef(){const n=nickRaw();if(!n)return'상대';const c=n.charCodeAt(n.length-1);return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?n+'이':n}
 function pers(t){if(typeof t!=='string')return t;const r=nickRef(),h=(nickRaw()||'')+'님';return t.replace(/수아님/g,()=>h).replace(/수아/g,()=>r)}
 function budHTML(){const b=BUD(),t=TIERS[S.tier]?S.tier:'bal';return `<div class="bset"><div class="tht">한 달 예산</div><div class="chips bch">${[5,10,20,50].map(v=>`<button class="chip${b===v?' on':''}" data-go="bud" data-v="${v}">${v}달러</button>`).join('')}</div></div><div class="bset"><div class="tht">말투 등급</div><div class="chips bch">${Object.entries(TIERS).map(([k,v])=>`<button class="chip${t===k?' on':''}" data-go="tier" data-v="${k}">${v[2]}</button>`).join('')}</div><div class="chipt tier-d">${TIERS[t][3]}</div><div class="chipt">어림값 · 하루 쪽지 열 번쯤 주고받을 때</div></div>`}
 /* fill these in before release: an empty one is simply not shown */
-const VER='1.0',CONTACT='',PRIVACY_URL='';
+const VER='1.0',CONTACT='',PRIVACY_URL='https://suazinabi.github.io/chaektarae-books/silmari/privacy.html';
 function infoHTML(){const n=(S.rep||[]).length;return `<details class="dset"><summary>앱 정보</summary><div class="ainfo"><p><b>여기 사람들은 전부 AI야.</b> 피드에 글을 쓰고 쪽지를 보내는 사람들은 AI(Claude)가 연기하는 가상의 독서 친구야.</p><p>답장을 만들려고 네가 쓴 글·쪽지·사진은 Anthropic(Claude)으로 보내져. 키와 기록은 이 폰에만 있어.</p><p>책 원문은 저작권이 끝난 작품이야. 주로 위키문헌(Wikisource)에서 가져왔어.</p>${n?`<p>신고한 것 ${n}건</p>`:''}${PRIVACY_URL?`<p><a href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></p>`:''}${CONTACT?`<p>문의 <a href="mailto:${CONTACT}">${CONTACT}</a></p>`:''}<p class="aver">북실북실 ${VER}</p></div></details>`}
 function onbShow(){if(S.onb||$('#onb'))return;const o=document.createElement('div');o.id='onb';o.className='onb';document.body.appendChild(o);onbStep(0)}
 function onbStep(k){const o=$('#onb');if(!o)return;const lg=($('img.logo')||{}).src||'';
@@ -2307,7 +2309,7 @@ function repSend(id,r){S.rep=S.rep||[];let rec;const at=Date.now(),why=REPR[r]||
 if(String(id).startsWith('dm:')){const uid=id.slice(3);rec={k:'dm',u:uid,why,at,x:(S.dm[uid]||[]).slice(-6).map(m=>(m.f==='me'?'나: ':'')+m.x).join('\n')}}
 else{const w=TW[id];if(!w)return;rec={k:'post',id,u:w.u||'',why,at,x:w.x};S.hid=S.hid||{};S.hid[id]=1}
 S.rep.push(rec);if(S.rep.length>300)S.rep.shift();store();
-if(REPORT_URL)try{fetch(REPORT_URL,{method:'POST',mode:'no-cors',headers:{'content-type':'text/plain'},body:JSON.stringify(Object.assign({app:'buksil'},rec))}).catch(()=>{})}catch(e){}
+if(REPORT_URL)try{fetch(REPORT_URL,{method:'POST',mode:'no-cors',body:new URLSearchParams({[REPORT_FIELD]:`[${rec.k==='dm'?'쪽지':'글'}] @${(UK[rec.u]||{}).handle||rec.u} · ${rec.why} · v${VER}\n${String(rec.x||'').slice(0,1500)}`})}).catch(()=>{})}catch(e){}
 if(rec.k==='post'){rebuild();clearFeeds();if(cur==='home')ensure(mode);else if(cur==='thread')back();else if(cur==='profile')show(cur,arg)}
 buz([5,30,5]);toast(rec.k==='post'?'신고했어. 이 글은 이제 안 보여':'신고했어. 고마워')}
 /* backup: one file, kept wherever the user keeps files */
