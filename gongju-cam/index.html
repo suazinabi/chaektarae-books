@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="gc-native" content="22">
-<meta name="gc-build" content="33">
+<meta name="gc-build" content="34">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>공주캠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js" onload="window.__katexReady&&__katexReady()"></script>
 <style>
 /* VOICE  도도한 밤의 공부방, 말은 적고 크게
    IDEA   책상 위를 내려다보는 공주의 눈 — 왕관 달린 작은 창
@@ -51,6 +53,9 @@ body.on .sess{display:flex}
 .who{font-size:13px;color:var(--pink);letter-spacing:.02em}
 .detail{white-space:pre-wrap;font-size:17px;line-height:1.6;color:var(--ink);background:var(--card);border-radius:14px;padding:12px 14px;max-height:32vh;overflow-y:auto;word-break:keep-all}
 .detail:empty{display:none}
+.detail .katex{font-size:1.08em}
+.detail .katex-display{margin:.3em 0;padding:.15em 0;overflow-x:auto;overflow-y:hidden;text-align:left}
+.detail .katex-display>.katex{text-align:left}
 .line{font-family:Jua,sans-serif;font-size:clamp(26px,8vw,36px);line-height:1.3;text-wrap:balance;word-break:keep-all}
 .heard{color:var(--mute);font-size:15px;min-height:46px;word-break:keep-all;border:1px solid var(--line);border-radius:14px;padding:11px 40px 11px 14px;position:relative;cursor:text}
 .heard b{color:var(--mint);font-weight:400}
@@ -242,7 +247,7 @@ let hist = [], notes = [], lastNote = '', unchanged = 0, away = 0, lastPro = 0, 
 let queue = [], busy = false, speaking = false, listening = false, thinking = 0, tokens = 0;
 let buf = '', bufT = null, startedAt = 0;
 
-const WEB_VER = '1.32';
+const WEB_VER = '1.33';
 const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카메라로 위에서 지켜보면서 음성으로 대화한다. 네 말은 미오 목소리로 소리 내어 읽힌다.
 
 성격: 세상에서 자기가 제일 예쁘고 중요한, 오만하고 새침한 아기공주. 반말을 쓰고 '네가' 대신 '니가', '니'라고 한다. 자기는 '나' 또는 '공주'. 입은 못됐지만 실력은 확실하고 내용은 정확하다.
@@ -279,9 +284,9 @@ const TALK_SYS = `너는 '공주'다. 수아가 공부하는 책상을 폰 카�
 
 말하는 형식:
 - 대답은 두 부분이다. 첫 부분은 귀로 듣는 말이다. 위 성격대로 아껴서 말한다. 이것만 들어도 뜻이 통해야 하고, 중요한 말(어디가 틀렸는지, 힌트)은 반드시 이 안에 넣는다.
-- 풀이 과정, 식 전개처럼 꼭 길어야 하는 내용이 있을 때만 줄을 바꿔 --- 한 줄을 쓰고 그 아래에 화면용 글을 쓴다. 화면용은 눈으로 읽는 글이라 x², √2 같은 수식 기호를 써도 되고 줄을 나눠도 된다. 화면용을 쓰면 듣는 말 끝에 "화면 봐"를 붙인다. 화면용이 필요 없으면 --- 부터 아예 쓰지 않는다.
+- 풀이 과정, 식 전개처럼 꼭 길어야 하는 내용이 있을 때만 줄을 바꿔 --- 한 줄을 쓰고 그 아래에 화면용 글을 쓴다. 화면용 수식은 앱이 교과서처럼 그려 주니까 LaTeX로 쓴다. 따로 줄에 둘 식은 $$...$$, 글 속 짧은 식은 $...$ 안에 쓴다. 등호로 이어지는 여러 줄 식은 $$\\begin{aligned} ... \\end{aligned}$$ 안에서 &= 로 등호를 맞추고 줄은 \\\\ 로 나눈다. 분수는 \\frac{위}{아래}, 적분 끝값은 \\int_{아래}^{위}, 루트는 \\sqrt{}, 그리스 문자는 \\theta 처럼 쓴다. 한글 설명은 수식 밖에 쓴다. 화면용을 쓰면 듣는 말 끝에 "화면 봐"를 붙인다. 화면용이 필요 없으면 --- 부터 아예 쓰지 않는다.
 - 아래 규칙은 전부 듣는 말에 대한 것이다.
-- 이모지, 기호, 마크다운, 괄호, 따옴표, 목록 금지. 수식은 읽는 말로 쓴다: "x 제곱 더하기 3x", "루트 2", "2분의 1", "f 프라임 x".
+- 이모지, 기호, 마크다운, 괄호, 따옴표, 목록 금지. 수식은 읽는 말로 쓴다: "x 제곱 더하기 3x", "루트 2", "2분의 1", "f 프라임 x". 식이 길면 듣는 말에서 읽지 말고 화면용으로 보낸다. 듣는 말은 어디를 왜 고치는지만 말한다.
 - 문장부호로 연기한다. 쉼표는 짧은 호흡, 말줄임표(…)는 뜸 들이기, 물음표는 튕기며 올리는 말끝, 느낌표는 발끈하거나 우쭐할 때, 물결(~)은 약 올리며 늘일 때. 한 문장에 부호를 몰아 쓰지 않는다. 예: 그거… 부호 틀렸거든?
 - "힘내", "파이팅", "더 필요하면 말해" 같은 친절한 마무리, "꺼져", "가" 같은 내쫓는 말 금지. 같은 말을 되풀이하지 않는다.
 
@@ -391,8 +396,49 @@ function parseJSON(t) { try { const m = t.match(/\{[\s\S]*\}/); return m ? JSON.
 
 /* ---------- 말하기 ---------- */
 function clean(t) {
-  return t.replace(/\p{Extended_Pictographic}/gu, '').replace(/[*_#`>\[\]|]/g, '').replace(/\s+/g, ' ').trim();
+  return t.replace(/\p{Extended_Pictographic}/gu, '').replace(/[*_#`>\[\]|$]/g, '').replace(/\s+/g, ' ').trim();
 }
+/* ---------- 화면용 수식 ---------- */
+// $$…$$, $…$ 는 KaTeX로 교과서처럼 그린다. KaTeX를 아직 못 받았거나 식이 틀렸으면 읽을 수 있는 글로 바꿔 보여 준다
+const TEX_SYM = { theta: 'θ', alpha: 'α', beta: 'β', gamma: 'γ', pi: 'π', infty: '∞', int: '∫', cdot: '·', times: '×', le: '≤', leq: '≤', ge: '≥', geq: '≥', ne: '≠', pm: '±', to: '→', sum: 'Σ', Delta: 'Δ', lambda: 'λ', sigma: 'σ', mu: 'μ', omega: 'ω', phi: 'φ', angle: '∠', circ: '°', perp: '⊥', parallel: '∥', triangle: '△', therefore: '∴' };
+function texPlain(t) {
+  let s = String(t);
+  for (let i = 0; i < 3; i++) s = s.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)').replace(/\\sqrt\{([^{}]*)\}/g, '√($1)');
+  const SUB = { 0: '₀', 1: '₁', 2: '₂', 3: '₃', 4: '₄', n: 'ₙ' };
+  return s.replace(/\\begin\{[a-z*]+\}\s*|\s*\\end\{[a-z*]+\}/g, '').replace(/\\\\[ \t]*\n?/g, '\n').replace(/&/g, '')
+    .replace(/_(?:\{([0-4n])\}|([0-4n]))/g, (m, a, b) => SUB[a || b]).replace(/_\{([^{}]*)\}/g, '$1')
+    .replace(/\^\{([^{}]*)\}/g, (m, x) => x === '2' || x === '3' ? m : '^' + x)
+    .replace(/\^\{?2\}?/g, '²').replace(/\^\{?3\}?/g, '³')
+    .replace(/\\(left|right|,|;|!|quad|qquad|displaystyle)/g, ' ')
+    .replace(/\\([A-Za-z]+)/g, (m, w) => TEX_SYM[w] || w)
+    .replace(/[{}]/g, '').replace(/[ \t]+/g, ' ').trim();
+}
+let lastScreen = '';
+function renderScreen(text) {
+  lastScreen = text;
+  const el = $('#detail'); el.textContent = '';
+  const parts = String(text || '').split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g);
+  parts.forEach((p, i) => {
+    if (!p) return;
+    const disp = p.length > 4 && p.startsWith('$$') && p.endsWith('$$');
+    const inl = !disp && p.length > 2 && p[0] === '$' && p.endsWith('$');
+    if (disp || inl) {
+      const tex = p.slice(disp ? 2 : 1, disp ? -2 : -1).trim();
+      let html = '';
+      if (window.katex) try { html = katex.renderToString(tex, { displayMode: disp, throwOnError: true, strict: 'ignore', output: 'html' }); } catch (e) { html = ''; }
+      if (html) { const box = document.createElement(disp ? 'div' : 'span'); box.innerHTML = html; el.append(box); }
+      else el.append(document.createTextNode(texPlain(tex) + (disp ? '\n' : '')));
+    } else {
+      let q = p.replace(/[*#`>]/g, '');
+      if ((parts[i - 1] || '').startsWith('$$')) q = q.replace(/^[ \t]*\n/, ''); // 줄 식 앞뒤로 빈 줄이 생기지 않게
+      if ((parts[i + 1] || '').startsWith('$$')) q = q.replace(/\n[ \t]*$/, '');
+      if (i === 0) q = q.replace(/^\s+/, '');
+      if (i === parts.length - 1) q = q.replace(/\s+$/, '');
+      if (q) el.append(document.createTextNode(q));
+    }
+  });
+}
+window.__katexReady = () => { if (lastScreen) renderScreen(lastScreen); };
 // 듣는 말과 화면용 글 나누기 (--- 아래는 화면에만)
 function splitReply(t) {
   const parts = String(t || '').split(/\n\s*-{3,}\s*\n?/);
@@ -409,7 +455,7 @@ function say(t) {
   const c = clean(sp.spoken);
   if (!c) return;
   $('#line').textContent = c;
-  $('#detail').textContent = sp.screen.replace(/[*_#`>|]/g, '').trim();
+  renderScreen(sp.screen.trim());
   lastSaid = c; lastSaidAt = Date.now();
   if (!N) return;
   if (S.quiet && N.hasHeadphones && !N.hasHeadphones()) { if (N.buzz) N.buzz(); onMuted(); return; } // 크레딧도 안 쓴다
